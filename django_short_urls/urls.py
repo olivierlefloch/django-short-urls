@@ -5,6 +5,7 @@ from django.conf.urls import patterns, include, url
 # admin.autodiscover()
 
 urlpatterns = patterns('',
+    url(r'^api/v1/new$', 'django_short_urls.views.new', name='new'),
     url(r'^(.*)$', 'django_short_urls.views.main', name='main'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
