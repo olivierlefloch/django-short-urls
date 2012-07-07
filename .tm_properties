@@ -1,0 +1,8 @@
+# Textmate project configuration
+
+projectDirectory    = "$CWD"
+windowTitle         = "$TM_DISPLAYNAME — Django Short Urls"
+
+# Code formatting settings
+
+softTabs = true
