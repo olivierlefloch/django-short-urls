@@ -131,3 +131,17 @@ LOGGING = {
         },
     }
 }
+
+# Databases
+
+DATABASES = {
+   'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': '',
+    }
+}
+
+import mongoengine
+from local_settings import MONGOENGINE
+
+mongoengine.connect(**MONGOENGINE)
