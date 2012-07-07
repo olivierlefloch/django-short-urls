@@ -15,7 +15,7 @@ def new(request):
     user = User.objects(login=request.POST['login'], api_key=request.POST['api_key']).first()
     
     if user is None:
-        raise HttpResponseForbidden
+        return HttpResponseForbidden
     
     link = Link(short_path=request.POST['short_path'], long_url=request.POST['long_url']).save()
     
