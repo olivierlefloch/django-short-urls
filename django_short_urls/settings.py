@@ -1,11 +1,7 @@
 # Django settings for django_short_urls project.
+from local_settings import DEBUG, ADMINS, MONGOENGINE
 
-DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-
-ADMINS = (
-    ('Work4 Labs Root', 'root@work4labs.com'),
-)
 
 MANAGERS = ADMINS
 
@@ -141,6 +137,5 @@ DATABASES = {
 }
 
 import mongoengine
-from local_settings import MONGOENGINE
 
 mongoengine.connect(**MONGOENGINE)

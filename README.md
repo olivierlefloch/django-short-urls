@@ -9,6 +9,12 @@ Installation:
 
 Add a `local_settings.py` file in directory `django_short_urls`, its content should look like:
 
+    DEBUG = False
+    
+    ADMINS = (
+        ('Work4 Labs Root', 'root@work4labs.com'),
+    )
+    
     MONGOENGINE = {
         'db': 'work4labs',
         'host': 'localhost',
