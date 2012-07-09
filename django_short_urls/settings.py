@@ -10,8 +10,6 @@ TIME_ZONE = None
 
 LANGUAGE_CODE = 'en-us'
 
-SITE_ID = 1
-
 USE_I18N = False
 USE_L10N = False
 USE_TZ = True
@@ -85,7 +83,7 @@ INSTALLED_APPS = (
     # 'django.contrib.auth',
     # 'django.contrib.contenttypes',
     # 'django.contrib.sessions',
-    'django.contrib.sites',
+    # 'django.contrib.sites',
     # 'django.contrib.messages',
     # 'django.contrib.staticfiles',
     # Uncomment the next line to enable the admin:
