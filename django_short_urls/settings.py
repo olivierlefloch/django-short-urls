@@ -1,5 +1,5 @@
 # Django settings for django_short_urls project.
-from local_settings import DEBUG, ADMINS, MONGOENGINE
+from local_settings import ADMINS, DEBUG, MONGOENGINE, SECRET_KEY
 
 TEMPLATE_DEBUG = DEBUG
 
@@ -47,9 +47,6 @@ STATICFILES_FINDERS = (
     # 'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
-
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = '6r__q4gindk5hzbb^)u!q%4-!d&amp;clxu#%0g3v4m@rg7!xf$#=@'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
