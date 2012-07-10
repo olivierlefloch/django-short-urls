@@ -1,4 +1,5 @@
 # Django settings for django_short_urls project.
+import os
 from local_settings import ADMINS, DEBUG, MONGOENGINE, SECRET_KEY
 
 TEMPLATE_DEBUG = DEBUG
@@ -50,9 +51,7 @@ STATICFILES_FINDERS = (
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-    # 'django.template.loaders.filesystem.Loader',
-    # 'django.template.loaders.app_directories.Loader',
-    # 'django.template.loaders.eggs.Loader',
+    'django.template.loaders.filesystem.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -71,9 +70,7 @@ ROOT_URLCONF = 'django_short_urls.urls'
 WSGI_APPLICATION = 'django_short_urls.wsgi.application'
 
 TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
+    os.path.abspath('%s/templates' % os.path.dirname(__file__)),
 )
 
 INSTALLED_APPS = (
