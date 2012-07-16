@@ -3,8 +3,9 @@ from django.http import Http404, HttpResponseForbidden, HttpResponse
 from django.shortcuts import redirect
 
 def main(request, path):
-    link = Link.objects(short_path=path).first()
-    # link = Link.objects(short_path=path).first()
+    link = Link.find_by_short_path(short_path=path)
+    
+    # FIXME: Add tracking
     
     if link is None:
         raise Http404
@@ -17,6 +18,9 @@ def new(request):
     if user is None:
         return HttpResponseForbidden()
     
-    link = Link(short_path=request.POST['short_path'], long_url=request.POST['long_url']).save()
+    # FIXME: Also support passing data as GET parameters?
+    link = Link.new(
+        short_path=request.POST['short_path'],
+        long_url=request.POST['long_url'])
     
-    return HttpResponse("%s -> %s\n" % (link.short_path, link.long_url))
+    return HttpResponse("%s" % link)
