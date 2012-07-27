@@ -9,7 +9,7 @@ class Link(Document):
     # FIXME: Add unit tests - WFU-1527
     
     short_path = StringField(required=True)
-    short_path_to_lower = StringField(required, unique=True)
+    short_path_to_lower = StringField(required=True, unique=True)
     long_url = StringField(required=True)
     
     def __init__(self, *args, **kwargs):
