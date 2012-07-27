@@ -5,7 +5,7 @@ from django.shortcuts import redirect
 def main(request, path):
     link = Link.find_by_short_path(short_path=path)
     
-    # FIXME: Add tracking
+    # FIXME: Add tracking - WFU-1528
     
     if link is None:
         raise Http404
@@ -18,7 +18,7 @@ def new(request):
     if user is None:
         return HttpResponseForbidden()
     
-    # FIXME: Also support passing data as GET parameters?
+    # FIXME: Also support passing data as GET parameters? - WFU-1422
     link = Link.new(
         short_path=request.POST['short_path'],
         long_url=request.POST['long_url'])

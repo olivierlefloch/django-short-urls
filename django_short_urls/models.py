@@ -6,7 +6,7 @@ class User(Document):
     email = StringField(required=True)
 
 class Link(Document):
-    # FIXME: Add unit tests
+    # FIXME: Add unit tests - WFU-1527
     
     short_path = StringField(required=True)
     short_path_to_lower = StringField(required, unique=True)
