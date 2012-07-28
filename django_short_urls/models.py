@@ -15,7 +15,8 @@ class Link(Document):
     def __init__(self, *args, **kwargs):
         super(Link, self).__init__(*args, **kwargs)
         
-        self.short_path_to_lower = short_path.lower()
+        if self.short_path_to_lower is None:
+            self.short_path_to_lower = self.short_path.lower()
     
     @classmethod
     def new(cls, long_url, short_path=None):
@@ -35,8 +36,7 @@ class Link(Document):
     def find_by_short_path(cls, short_path):
         """Return Link with matching short path (ignores case)"""
         
-        return cls.objects(short_path_to_lower=path.lower()).first()
-        
+        return cls.objects(short_path_to_lower=short_path.lower()).first()
     
     def __str__(self):
         return "%s -> %s\n" % (self.short_path, self.long_url)
