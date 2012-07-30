@@ -22,7 +22,7 @@ def new(request):
     long_url   = request.REQUEST['long_url']
     short_path = request.REQUEST['short_path']
     
-    if short_path:
+    if '/' in short_path:
         return HttpResponseForbidden("short_path contains a '/'.")
     
     link = Link.shorten(long_url=long_url, short_path=short_path)
