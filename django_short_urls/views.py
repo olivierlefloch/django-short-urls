@@ -20,8 +20,8 @@ def new(request):
         return HttpResponseForbidden("Invalid credentials.")
     
     # FIXME: Also support passing data as REQUEST parameters? - WFU-1422
-    short_path = request.REQUEST['short_path']
     long_url   = request.REQUEST['long_url']
+    short_path = request.REQUEST['short_path']
     
     link = Link.new(short_path=short_path, long_url=long_url)
     
