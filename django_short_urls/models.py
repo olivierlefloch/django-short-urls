@@ -23,11 +23,11 @@ class Link(Document):
         if short_path is None:
             raise NotImplementedError
         
-        link = cls.objects.get_or_create(short_path=short_path)
+        link, created = cls.objects.get_or_create(
+            short_path=short_path,
+            defaults={'long_url': long_url})
         
-        if link.long_url is None:
-            link.long_url = long_url
-        elif link.long_url != long_url:
+        if created and link.long_url != long_url:
             raise Exception('Short path "%s" has already been bound.' % short_path)
         
         link.save()
