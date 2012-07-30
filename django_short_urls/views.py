@@ -1,3 +1,4 @@
+import json
 from models import Link, User
 from django.http import Http404, HttpResponseForbidden, HttpResponse
 from django.shortcuts import redirect
@@ -19,8 +20,15 @@ def new(request):
         return HttpResponseForbidden()
     
     # FIXME: Also support passing data as GET parameters? - WFU-1422
-    link = Link.new(
-        short_path=request.POST['short_path'],
-        long_url=request.POST['long_url'])
+    short_path = request.POST['short_path']
+    long_url   = request.POST['long_url']
     
-    return HttpResponse("%s" % link)
+    link = Link.new(short_path=short_path, long_url=long_url)
+    
+    return HttpResponse(
+        json.dumps({
+            'short_path': short_path,
+            'long_url': long_url
+        }),
+        mimetype="application/json"
+    )
