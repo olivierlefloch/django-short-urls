@@ -23,7 +23,7 @@ def new(request):
     long_url   = request.REQUEST['long_url']
     short_path = request.REQUEST['short_path']
     
-    link = Link.new(short_path=short_path, long_url=long_url)
+    link = Link.shorten(long_url=long_url, short_path=short_path)
     
     return HttpResponse(
         json.dumps({

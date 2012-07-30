@@ -19,7 +19,7 @@ class Link(Document):
             self.short_path_to_lower = self.short_path.lower()
     
     @classmethod
-    def new(cls, long_url, short_path=None):
+    def shorten(cls, long_url, short_path=None):
         if short_path is None:
             raise NotImplementedError
         
