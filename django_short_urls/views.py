@@ -14,14 +14,14 @@ def main(request, path):
     return redirect(link.long_url)
 
 def new(request):
-    user = User.objects(login=request.POST['login'], api_key=request.POST['api_key']).first()
+    user = User.objects(login=request.REQUEST['login'], api_key=request.REQUEST['api_key']).first()
     
     if user is None:
         return HttpResponseForbidden()
     
-    # FIXME: Also support passing data as GET parameters? - WFU-1422
-    short_path = request.POST['short_path']
-    long_url   = request.POST['long_url']
+    # FIXME: Also support passing data as REQUEST parameters? - WFU-1422
+    short_path = request.REQUEST['short_path']
+    long_url   = request.REQUEST['long_url']
     
     link = Link.new(short_path=short_path, long_url=long_url)
     
