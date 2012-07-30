@@ -19,7 +19,6 @@ def new(request):
     if user is None:
         return HttpResponseForbidden("Invalid credentials.")
     
-    # FIXME: Also support passing data as REQUEST parameters? - WFU-1422
     long_url   = request.REQUEST['long_url']
     short_path = request.REQUEST['short_path']
     
