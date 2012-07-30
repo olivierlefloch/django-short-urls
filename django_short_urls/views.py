@@ -17,7 +17,7 @@ def new(request):
     user = User.objects(login=request.REQUEST['login'], api_key=request.REQUEST['api_key']).first()
     
     if user is None:
-        return HttpResponseForbidden()
+        return HttpResponseForbidden("Invalid credentials.")
     
     # FIXME: Also support passing data as REQUEST parameters? - WFU-1422
     short_path = request.REQUEST['short_path']
