@@ -14,10 +14,22 @@ def main(request, path):
     return redirect(link.long_url)
 
 def new(request):
-    user = User.objects(login=request.REQUEST['login'], api_key=request.REQUEST['api_key']).first()
+    try:
+        login   = request.REQUEST['login']
+        api_key = request.REQUEST['api_key']
+
+        user = User.objects(login=login, api_key=api_key).first()
+    except KeyError:
+        user = None
 
     if user is None:
-        return HttpResponseForbidden("Invalid credentials.")
+        return HttpResponseForbidden(
+            json.dumps({
+                "error": True,
+                "message": "Invalid credentials."
+            }),
+            mimetype="application/json"
+        )
 
     long_url   = request.REQUEST['long_url']
     short_path = request.REQUEST['short_path']
