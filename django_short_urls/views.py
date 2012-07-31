@@ -25,17 +25,22 @@ def new(request):
     if user is None:
         return response(status=HTTP_UNAUTHORIZED, message="Invalid credentials.")
 
-    for param in ('long_url', 'short_path'):
-        if param not in request.REQUEST:
+    if 'long_url' in request.REQUEST:
+        long_url = request.REQUEST['long_url']
+    else:
+        return response(
+            status=HTTP_BAD_REQUEST,
+            message="Missing parameter: 'long_url'")
+
+    if 'short_path' in request.REQUEST:
+        short_path = request.REQUEST['short_path']
+
+        if '/' in short_path:
             return response(
                 status=HTTP_BAD_REQUEST,
-                message="Missing parameter: '%s'" % param)
-
-    long_url   = request.REQUEST['long_url']
-    short_path = request.REQUEST['short_path']
-
-    if '/' in short_path:
-        return response(status=HTTP_BAD_REQUEST, message="short_path contains a '/'.")
+                message="short_path contains a '/'.")
+    else:
+        short_path = None
 
     try:
         link = Link.shorten(long_url=long_url, short_path=short_path, creator=user.login)
