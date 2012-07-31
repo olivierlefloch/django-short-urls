@@ -1,7 +1,7 @@
-import json
 from models import Link, User
-from django.http import Http404, HttpResponseForbidden, HttpResponse
+
 from django.shortcuts import redirect
+from django.http import Http404
 
 def main(request, path):
     link = Link.find_by_short_path(short_path=path)
@@ -23,30 +23,37 @@ def new(request):
         user = None
 
     if user is None:
-        return error_forbidden("Invalid credentials.")
+        return response(status=HTTP_UNAUTHORIZED, message="Invalid credentials.")
+
+    for param in ('long_url', 'short_path'):
+        if param not in request.REQUEST:
+            return response(
+                status=HTTP_BAD_REQUEST,
+                message="Missing parameter: '%s'" % param)
 
     long_url   = request.REQUEST['long_url']
     short_path = request.REQUEST['short_path']
 
     if '/' in short_path:
-        return error_forbidden("short_path contains a '/'.")
+        return response(status=HTTP_BAD_REQUEST, message="short_path contains a '/'.")
 
     link = Link.shorten(long_url=long_url, short_path=short_path, creator=user.login)
 
-    return HttpResponse(
-        json.dumps({
-            "error": False,
-            'short_path': short_path,
-            'long_url': long_url
-        }),
-        mimetype="application/json"
-    )
+    return response(short_path=short_path, long_url=long_url)
 
-def error_forbidden(message):
-    return HttpResponseForbidden(
-        json.dumps({
-            "error": True,
-            "message": message
-        }),
-        mimetype="application/json"
-    )
+# TODO: Move the following code to a seperate file
+
+from django.http import HttpResponse
+import json
+
+HTTP_OK           = 200
+HTTP_BAD_REQUEST  = 400
+HTTP_UNAUTHORIZED = 401
+
+def response(message=None, status=HTTP_OK, **kwargs):
+    kwargs.update({
+        "error": status != HTTP_OK,
+        "message": message
+    })
+
+    return HttpResponse(json.dumps(kwargs), status=status, mimetype="application/json")
