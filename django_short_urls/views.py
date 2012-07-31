@@ -23,26 +23,30 @@ def new(request):
         user = None
 
     if user is None:
-        return HttpResponseForbidden(
-            json.dumps({
-                "error": True,
-                "message": "Invalid credentials."
-            }),
-            mimetype="application/json"
-        )
+        return error_forbidden("Invalid credentials.")
 
     long_url   = request.REQUEST['long_url']
     short_path = request.REQUEST['short_path']
 
     if '/' in short_path:
-        return HttpResponseForbidden("short_path contains a '/'.")
+        return error_forbidden("short_path contains a '/'.")
 
     link = Link.shorten(long_url=long_url, short_path=short_path, creator=user.login)
 
     return HttpResponse(
         json.dumps({
+            "error": False,
             'short_path': short_path,
             'long_url': long_url
+        }),
+        mimetype="application/json"
+    )
+
+def error_forbidden(message):
+    return HttpResponseForbidden(
+        json.dumps({
+            "error": True,
+            "message": message
         }),
         mimetype="application/json"
     )
