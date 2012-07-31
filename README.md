@@ -10,11 +10,11 @@ Installation:
 Add a `local_settings.py` file in directory `django_short_urls`, its content should look like:
 
     DEBUG = False
-    
+
     ADMINS = (
         ('Work4 Labs Root', 'root@work4labs.com'),
     )
-    
+
     MONGOENGINE = {
         'db': 'work4labs',
         'host': 'localhost',
@@ -22,7 +22,7 @@ Add a `local_settings.py` file in directory `django_short_urls`, its content sho
         'username': 'work4labs',
         'password': 'work4labs'
     }
-    
+
     # Make this unique, and don't share it with anybody.
     SECRET_KEY = '6r__q4gindk5hzbb^)u!q%4-!d&amp;clxu#%0g3v4m@rg7!xf$#=@'
 
