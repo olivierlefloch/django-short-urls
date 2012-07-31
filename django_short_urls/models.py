@@ -5,6 +5,13 @@ class User(Document):
     api_key = StringField(required=True)
     email = StringField(required=True)
 
+class ShortPathConflict(Exception):
+    def __init__(self, short_path):
+        self.short_path = short_path
+
+    def __str__(self):
+        return 'Short path "%s" has already been bound.' % self.short_path
+
 class Link(Document):
     # FIXME: Add unit tests - WFU-1527
 
@@ -28,8 +35,8 @@ class Link(Document):
             short_path=short_path,
             defaults={'long_url': long_url})
 
-        if created and link.long_url != long_url:
-            raise Exception('Short path "%s" has already been bound.' % short_path)
+        if not created and link.long_url != long_url:
+            raise ShortPathConflict(short_path)
 
         if creator is not None:
             link.creator = creator

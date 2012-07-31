@@ -1,4 +1,4 @@
-from models import Link, User
+from models import Link, User, ShortPathConflict
 
 from django.shortcuts import redirect
 from django.http import Http404
@@ -37,7 +37,10 @@ def new(request):
     if '/' in short_path:
         return response(status=HTTP_BAD_REQUEST, message="short_path contains a '/'.")
 
-    link = Link.shorten(long_url=long_url, short_path=short_path, creator=user.login)
+    try:
+        link = Link.shorten(long_url=long_url, short_path=short_path, creator=user.login)
+    except ShortPathConflict, e:
+        return response(status=HTTP_CONFLICT, message=str(e), short_path=short_path)
 
     return response(short_path=short_path, long_url=long_url)
 
@@ -49,6 +52,7 @@ import json
 HTTP_OK           = 200
 HTTP_BAD_REQUEST  = 400
 HTTP_UNAUTHORIZED = 401
+HTTP_CONFLICT     = 409
 
 def response(message=None, status=HTTP_OK, **kwargs):
     kwargs.update({
