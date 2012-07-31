@@ -22,7 +22,8 @@ class Link(Document):
     short_path = StringField(required=True)
     short_path_to_lower = StringField(required=True, unique=True)
     long_url = StringField(required=True)
-    creator = StringField()
+    creator = StringField(required=True)
+    created_at = DateTimeField(required=True)
 
     def __init__(self, *args, **kwargs):
         super(Link, self).__init__(*args, **kwargs)
