@@ -47,7 +47,7 @@ def new(request):
     except ShortPathConflict, e:
         return response(status=HTTP_CONFLICT, message=str(e), short_path=short_path)
 
-    return response(short_path=short_path, long_url=long_url)
+    return response(short_path=link.short_path, long_url=link.long_url)
 
 # TODO: Move the following code to a separate file
 
