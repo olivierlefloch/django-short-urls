@@ -44,7 +44,7 @@ def new(request):
 
     return response(short_path=short_path, long_url=long_url)
 
-# TODO: Move the following code to a seperate file
+# TODO: Move the following code to a separate file
 
 from django.http import HttpResponse
 import json
