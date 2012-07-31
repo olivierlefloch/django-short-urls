@@ -25,7 +25,7 @@ def new(request):
     if '/' in short_path:
         return HttpResponseForbidden("short_path contains a '/'.")
 
-    link = Link.shorten(long_url=long_url, short_path=short_path)
+    link = Link.shorten(long_url=long_url, short_path=short_path, creator=user.login)
 
     return HttpResponse(
         json.dumps({

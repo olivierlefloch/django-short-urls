@@ -11,6 +11,7 @@ class Link(Document):
     short_path = StringField(required=True)
     short_path_to_lower = StringField(required=True, unique=True)
     long_url = StringField(required=True)
+    creator = StringField()
 
     def __init__(self, *args, **kwargs):
         super(Link, self).__init__(*args, **kwargs)
@@ -19,7 +20,7 @@ class Link(Document):
             self.short_path_to_lower = self.short_path.lower()
 
     @classmethod
-    def shorten(cls, long_url, short_path=None):
+    def shorten(cls, long_url, short_path=None, creator=None):
         if short_path is None:
             raise NotImplementedError
 
@@ -29,6 +30,9 @@ class Link(Document):
 
         if created and link.long_url != long_url:
             raise Exception('Short path "%s" has already been bound.' % short_path)
+
+        if creator is not None:
+            link.creator = creator
 
         link.save()
 
