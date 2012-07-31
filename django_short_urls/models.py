@@ -53,8 +53,6 @@ class Link(Document):
 
                     if created:
                         # Short path didn't exist, we're done
-                        print "ALAKAZAM ALAKAZAM NEW SHORT PATH FOUND! %s" % short_path
-
                         break
                     else:
                         # Short path was already used, forget this link
