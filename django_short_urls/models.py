@@ -19,11 +19,16 @@ class ShortPathConflict(Exception):
 class Link(Document):
     # FIXME: Add unit tests - WFU-1527
 
-    short_path = StringField(required=True)
+    short_path          = StringField(required=True)
     short_path_to_lower = StringField(required=True, unique=True)
-    long_url = StringField(required=True)
-    creator = StringField(required=True)
-    created_at = DateTimeField(required=True)
+    long_url            = StringField(required=True)
+    prefix              = StringField()
+    creator             = StringField(required=True)
+    created_at          = DateTimeField(required=True)
+
+    meta = {
+        'indexes': [('prefix', 'long_url')]
+    }
 
     def __init__(self, *args, **kwargs):
         super(Link, self).__init__(*args, **kwargs)
@@ -34,30 +39,10 @@ class Link(Document):
     @classmethod
     def shorten(cls, long_url, short_path=None, prefix='', creator=None):
         if short_path is None:
-            # Generate a seed from the long url and the current date
-            seed = long_url + str(datetime.utcnow())
+            link = cls.objects(long_url=long_url, prefix=prefix).first()
 
-            link = None
-
-            while link is None:
-                hashed = int(sha1(seed).hexdigest(), 16)
-                mod    = 1
-
-                while hashed > mod:
-                    mod *= 10
-                    short_path = int_to_alnum.encode(hashed % mod)
-
-                    link, created = cls.__get_or_create(short_path, prefix, long_url, creator)
-
-                    if created:
-                        # Short path didn't exist, we're done
-                        break
-                    else:
-                        # Short path was already used, forget this link
-                        link = None
-
-                # Try again with a space appended to seed
-                seed += ' '
+            if link is None:
+                link = cls.__create_with_random_short_path(long_url, prefix, creator)
         else:
             link, created = cls.__get_or_create(short_path, prefix, long_url, creator)
 
@@ -67,6 +52,24 @@ class Link(Document):
         link.save()
 
         return link
+
+    @classmethod
+    def __create_with_random_short_path(cls, long_url, prefix, creator):
+        while True:
+            # Generate a seed from the long url and the current date (with milliseconds)
+            seed   = long_url + str(datetime.utcnow())
+            hashed = int(sha1(seed).hexdigest(), 16)
+            mod    = 1
+
+            while hashed > mod:
+                mod *= 10
+                short_path = int_to_alnum.encode(hashed % mod)
+
+                link, created = cls.__get_or_create(short_path, prefix, long_url, creator)
+
+                if created:
+                    # Short path didn't exist, we're done
+                    return link
 
     @classmethod
     def __get_or_create(cls, short_path, prefix, long_url, creator):
