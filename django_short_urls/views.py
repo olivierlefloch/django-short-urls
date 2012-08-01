@@ -44,28 +44,28 @@ def new(request):
     else:
         short_path = None
 
+    if 'prefix' in request.REQUEST:
+        prefix = request.REQUEST['prefix']
+
+        if '/' in prefix:
+            return response(
+                status=HTTP_BAD_REQUEST,
+                message="prefix contains a '/'.")
+    else:
+        prefix = ''
+
+    params = {
+        'long_url': long_url,
+        'short_path': short_path,
+        'prefix': prefix,
+        'creator': user.login
+    }
+
     try:
-        link = Link.shorten(long_url=long_url, short_path=short_path, creator=user.login)
+        link = Link.shorten(**params)
     except ShortPathConflict, e:
-        return response(status=HTTP_CONFLICT, message=str(e), short_path=short_path)
+        return response(status=HTTP_CONFLICT, message=str(e), **params)
 
-    return response(short_path=link.short_path, long_url=link.long_url)
+    params['short_path'] = link.short_path
 
-# TODO: Move the following code to a separate file
-
-from django.http import HttpResponse
-import json
-
-HTTP_OK           = 200
-HTTP_BAD_REQUEST  = 400
-HTTP_UNAUTHORIZED = 401
-HTTP_CONFLICT     = 409
-
-def response(message=None, status=HTTP_OK, **kwargs):
-    kwargs.update({
-        "status_code": status,
-        "error": status != HTTP_OK,
-        "message": message
-    })
-
-    return HttpResponse(json.dumps(kwargs), status=status, mimetype="application/json")
+    return response(**params)

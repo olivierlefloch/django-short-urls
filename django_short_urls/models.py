@@ -32,11 +32,8 @@ class Link(Document):
             self.short_path_to_lower = self.short_path.lower()
 
     @classmethod
-    def shorten(cls, long_url, short_path=None, prefix=None, creator=None):
+    def shorten(cls, long_url, short_path=None, prefix='', creator=None):
         if short_path is None:
-            if prefix is not None:
-                raise NotImplementedError
-
             # Generate a seed from the long url and the current date
             seed = long_url + str(datetime.utcnow())
 
@@ -50,7 +47,7 @@ class Link(Document):
                     mod *= 10
                     short_path = int_to_alnum.encode(hashed % mod)
 
-                    link, created = cls.__get_or_create(short_path, long_url, creator)
+                    link, created = cls.__get_or_create(short_path, prefix, long_url, creator)
 
                     if created:
                         # Short path didn't exist, we're done
@@ -62,7 +59,7 @@ class Link(Document):
                 # Try again with a space appended to seed
                 seed += ' '
         else:
-            link, created = cls.__get_or_create(short_path, long_url, creator)
+            link, created = cls.__get_or_create(short_path, prefix, long_url, creator)
 
             if not created and link.long_url != long_url:
                 raise ShortPathConflict(short_path)
@@ -72,10 +69,11 @@ class Link(Document):
         return link
 
     @classmethod
-    def __get_or_create(cls, short_path, long_url, creator):
+    def __get_or_create(cls, short_path, prefix, long_url, creator):
         return cls.objects.get_or_create(
-            short_path=short_path,
+            short_path='%s%s' % ('%s/' % prefix if prefix != '' else '', short_path),
             defaults={
+                'prefix': prefix,
                 'long_url': long_url,
                 'creator': creator,
                 'created_at': datetime.utcnow()})
