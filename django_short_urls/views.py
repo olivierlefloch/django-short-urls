@@ -4,7 +4,7 @@ from datetime import datetime
 from django.shortcuts import redirect
 from django.http import Http404
 
-from w4l_http import response
+from w4l_http import *
 
 def main(request, path):
     link = Link.find_by_short_path(short_path=path)
