@@ -3,6 +3,8 @@ from models import Link, User, ShortPathConflict
 from django.shortcuts import redirect
 from django.http import Http404
 
+from w4l_http import response
+
 def main(request, path):
     link = Link.find_by_short_path(short_path=path)
 
