@@ -89,3 +89,17 @@ class Link(Document):
 
     def __str__(self):
         return "%s -> %s\n" % (self.short_path, self.long_url)
+
+class Click(Document):
+    server     = StringField(required=True)
+    full_path  = StringField(required=True)
+    link       = ReferenceField('Link')
+    created_at = DateTimeField(required=True)
+    ip         = StringField(required=True)
+    browser    = StringField()
+    referer    = StringField()
+    lang       = StringField()
+
+    meta = {
+        'cascade': False
+    }
