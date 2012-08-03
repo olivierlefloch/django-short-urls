@@ -38,7 +38,7 @@ class Link(Document):
             if link is None:
                 link = cls.__create_with_random_short_path(long_url, prefix, creator)
         else:
-            link, created = cls.__get_or_create(short_path, prefix, long_url, creator)
+            link, created = cls.__get_or_create(prefix, short_path, long_url, creator)
 
             if not created and link.long_url != long_url:
                 raise ShortPathConflict(short_path)
@@ -59,20 +59,21 @@ class Link(Document):
                 mod *= 10
                 short_path = int_to_alnum.encode(hashed % mod)
 
-                link, created = cls.__get_or_create(short_path, prefix, long_url, creator)
+                link, created = cls.__get_or_create(prefix, short_path, long_url, creator)
 
                 if created:
                     # Short path didn't exist, we're done
                     return link
 
     @classmethod
-    def __get_or_create(cls, short_path, prefix, long_url, creator):
-        short_path_to_lower = ('%s%s' % ('%s/' % prefix if prefix != '' else '', short_path)).lower()
+    def __get_or_create(cls, prefix, short_path_without_prefix, long_url, creator):
+        short_path_with_prefix = '%s%s' % ('%s/' % prefix if prefix != '' else '', short_path_without_prefix)
+        short_path_to_lower = short_path_with_prefix.lower()
 
         return cls.objects.get_or_create(
             short_path_to_lower=short_path_to_lower,
             defaults={
-                'short_path': short_path,
+                'short_path': short_path_with_prefix,
                 'prefix': prefix,
                 'long_url': long_url,
                 'creator': creator,
