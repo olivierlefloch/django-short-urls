@@ -37,7 +37,7 @@ Add a new user to your database using the Django shell:
 
 You can then register new urls via requests to the API such as (take care to url encode urls):
 
-    % curl -d "login=work4labs&api_key=work4labs&short_path=work4labs/corporate&long_url=http://www.work4labs.com/" "http://workfor.us/api/v1/new"
+    % curl -d "login=work4labs&api_key=work4labs&prefix=work4labs&short_path=corporate&long_url=http://www.work4labs.com/" "http://workfor.us/api/v1/new"
     work4labs/corporate -> http://www.work4labs.com/
 
 Once that is done `http://workfor.us/work4labs/corporate` will redirect to `http://www.work4labs.com/`.

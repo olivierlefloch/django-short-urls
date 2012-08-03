@@ -6,8 +6,8 @@ from django.http import Http404
 
 from w4l_http import *
 
-def main(request, path):
-    link = Link.find_by_short_path(short_path=path)
+def main(request, hash):
+    link = Link.find_by_hash(hash=hash)
 
     Click(
         server="%s:%s" % (request.META['SERVER_NAME'], request.META['SERVER_PORT']),
@@ -74,6 +74,9 @@ def new(request):
     try:
         link = Link.shorten(**params)
     except ShortPathConflict, e:
+        del params['short_url'], params['prefix'], params['long_url']
+        params['hash'] = e.link.hash
+
         return response(status=HTTP_CONFLICT, message=str(e), **params)
 
     params['short_path'] = link.short_path

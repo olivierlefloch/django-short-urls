@@ -5,26 +5,26 @@ from mongoengine import *
 import int_to_alnum
 
 class User(Document):
-    login = StringField(required=True, unique=True)
+    login   = StringField(required=True, unique=True)
     api_key = StringField(required=True)
-    email = StringField(required=True)
+    email   = StringField(required=True)
 
 class ShortPathConflict(Exception):
-    def __init__(self, short_path):
-        self.short_path = short_path
+    def __init__(self, link):
+        self.link = link
 
     def __str__(self):
-        return 'Short path "%s" has already been bound.' % self.short_path
+        return 'Hash "%s" has already been bound.' % link.hash
 
 class Link(Document):
     # FIXME: Add unit tests - WFU-1527
 
-    short_path          = StringField(required=True)
-    short_path_to_lower = StringField(required=True, unique=True)
-    long_url            = StringField(required=True)
-    prefix              = StringField(required=True)
-    creator             = StringField(required=True)
-    created_at          = DateTimeField(required=True)
+    hash       = StringField(required=True, unique=True)
+    prefix     = StringField(required=True)
+    short_path = StringField(required=True)
+    long_url   = StringField(required=True)
+    creator    = StringField(required=True)
+    created_at = DateTimeField(required=True)
 
     meta = {
         'indexes': [('prefix', 'long_url')]
@@ -41,7 +41,7 @@ class Link(Document):
             link, created = cls.__get_or_create(prefix, short_path, long_url, creator)
 
             if not created and link.long_url != long_url:
-                raise ShortPathConflict(short_path)
+                raise ShortPathConflict(link)
 
         link.save()
 
@@ -66,27 +66,26 @@ class Link(Document):
                     return link
 
     @classmethod
-    def __get_or_create(cls, prefix, short_path_without_prefix, long_url, creator):
-        short_path_with_prefix = '%s%s' % ('%s/' % prefix if prefix != '' else '', short_path_without_prefix)
-        short_path_to_lower = short_path_with_prefix.lower()
-
+    def __get_or_create(cls, prefix, short_path, long_url, creator):
         return cls.objects.get_or_create(
-            short_path_to_lower=short_path_to_lower,
+            hash=Link.hash_for_prefix_and_short_path(prefix, short_path),
             defaults={
-                'short_path': short_path_with_prefix,
+                'short_path': short_path,
                 'prefix': prefix,
                 'long_url': long_url,
                 'creator': creator,
                 'created_at': datetime.utcnow()})
 
     @classmethod
-    def find_by_short_path(cls, short_path):
-        """Return Link with matching short path (ignores case)"""
+    def hash_for_prefix_and_short_path(prefix, short_path):
+        return ('%s%s' % ('%s/' % prefix if prefix != '' else '', short_path)).lower()
 
-        return cls.objects(short_path_to_lower=short_path.lower()).first()
+    @classmethod
+    def find_by_hash(cls, short_path):
+        return cls.objects(hash=hash.lower()).first()
 
     def __str__(self):
-        return "%s -> %s\n" % (self.short_path, self.long_url)
+        return "%s -> %s\n" % (self.hash, self.long_url)
 
 class Click(Document):
     server     = StringField(required=True)
