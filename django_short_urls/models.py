@@ -14,7 +14,7 @@ class ShortPathConflict(Exception):
         self.link = link
 
     def __str__(self):
-        return 'Hash "%s" has already been bound.' % link.hash
+        return 'Hash "%s" has already been bound.' % self.link.hash
 
 class Link(Document):
     # FIXME: Add unit tests - WFU-1527
