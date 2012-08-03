@@ -30,12 +30,6 @@ class Link(Document):
         'indexes': [('prefix', 'long_url')]
     }
 
-    def __init__(self, *args, **kwargs):
-        super(Link, self).__init__(*args, **kwargs)
-
-        if self.short_path_to_lower is None:
-            self.short_path_to_lower = self.short_path.lower()
-
     @classmethod
     def shorten(cls, long_url, short_path=None, prefix='', creator=None):
         if short_path is None:
@@ -73,9 +67,12 @@ class Link(Document):
 
     @classmethod
     def __get_or_create(cls, short_path, prefix, long_url, creator):
+        short_path_to_lower = ('%s%s' % ('%s/' % prefix if prefix != '' else '', short_path)).lower()
+
         return cls.objects.get_or_create(
-            short_path='%s%s' % ('%s/' % prefix if prefix != '' else '', short_path),
+            short_path_to_lower=short_path_to_lower,
             defaults={
+                'short_path': short_path,
                 'prefix': prefix,
                 'long_url': long_url,
                 'creator': creator,
