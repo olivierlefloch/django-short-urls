@@ -22,7 +22,7 @@ class Link(Document):
     short_path          = StringField(required=True)
     short_path_to_lower = StringField(required=True, unique=True)
     long_url            = StringField(required=True)
-    prefix              = StringField()
+    prefix              = StringField(required=True)
     creator             = StringField(required=True)
     created_at          = DateTimeField(required=True)
 
