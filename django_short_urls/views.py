@@ -7,7 +7,7 @@ from django.http import Http404
 from w4l_http import *
 
 def main(request, hash):
-    link = Link.find_by_hash(hash=hash)
+    link = Link.find_by_hash(hash)
 
     Click(
         server="%s:%s" % (request.META['SERVER_NAME'], request.META['SERVER_PORT']),

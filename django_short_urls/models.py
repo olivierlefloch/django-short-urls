@@ -81,7 +81,7 @@ class Link(Document):
         return ('%s%s' % ('%s/' % prefix if prefix != '' else '', short_path)).lower()
 
     @classmethod
-    def find_by_hash(cls, short_path):
+    def find_by_hash(cls, hash):
         return cls.objects(hash=hash.lower()).first()
 
     def __str__(self):
