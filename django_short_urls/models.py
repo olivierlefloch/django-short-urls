@@ -77,7 +77,7 @@ class Link(Document):
                 'created_at': datetime.utcnow()})
 
     @classmethod
-    def hash_for_prefix_and_short_path(prefix, short_path):
+    def hash_for_prefix_and_short_path(cls, prefix, short_path):
         return ('%s%s' % ('%s/' % prefix if prefix != '' else '', short_path)).lower()
 
     @classmethod
