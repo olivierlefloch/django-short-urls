@@ -74,7 +74,7 @@ def new(request):
     try:
         link = Link.shorten(**params)
     except ShortPathConflict, e:
-        del params['short_url'], params['prefix'], params['long_url']
+        del params['short_path'], params['prefix'], params['long_url']
         params['hash'] = e.link.hash
 
         return response(status=HTTP_CONFLICT, message=str(e), **params)
