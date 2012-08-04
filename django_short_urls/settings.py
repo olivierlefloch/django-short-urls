@@ -1,6 +1,6 @@
 # Django settings for django_short_urls project.
 import os
-from local_settings import ADMINS, DEBUG, MONGOENGINE, SECRET_KEY
+from local_settings import *
 
 TEMPLATE_DEBUG = DEBUG
 
