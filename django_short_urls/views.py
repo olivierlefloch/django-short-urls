@@ -26,6 +26,8 @@ def main(request, hash):
     return redirect(link.long_url)
 
 def new(request):
+    # FIXME: Require a POST request
+
     try:
         login   = request.REQUEST['login']
         api_key = request.REQUEST['api_key']
