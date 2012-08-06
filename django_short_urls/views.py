@@ -39,32 +39,32 @@ def new(request):
     if user is None:
         return response(status=HTTP_UNAUTHORIZED, message="Invalid credentials.")
 
-    if 'long_url' in request.REQUEST:
+    try:
         long_url = request.REQUEST['long_url']
-    else:
+    except KeyError, e:
         return response(
             status=HTTP_BAD_REQUEST,
-            message="Missing parameter: 'long_url'")
+            message="Missing parameter: '%s'" % e.value)
 
-    if 'short_path' in request.REQUEST:
+    try:
         short_path = request.REQUEST['short_path']
-
-        if '/' in short_path:
-            return response(
-                status=HTTP_BAD_REQUEST,
-                message="short_path contains a '/'.")
-    else:
+    except KeyError, e:
         short_path = None
 
-    if 'prefix' in request.REQUEST:
-        prefix = request.REQUEST['prefix']
+    if '/' in short_path:
+        return response(
+            status=HTTP_BAD_REQUEST,
+            message="short_path contains a '/'.")
 
-        if '/' in prefix:
-            return response(
-                status=HTTP_BAD_REQUEST,
-                message="prefix contains a '/'.")
-    else:
+    try:
+        prefix = request.REQUEST['prefix']
+    except KeyError:
         prefix = ''
+
+    if '/' in prefix:
+        return response(
+            status=HTTP_BAD_REQUEST,
+            message="prefix contains a '/'.")
 
     params = {
         'long_url': long_url,
