@@ -1,4 +1,6 @@
 from datetime import datetime
+from urlparse import urlparse
+
 from django.shortcuts import redirect
 from django.http import Http404
 
@@ -41,7 +43,22 @@ def new(request):
     try:
         long_url = request.REQUEST['long_url']
 
-        # FIXME: Validate url using urlparse
+        parsed_url = urlparse(long_url)
+
+        if not parsed_url.netloc:
+            return response(
+                status=HTTP_BAD_REQUEST,
+                message="Invalid long url: '%s'" % long_url)
+
+        if parsed_url.scheme not in ('http', 'https'):
+            return response(
+                status=HTTP_BAD_REQUEST,
+                message="Unsupported URL scheme for long_url: '%s'" % parsed_url.scheme)
+
+        if parsed_url.password:
+            return response(
+                status=HTTP_BAD_REQUEST,
+                message="URLs containing passwords are not supported. long_url: '%s'" % long_url)
     except KeyError, e:
         return response(
             status=HTTP_BAD_REQUEST,
