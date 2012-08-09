@@ -67,7 +67,7 @@ def new(request):
     try:
         short_path = request.REQUEST['short_path']
     except KeyError, e:
-        short_path = None
+        short_path = ''
 
     if '/' in short_path:
         return response(

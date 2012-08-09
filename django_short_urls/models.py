@@ -31,8 +31,8 @@ class Link(Document):
     }
 
     @classmethod
-    def shorten(cls, long_url, short_path=None, prefix='', creator=None):
-        if short_path is None:
+    def shorten(cls, long_url, short_path, prefix, creator):
+        if short_path is None or not len(short_path):
             link = cls.objects(long_url=long_url, prefix=prefix).first()
 
             if link is None:
