@@ -1,10 +1,9 @@
-from models import Link, User, ShortPathConflict, Click
-
 from datetime import datetime
 from django.shortcuts import redirect
 from django.http import Http404
 
 from w4l_http import *
+from models import Link, User, ShortPathConflict, Click
 
 def main(request, hash):
     link = Link.find_by_hash(hash)
