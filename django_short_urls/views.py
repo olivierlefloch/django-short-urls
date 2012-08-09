@@ -41,6 +41,8 @@ def new(request):
 
     try:
         long_url = request.REQUEST['long_url']
+
+        # FIXME: Validate url using urlparse
     except KeyError, e:
         return response(
             status=HTTP_BAD_REQUEST,
