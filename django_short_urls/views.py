@@ -16,7 +16,9 @@ def main(request, hash):
         link=link,
         created_at=datetime.utcnow(),
         ip=request.META['REMOTE_ADDR'],
-        browser=request.META['HTTP_USER_AGENT'] if 'HTTP_USER_AGENT' in request.META else None,
+        browser=(
+            ''.join([x if ord(x) < 128 else '?' for x in request.META['HTTP_USER_AGENT']])
+                if 'HTTP_USER_AGENT' in request.META else None),
         referer=request.META['HTTP_REFERER'] if 'HTTP_REFERER' in request.META else None,
         lang=request.META['HTTP_ACCEPT_LANGUAGE'] if 'HTTP_ACCEPT_LANGUAGE' in request else None
     ).save()
