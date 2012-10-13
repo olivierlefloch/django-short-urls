@@ -3,9 +3,11 @@ from urlparse import urlparse
 
 from django.shortcuts import redirect
 from django.http import Http404
+from django.utils.log import getLogger
+logger = getLogger('app')
 
 from w4l_http import *
-from models import Link, User, ShortPathConflict, Click
+from models import Link, User, Click, ShortPathConflict, ForbiddenKeyword
 
 def main(request, hash):
     link = Link.find_by_hash(hash)
@@ -100,6 +102,9 @@ def new(request):
         params['hash'] = e.link.hash
 
         return response(status=HTTP_CONFLICT, message=str(e), **params)
+    except ForbiddenKeyword, e:
+        logger.warning('Attempt to use forbidden keyword "%s" in a short url.' % e.keyword)
+        return response(status=HTTP_FORBIDDEN, message=str(e), **params)
 
     params['short_path'] = link.short_path
 

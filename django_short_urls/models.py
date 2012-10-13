@@ -11,6 +11,27 @@ class User(Document):
     api_key = StringField(required=True)
     email   = StringField(required=True)
 
+class ForbiddenKeyword(Exception):
+    ban_words = [
+        'admin', 'refer', 'share', 'settings', 'jobs', 'careers', 'apply',
+        'mobile', 'signup', 'login', 'register', 'install'
+    ]
+
+    @classmethod
+    def is_banned(cls, keyword):
+        return keyword in cls.ban_words
+
+    @classmethod
+    def raise_if_banned(cls, keyword):
+        if cls.is_banned(keyword):
+            raise cls(keyword)
+
+    def __init__(self, keyword):
+        self.keyword = keyword
+
+    def __str__(self):
+        return 'Keyword "%s" cannot be used as a short path or a prefix.' % self.keyword
+
 class ShortPathConflict(Exception):
     def __init__(self, link):
         self.link = link
@@ -34,6 +55,9 @@ class Link(Document):
 
     @classmethod
     def shorten(cls, long_url, short_path, prefix, creator):
+        ForbiddenKeyword.raise_if_banned(short_path)
+        ForbiddenKeyword.raise_if_banned(prefix)
+
         if short_path is None or not len(short_path):
             link = cls.objects(long_url=long_url, prefix=prefix).first()
 
@@ -73,6 +97,7 @@ class Link(Document):
     RE_VALID_RANDOM_SHORT_PATHS = re.compile(r'^([a-z]{0,2}\d)+[a-z]{0,2}$')
     @classmethod
     def is_valid_random_short_path(cls, short_path):
+        # We don't check for ForbiddenKeywords because the constraints make that redundant
         return cls.RE_VALID_RANDOM_SHORT_PATHS.match(short_path) is not None
 
     @classmethod
