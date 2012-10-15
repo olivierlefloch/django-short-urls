@@ -1,5 +1,7 @@
 from datetime import datetime
 from hashlib import sha1
+import re
+
 from mongoengine import *
 
 import int_to_alnum
@@ -86,7 +88,7 @@ class Link(Document):
                 nb_tries  += 1
                 short_path = int_to_alnum.encode(hashed % mod)
 
-                if ForbiddenKeyword.is_banned(short_path):
+                if not cls.is_valid_random_short_path(short_path):
                     continue
 
                 link, created = cls.__get_or_create(prefix, short_path, long_url, creator)
@@ -95,6 +97,12 @@ class Link(Document):
                     # Short path didn't exist, store number of tries and we're done
                     link.nb_tries_to_generate = nb_tries
                     return link
+
+    RE_VALID_RANDOM_SHORT_PATHS = re.compile(r'^([a-z]{0,2}\d)+[a-z]{0,2}$')
+    @classmethod
+    def is_valid_random_short_path(cls, short_path):
+        # We don't check for ForbiddenKeywords because the constraints make that redundant
+        return cls.RE_VALID_RANDOM_SHORT_PATHS.match(short_path) is not None
 
     @classmethod
     def __get_or_create(cls, prefix, short_path, long_url, creator):
