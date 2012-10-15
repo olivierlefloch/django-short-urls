@@ -46,6 +46,7 @@ class Link(Document):
     long_url   = StringField(required=True)
     creator    = StringField(required=True)
     created_at = DateTimeField(required=True)
+    nb_tries_to_generate = IntField()
 
     meta = {
         'indexes': [('prefix', 'long_url')]
@@ -75,12 +76,14 @@ class Link(Document):
     def __create_with_random_short_path(cls, long_url, prefix, creator):
         while True:
             # Generate a seed from the long url and the current date (with milliseconds)
-            seed   = long_url + str(datetime.utcnow())
-            hashed = int(sha1(seed).hexdigest(), 16)
-            mod    = 1
+            seed     = long_url + str(datetime.utcnow())
+            hashed   = int(sha1(seed).hexdigest(), 16)
+            mod      = 1
+            nb_tries = 0
 
             while hashed > mod:
-                mod *= 10
+                mod       *= 10
+                nb_tries  += 1
                 short_path = int_to_alnum.encode(hashed % mod)
 
                 if ForbiddenKeyword.is_banned(short_path):
@@ -89,7 +92,8 @@ class Link(Document):
                 link, created = cls.__get_or_create(prefix, short_path, long_url, creator)
 
                 if created:
-                    # Short path didn't exist, we're done
+                    # Short path didn't exist, store number of tries and we're done
+                    link.nb_tries_to_generate = nb_tries
                     return link
 
     @classmethod
