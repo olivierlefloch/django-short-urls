@@ -55,7 +55,7 @@ class Link(Document):
     }
 
     @classmethod
-    def shorten(cls, long_url, short_path, prefix, creator):
+    def shorten(cls, long_url, creator, short_path=None, prefix=None):
         ForbiddenKeyword.raise_if_banned(short_path)
         ForbiddenKeyword.raise_if_banned(prefix)
 
