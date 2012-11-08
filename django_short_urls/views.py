@@ -85,6 +85,21 @@ def new(request):
         pass
 
     try:
+        params['scheduler_url'] = request.REQUEST['scheduler_url']
+
+        if 'prefix' in params:
+            return response(
+                status=HTTP_BAD_REQUEST,
+                message="You may not provide a scheduler_url if you are generating a prefixed short url.")
+
+        (is_valid, error_message) = validate_url(params['scheduler_url'])
+
+        if not is_valid:
+            return response(status=HTTP_BAD_REQUEST, message=error_message)
+    except KeyError:
+        pass
+
+    try:
         link = Link.shorten(**params)
     except ShortPathConflict, e:
         del params['short_path'], params['prefix'], params['long_url']
@@ -98,5 +113,8 @@ def new(request):
     params['short_path'] = link.short_path
 
     params['short_url'] = link.build_absolute_uri(request)
+
+    if link.scheduler_link is not None:
+        params['scheduler_short_url'] = link.scheduler_link.build_absolute_uri(request)
 
     return response(**params)
