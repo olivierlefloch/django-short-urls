@@ -97,9 +97,6 @@ def new(request):
 
     params['short_path'] = link.short_path
 
-    params['short_url'] = request.build_absolute_uri(
-        "/%s%s" % (
-            '%s/' % params['prefix'] if params['prefix'] else '',
-            params['short_path']))
+    params['short_url'] = link.build_absolute_uri(request)
 
     return response(**params)

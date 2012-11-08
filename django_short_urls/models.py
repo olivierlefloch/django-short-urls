@@ -123,6 +123,12 @@ class Link(Document):
     def find_by_hash(cls, hash):
         return cls.objects(hash=hash.lower()).first()
 
+    def build_relative_path(self):
+        return ('/%s/%%s' % self.prefix if self.prefix else '/%s') % self.short_path
+
+    def build_absolute_uri(self, request):
+        return request.build_absolute_uri(self.build_relative_path())
+
     def __str__(self):
         return "%s -> %s\n" % (self.hash, self.long_url)
 
