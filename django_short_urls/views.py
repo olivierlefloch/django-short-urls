@@ -1,5 +1,4 @@
 from datetime import datetime
-from urlparse import urlparse
 
 from django.shortcuts import redirect
 from django.http import Http404
@@ -48,56 +47,42 @@ def new(request):
     if user is None:
         return response(status=HTTP_UNAUTHORIZED, message="Invalid credentials.")
 
+    params = {
+        'creator': user.login
+    }
+
     try:
-        long_url = request.REQUEST['long_url']
+        params['long_url'] = request.REQUEST['long_url']
 
-        parsed_url = urlparse(long_url)
+        (is_valid, error) = validate_url(params['long_url'])
 
-        if not parsed_url.netloc:
-            return response(
-                status=HTTP_BAD_REQUEST,
-                message="Invalid long url: '%s'" % long_url)
-
-        if parsed_url.scheme not in ('http', 'https'):
-            return response(
-                status=HTTP_BAD_REQUEST,
-                message="Unsupported URL scheme for long_url: '%s'" % parsed_url.scheme)
-
-        if parsed_url.password:
-            return response(
-                status=HTTP_BAD_REQUEST,
-                message="URLs containing passwords are not supported. long_url: '%s'" % long_url)
+        if not is_valid:
+            return response(status=HTTP_BAD_REQUEST, message=message)
     except KeyError, e:
         return response(
             status=HTTP_BAD_REQUEST,
             message="Missing parameter: '%s'" % e.value)
 
     try:
-        short_path = request.REQUEST['short_path']
-    except KeyError, e:
-        short_path = ''
+        params['short_path'] = request.REQUEST['short_path']
 
-    if '/' in short_path:
-        return response(
-            status=HTTP_BAD_REQUEST,
-            message="short_path contains a '/'.")
+        if '/' in params['short_path']:
+            return response(
+                status=HTTP_BAD_REQUEST,
+                message="short_path may not contain a '/' character.")
+    except KeyError:
+        pass
+
 
     try:
-        prefix = request.REQUEST['prefix']
+        params['prefix'] = request.REQUEST['prefix']
+
+        if '/' in params['prefix']:
+            return response(
+                status=HTTP_BAD_REQUEST,
+                message="prefix may not contain a '/' character.")
     except KeyError:
-        prefix = ''
-
-    if '/' in prefix:
-        return response(
-            status=HTTP_BAD_REQUEST,
-            message="prefix contains a '/'.")
-
-    params = {
-        'long_url': long_url,
-        'short_path': short_path,
-        'prefix': prefix,
-        'creator': user.login
-    }
+        pass
 
     try:
         link = Link.shorten(**params)
