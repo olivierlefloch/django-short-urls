@@ -31,7 +31,11 @@ def main(request, hash):
     return redirect(link.long_url)
 
 def new(request):
-    # FIXME: Require a POST request
+    if request.method != 'PUT' and request.method != 'POST':
+        # Support both 'PUT' and 'POST' as this is not truly a RESTful API, but definitely do not allow 'GET'
+        return response(
+            status=HTTP_BAD_REQUEST,
+            message="The 'new' endpoint only accepts PUT or POST requests.")
 
     try:
         login   = request.REQUEST['login']
