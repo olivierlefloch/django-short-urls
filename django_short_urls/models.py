@@ -19,7 +19,7 @@ class ForbiddenKeyword(Exception):
 
     @classmethod
     def is_banned(cls, keyword):
-        return keyword.lower() in cls.ban_words
+        return keyword is None or keyword.lower() in cls.ban_words
 
     @classmethod
     def raise_if_banned(cls, keyword):
