@@ -7,6 +7,7 @@ HTTP_BAD_REQUEST  = 400
 HTTP_UNAUTHORIZED = 401
 HTTP_FORBIDDEN    = 403
 HTTP_CONFLICT     = 409
+HTTP_SERVER_ERROR = 500
 
 def response(message=None, status=HTTP_OK, **kwargs):
     kwargs.update({
