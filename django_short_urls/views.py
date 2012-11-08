@@ -54,10 +54,10 @@ def new(request):
     try:
         params['long_url'] = request.REQUEST['long_url']
 
-        (is_valid, error) = validate_url(params['long_url'])
+        (is_valid, error_message) = validate_url(params['long_url'])
 
         if not is_valid:
-            return response(status=HTTP_BAD_REQUEST, message=message)
+            return response(status=HTTP_BAD_REQUEST, message=error_message)
     except KeyError, e:
         return response(
             status=HTTP_BAD_REQUEST,
