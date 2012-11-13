@@ -19,7 +19,7 @@ class ForbiddenKeyword(Exception):
 
     @classmethod
     def is_banned(cls, keyword):
-        return keyword.lower() in cls.ban_words
+        return keyword is not None and keyword.lower() in cls.ban_words
 
     @classmethod
     def raise_if_banned(cls, keyword):
@@ -49,15 +49,28 @@ class Link(Document):
     creator    = StringField(required=True)
     created_at = DateTimeField(required=True)
     nb_tries_to_generate = IntField()
+    scheduler_link       = ReferenceField('self')
 
     meta = {
         'indexes': [('prefix', 'long_url')]
     }
 
     @classmethod
-    def shorten(cls, long_url, short_path, prefix, creator):
-        ForbiddenKeyword.raise_if_banned(short_path)
-        ForbiddenKeyword.raise_if_banned(prefix)
+    def shorten(cls, long_url, creator, short_path=None, prefix=None, scheduler_url=None):
+        # This intermediate public method hides the private _ignore_bans parameter
+        return cls.__shorten(long_url=long_url, creator=creator, short_path=short_path, prefix=prefix, scheduler_url=scheduler_url)
+
+    @classmethod
+    def __shorten(cls, long_url, creator, _ignore_bans=False, short_path=None, prefix=None, scheduler_url=None):
+        if not _ignore_bans:
+            ForbiddenKeyword.raise_if_banned(short_path)
+            ForbiddenKeyword.raise_if_banned(prefix)
+
+        if scheduler_url is not None and prefix is not None:
+            raise Exception('You may not provide both a prefix and a scheduler_url.')
+
+        if prefix is None:
+            prefix = ''
 
         if short_path is None or not len(short_path):
             link = cls.objects(long_url=long_url, prefix=prefix).first()
@@ -71,6 +84,12 @@ class Link(Document):
                 raise ShortPathConflict(link)
 
         link.save()
+
+        if scheduler_url is not None:
+            link.scheduler_link = cls.__shorten(
+                long_url=scheduler_url, creator=creator,
+                short_path='share', prefix=link.short_path,
+                _ignore_bans=True)
 
         return link
 
@@ -122,6 +141,12 @@ class Link(Document):
     @classmethod
     def find_by_hash(cls, hash):
         return cls.objects(hash=hash.lower()).first()
+
+    def build_relative_path(self):
+        return ('/%s/%%s' % self.prefix if self.prefix else '/%s') % self.short_path
+
+    def build_absolute_uri(self, request):
+        return request.build_absolute_uri(self.build_relative_path())
 
     def __str__(self):
         return "%s -> %s\n" % (self.hash, self.long_url)
