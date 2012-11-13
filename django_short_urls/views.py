@@ -36,12 +36,12 @@ def new(request):
             status=HTTP_BAD_REQUEST,
             message="The 'new' endpoint only accepts PUT or POST requests.")
 
-    try:
+    if 'login' in request.REQUEST and 'api_key' in request.REQUEST:
         login   = request.REQUEST['login']
         api_key = request.REQUEST['api_key']
 
         user = User.objects(login=login, api_key=api_key).first()
-    except KeyError:
+    else:
         user = None
 
     if user is None:
@@ -51,40 +51,35 @@ def new(request):
         'creator': user.login
     }
 
-    try:
+    if 'long_url' in request.REQUEST:
         params['long_url'] = request.REQUEST['long_url']
 
         (is_valid, error_message) = validate_url(params['long_url'])
 
         if not is_valid:
             return response(status=HTTP_BAD_REQUEST, message=error_message)
-    except KeyError, e:
+    else:
         return response(
             status=HTTP_BAD_REQUEST,
-            message="Missing parameter: '%s'" % e.value)
+            message="Missing parameter: 'long_url'")
 
-    try:
+    if 'short_path' in request.REQUEST:
         params['short_path'] = request.REQUEST['short_path']
 
         if '/' in params['short_path']:
             return response(
                 status=HTTP_BAD_REQUEST,
                 message="short_path may not contain a '/' character.")
-    except KeyError:
-        pass
 
-
-    try:
+    if 'prefix' in request.REQUEST:
         params['prefix'] = request.REQUEST['prefix']
 
         if '/' in params['prefix']:
             return response(
                 status=HTTP_BAD_REQUEST,
                 message="prefix may not contain a '/' character.")
-    except KeyError:
-        pass
 
-    try:
+    if 'scheduler_url' in request.REQUEST:
         params['scheduler_url'] = request.REQUEST['scheduler_url']
 
         if 'prefix' in params:
@@ -96,8 +91,6 @@ def new(request):
 
         if not is_valid:
             return response(status=HTTP_BAD_REQUEST, message=error_message)
-    except KeyError:
-        pass
 
     try:
         link = Link.shorten(**params)
