@@ -83,6 +83,7 @@ def new(request):
         params['scheduler_url'] = request.REQUEST['scheduler_url']
 
         if 'prefix' in params:
+            # Partially redundant with a similar check in Link.shorten, but avoids tight coupling between Model and View in order to get the appropriate error message returned.
             return response(
                 status=HTTP_BAD_REQUEST,
                 message="You may not provide a scheduler_url if you are generating a prefixed short url.")
