@@ -50,6 +50,7 @@ class Link(Document):
     created_at = DateTimeField(required=True)
     nb_tries_to_generate = IntField()
     scheduler_link       = ReferenceField('self')
+    act_as_proxy = BooleanField()
 
     meta = {
         'indexes': [('prefix', 'long_url')]

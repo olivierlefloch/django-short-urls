@@ -27,7 +27,7 @@ def main(request, hash):
     if link is None:
         raise Http404
 
-    return redirect(link.long_url)
+    return (proxy if link.act_as_proxy else redirect)(link.long_url)
 
 def new(request):
     # FIXME: Require a POST request
