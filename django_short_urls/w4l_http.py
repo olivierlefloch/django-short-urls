@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 import json
+import requests
 from urlparse import urlparse
 
 HTTP_OK           = 200
@@ -31,3 +32,11 @@ def validate_url(url):
         return (False, "URLs containing passwords are not supported: '%s'" % url)
 
     return (True, None)
+
+def proxy(url):
+    r = requests.get(url)
+
+    return HttpResponse(
+        r.content,
+        status=r.status_code,
+        mimetype=r.headers['Content-Type'])
