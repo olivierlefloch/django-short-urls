@@ -1,5 +1,7 @@
 # Django settings for django_short_urls project.
 import os
+import logging
+
 from local_settings import *
 
 TEMPLATE_DEBUG = DEBUG
