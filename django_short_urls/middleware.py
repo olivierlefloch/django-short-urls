@@ -9,8 +9,9 @@ from w4l_http import reponse_service_unavailable
 
 class ServiceUnavailableMiddleware:
     def process_request(self, request):
-        if settings.SERVICE_UNAVAILABLE
-            or (settings.SITE_READ_ONLY and request.method not in ("GET", "HEAD")):
+        if (settings.SERVICE_UNAVAILABLE
+            or (settings.SITE_READ_ONLY and request.method not in ("GET", "HEAD"))
+        ):
             # Can't use render because there is no context
             return reponse_service_unavailable()
 
