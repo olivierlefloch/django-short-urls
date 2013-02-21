@@ -1,14 +1,16 @@
 from django.http import HttpResponse
+from django.template import loader
 import json
 import requests
 from urlparse import urlparse
 
-HTTP_OK           = 200
-HTTP_BAD_REQUEST  = 400
-HTTP_UNAUTHORIZED = 401
-HTTP_FORBIDDEN    = 403
-HTTP_CONFLICT     = 409
-HTTP_SERVER_ERROR = 500
+HTTP_OK                  = 200
+HTTP_BAD_REQUEST         = 400
+HTTP_UNAUTHORIZED        = 401
+HTTP_FORBIDDEN           = 403
+HTTP_CONFLICT            = 409
+HTTP_SERVER_ERROR        = 500
+HTTP_SERVICE_UNAVAILABLE = 503
 
 def response(message=None, status=HTTP_OK, **kwargs):
     kwargs.update({
@@ -40,3 +42,6 @@ def proxy(url):
         r.content,
         status=r.status_code,
         mimetype=r.headers['Content-Type'])
+
+def reponse_service_unavailable():
+    return HttpResponse(loader.render_to_string('503.html'), status=HTTP_SERVER_ERROR)
