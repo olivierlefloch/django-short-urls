@@ -56,6 +56,7 @@ TEMPLATE_LOADERS = (
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
+    'django_short_urls.middleware.ServiceUnavailableMiddleware',
     # 'django.contrib.sessions.middleware.SessionMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
     # 'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -155,4 +156,10 @@ DATABASES = {
 
 import mongoengine
 
-mongoengine.connect(**MONGOENGINE)
+try:
+    mongoengine.connect(**MONGOENGINE)
+
+    SERVICE_UNAVAILABLE = False
+except mongoengine.connection.ConnectionError, e:
+    logging.error('MongoEngine ConnectionError: %s' % e)
+    SERVICE_UNAVAILABLE = True
