@@ -3,11 +3,13 @@ from datetime import datetime
 from django.shortcuts import redirect
 from django.http import Http404
 from django.utils.log import getLogger
+from django.views.decorators.http import require_safe, require_POST
 logger = getLogger('app')
 
 from w4l_http import *
 from models import Link, User, Click, ShortPathConflict, ForbiddenKeyword
 
+@require_safe
 def main(request, hash):
     link = Link.find_by_hash(hash)
 
@@ -29,9 +31,8 @@ def main(request, hash):
 
     return (proxy if link.act_as_proxy else redirect)(link.long_url)
 
+@require_POST
 def new(request):
-    # FIXME: Require a POST request
-
     if 'login' in request.REQUEST and 'api_key' in request.REQUEST:
         login   = request.REQUEST['login']
         api_key = request.REQUEST['api_key']
