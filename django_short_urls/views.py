@@ -1,37 +1,39 @@
 from datetime import datetime
 
-from django.shortcuts import redirect
+from django.conf import settings
 from django.http import Http404
+from django.shortcuts import redirect
 from django.utils.log import getLogger
-logger = getLogger('app')
+from django.views.decorators.http import require_safe, require_POST
 
 from w4l_http import *
 from models import Link, User, Click, ShortPathConflict, ForbiddenKeyword
 
+@require_safe
 def main(request, hash):
     link = Link.find_by_hash(hash)
 
-    Click(
-        server="%s:%s" % (request.META['SERVER_NAME'], request.META['SERVER_PORT']),
-        full_path=request.get_full_path(),
-        link=link,
-        created_at=datetime.utcnow(),
-        ip=request.META['REMOTE_ADDR'],
-        browser=(
-            ''.join([x if ord(x) < 128 else '?' for x in request.META['HTTP_USER_AGENT']])
-                if 'HTTP_USER_AGENT' in request.META else None),
-        referer=request.META['HTTP_REFERER'] if 'HTTP_REFERER' in request.META else None,
-        lang=request.META['HTTP_ACCEPT_LANGUAGE'] if 'HTTP_ACCEPT_LANGUAGE' in request else None
-    ).save()
+    if not settings.SITE_READ_ONLY:
+        Click(
+            server="%s:%s" % (request.META['SERVER_NAME'], request.META['SERVER_PORT']),
+            full_path=request.get_full_path(),
+            link=link,
+            created_at=datetime.utcnow(),
+            ip=request.META['REMOTE_ADDR'],
+            browser=(
+                ''.join([x if ord(x) < 128 else '?' for x in request.META['HTTP_USER_AGENT']])
+                    if 'HTTP_USER_AGENT' in request.META else None),
+            referer=request.META['HTTP_REFERER'] if 'HTTP_REFERER' in request.META else None,
+            lang=request.META['HTTP_ACCEPT_LANGUAGE'] if 'HTTP_ACCEPT_LANGUAGE' in request else None
+        ).save()
 
     if link is None:
         raise Http404
 
     return (proxy if link.act_as_proxy else redirect)(link.long_url)
 
+@require_POST
 def new(request):
-    # FIXME: Require a POST request
-
     if 'login' in request.REQUEST and 'api_key' in request.REQUEST:
         login   = request.REQUEST['login']
         api_key = request.REQUEST['api_key']
@@ -99,7 +101,7 @@ def new(request):
 
         return response(status=HTTP_CONFLICT, message=str(e), **params)
     except ForbiddenKeyword, e:
-        logger.warning('Attempt to use forbidden keyword "%s" in a short url.' % e.keyword)
+        getLogger('app').warning('Attempt to use forbidden keyword "%s" in a short url.' % e.keyword)
         return response(status=HTTP_FORBIDDEN, message=str(e), **params)
 
     params['short_path'] = link.short_path

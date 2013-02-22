@@ -44,4 +44,4 @@ def proxy(url):
         mimetype=r.headers['Content-Type'])
 
 def reponse_service_unavailable():
-    return HttpResponse(loader.render_to_string('503.html'), status=HTTP_SERVER_ERROR)
+    return HttpResponse(loader.render_to_string('503.html'), status=HTTP_SERVICE_UNAVAILABLE)

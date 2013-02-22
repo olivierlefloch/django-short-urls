@@ -13,6 +13,8 @@ should look like:
         ('Work4 Labs Root', 'root@work4labs.com'),
     )
 
+    SERVER_EMAIL = "root@work4labs.com"
+
     MONGOENGINE = {
         'db': 'work4labs',
         'host': 'localhost',
@@ -23,6 +25,9 @@ should look like:
 
     # Make this unique, and don't share it with anybody.
     SECRET_KEY = '6r__q4gindk5hzbb^)u!q%4-!d&amp;clxu#%0g3v4m@rg7!xf$#=@'
+
+    # If true, then do not log clicks or allow creating new short links
+    SITE_READ_ONLY = False
 
 Setup your web server to load the `wsgi.py` file.
 
