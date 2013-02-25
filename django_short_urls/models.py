@@ -49,7 +49,8 @@ class Link(Document):
     creator    = StringField(required=True)
     created_at = DateTimeField(required=True)
     nb_tries_to_generate = IntField()
-    scheduler_link       = ReferenceField('self')
+    # FIXME: Switch to using strings as dbrefs http://mongoengine-odm.readthedocs.org/en/latest/upgrade.html#referencefields
+    scheduler_link       = ReferenceField('self', dbref=True)
     act_as_proxy = BooleanField()
 
     meta = {
@@ -155,7 +156,8 @@ class Link(Document):
 class Click(Document):
     server     = StringField(required=True)
     full_path  = StringField(required=True)
-    link       = ReferenceField('Link')
+    # FIXME: Switch to using strings as dbrefs http://mongoengine-odm.readthedocs.org/en/latest/upgrade.html#referencefields
+    link       = ReferenceField('Link', dbref=True)
     created_at = DateTimeField(required=True)
     ip         = StringField(required=True)
     browser    = StringField()
