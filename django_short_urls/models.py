@@ -1,14 +1,18 @@
 from datetime import datetime
+from django.conf import settings
 from hashlib import sha1
-import re
-
 from mongoengine import *
+import re
 
 import int_to_alnum
 from exceptions import ForbiddenKeyword, ShortPathConflict
 
 class User(Document):
-    meta = { 'auto_create_index': False }
+    meta = {
+        'allow_inheritance': False,
+        'auto_create_index': settings.MONGO_AUTO_CREATE_INDEXES,
+        'indexes': [('login',)]
+    }
 
     login   = StringField(required=True, unique=True)
     api_key = StringField(required=True)
@@ -17,7 +21,11 @@ class User(Document):
 class Link(Document):
     # FIXME: Add unit tests - WFU-1527
 
-    meta = { 'auto_create_index': False }
+    meta = {
+        'allow_inheritance': False,
+        'auto_create_index': settings.MONGO_AUTO_CREATE_INDEXES,
+        'indexes': [('prefix', 'long_url'), ('hash',)]
+    }
 
     hash       = StringField(required=True, unique=True)
     prefix     = StringField(required=True)
@@ -29,10 +37,6 @@ class Link(Document):
     # FIXME: Switch to using strings as dbrefs http://mongoengine-odm.readthedocs.org/en/latest/upgrade.html#referencefields
     scheduler_link       = ReferenceField('self', dbref=True)
     act_as_proxy = BooleanField()
-
-    meta = {
-        'indexes': [('prefix', 'long_url')]
-    }
 
     @classmethod
     def shorten(cls, long_url, creator, short_path=None, prefix=None, scheduler_url=None):
@@ -131,7 +135,12 @@ class Link(Document):
         return "%s -> %s\n" % (self.hash, self.long_url)
 
 class Click(Document):
-    meta = { 'auto_create_index': False }
+    meta = {
+        'allow_inheritance': False,
+        'auto_create_index': settings.MONGO_AUTO_CREATE_INDEXES,
+        'cascade': False,
+        'indexes': [('full_path', 'created_at'), ('link', 'created_at')]
+    }
 
     server     = StringField(required=True)
     full_path  = StringField(required=True)
@@ -142,7 +151,3 @@ class Click(Document):
     browser    = StringField()
     referer    = StringField()
     lang       = StringField()
-
-    meta = {
-        'cascade': False
-    }
