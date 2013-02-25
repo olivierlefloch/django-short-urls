@@ -8,12 +8,16 @@ import int_to_alnum
 from exceptions import ForbiddenKeyword, ShortPathConflict
 
 class User(Document):
+    meta = { 'auto_create_index': False }
+
     login   = StringField(required=True, unique=True)
     api_key = StringField(required=True)
     email   = StringField(required=True)
 
 class Link(Document):
     # FIXME: Add unit tests - WFU-1527
+
+    meta = { 'auto_create_index': False }
 
     hash       = StringField(required=True, unique=True)
     prefix     = StringField(required=True)
@@ -127,6 +131,8 @@ class Link(Document):
         return "%s -> %s\n" % (self.hash, self.long_url)
 
 class Click(Document):
+    meta = { 'auto_create_index': False }
+
     server     = StringField(required=True)
     full_path  = StringField(required=True)
     # FIXME: Switch to using strings as dbrefs http://mongoengine-odm.readthedocs.org/en/latest/upgrade.html#referencefields
