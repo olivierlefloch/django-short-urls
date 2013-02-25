@@ -4,30 +4,10 @@ For dependencies see `requirements.txt`.
 
 ## Installation
 
-Add a `local_settings.py` file in directory `django_short_urls`, its content
-should look like:
+Add a `local_settings.py` file in directory `django_short_urls` with
 
-    DEBUG = False
-
-    ADMINS = (
-        ('Work4 Labs Root', 'root@work4labs.com'),
-    )
-
-    SERVER_EMAIL = "root@work4labs.com"
-
-    MONGOENGINE = {
-        'db': 'work4labs',
-        'host': 'localhost',
-        'port': 27017,
-        'username': 'work4labs',
-        'password': 'work4labs'
-    }
-
-    # Make this unique, and don't share it with anybody.
-    SECRET_KEY = '6r__q4gindk5hzbb^)u!q%4-!d&amp;clxu#%0g3v4m@rg7!xf$#=@'
-
-    # If true, then do not log clicks or allow creating new short links
-    SITE_READ_ONLY = False
+    cp local_settings.tpl.py local_settings.py
+    vi local_settings.py
 
 Setup your web server to load the `wsgi.py` file.
 

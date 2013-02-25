@@ -7,7 +7,8 @@ from django.utils.log import getLogger
 from django.views.decorators.http import require_safe, require_POST
 
 from w4l_http import *
-from models import Link, User, Click, ShortPathConflict, ForbiddenKeyword
+from models import Link, User, Click
+from exceptions import ForbiddenKeyword, ShortPathConflict
 
 @require_safe
 def main(request, hash):

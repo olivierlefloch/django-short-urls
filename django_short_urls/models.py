@@ -1,46 +1,31 @@
 from datetime import datetime
+from django.conf import settings
 from hashlib import sha1
+from mongoengine import *
 import re
 
-from mongoengine import *
-
 import int_to_alnum
+from exceptions import ForbiddenKeyword, ShortPathConflict
 
 class User(Document):
+    meta = {
+        'allow_inheritance': False,
+        'auto_create_index': settings.MONGO_AUTO_CREATE_INDEXES,
+        'indexes': [('login',)]
+    }
+
     login   = StringField(required=True, unique=True)
     api_key = StringField(required=True)
     email   = StringField(required=True)
 
-class ForbiddenKeyword(Exception):
-    ban_words = [
-        'admin', 'refer', 'share', 'settings', 'jobs', 'careers', 'apply',
-        'mobile', 'signup', 'login', 'register', 'install'
-    ]
-
-    @classmethod
-    def is_banned(cls, keyword):
-        return keyword is not None and keyword.lower() in cls.ban_words
-
-    @classmethod
-    def raise_if_banned(cls, keyword):
-        if cls.is_banned(keyword):
-            raise cls(keyword)
-
-    def __init__(self, keyword):
-        self.keyword = keyword
-
-    def __str__(self):
-        return 'Keyword "%s" cannot be used as a short path or a prefix.' % self.keyword
-
-class ShortPathConflict(Exception):
-    def __init__(self, link):
-        self.link = link
-
-    def __str__(self):
-        return 'Hash "%s" has already been bound.' % self.link.hash
-
 class Link(Document):
     # FIXME: Add unit tests - WFU-1527
+
+    meta = {
+        'allow_inheritance': False,
+        'auto_create_index': settings.MONGO_AUTO_CREATE_INDEXES,
+        'indexes': [('prefix', 'long_url'), ('hash',)]
+    }
 
     hash       = StringField(required=True, unique=True)
     prefix     = StringField(required=True)
@@ -52,10 +37,6 @@ class Link(Document):
     # FIXME: Switch to using strings as dbrefs http://mongoengine-odm.readthedocs.org/en/latest/upgrade.html#referencefields
     scheduler_link       = ReferenceField('self', dbref=True)
     act_as_proxy = BooleanField()
-
-    meta = {
-        'indexes': [('prefix', 'long_url')]
-    }
 
     @classmethod
     def shorten(cls, long_url, creator, short_path=None, prefix=None, scheduler_url=None):
@@ -154,6 +135,13 @@ class Link(Document):
         return "%s -> %s\n" % (self.hash, self.long_url)
 
 class Click(Document):
+    meta = {
+        'allow_inheritance': False,
+        'auto_create_index': settings.MONGO_AUTO_CREATE_INDEXES,
+        'cascade': False,
+        'indexes': [('full_path', 'created_at'), ('link', 'created_at')]
+    }
+
     server     = StringField(required=True)
     full_path  = StringField(required=True)
     # FIXME: Switch to using strings as dbrefs http://mongoengine-odm.readthedocs.org/en/latest/upgrade.html#referencefields
@@ -163,7 +151,3 @@ class Click(Document):
     browser    = StringField()
     referer    = StringField()
     lang       = StringField()
-
-    meta = {
-        'cascade': False
-    }
