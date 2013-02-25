@@ -5,39 +5,12 @@ import re
 from mongoengine import *
 
 import int_to_alnum
+from exceptions import ForbiddenKeyword, ShortPathConflict
 
 class User(Document):
     login   = StringField(required=True, unique=True)
     api_key = StringField(required=True)
     email   = StringField(required=True)
-
-class ForbiddenKeyword(Exception):
-    ban_words = [
-        'admin', 'refer', 'share', 'settings', 'jobs', 'careers', 'apply',
-        'mobile', 'signup', 'login', 'register', 'install'
-    ]
-
-    @classmethod
-    def is_banned(cls, keyword):
-        return keyword is not None and keyword.lower() in cls.ban_words
-
-    @classmethod
-    def raise_if_banned(cls, keyword):
-        if cls.is_banned(keyword):
-            raise cls(keyword)
-
-    def __init__(self, keyword):
-        self.keyword = keyword
-
-    def __str__(self):
-        return 'Keyword "%s" cannot be used as a short path or a prefix.' % self.keyword
-
-class ShortPathConflict(Exception):
-    def __init__(self, link):
-        self.link = link
-
-    def __str__(self):
-        return 'Hash "%s" has already been bound.' % self.link.hash
 
 class Link(Document):
     # FIXME: Add unit tests - WFU-1527
