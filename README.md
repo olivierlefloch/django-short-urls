@@ -7,10 +7,10 @@ For dependencies see `requirements.txt`.
 Add a `local_settings.py` file in directory `django_short_urls`, its content
 should look like:
 
-    DEBUG = False
+    DEBUG = True
 
     ADMINS = (
-        ('Work4 Labs Root', 'root@work4labs.com'),
+        ('User Name', 'username@work4labs.com'),
     )
 
     SERVER_EMAIL = "root@work4labs.com"
