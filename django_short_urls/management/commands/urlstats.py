@@ -1,3 +1,5 @@
+import csv
+
 from django.core.management.base import BaseCommand, CommandError
 from django_short_urls.models import Click, Link
 
@@ -6,4 +8,15 @@ class Command(BaseCommand):
     help = 'Outputs a CSV with click data for all urls matching a prefix passed as an argument'
 
     def handle(self, *url_prefixes, **options):
-        self.stdout.write(repr(url_prefixes) + "\n")
+        self.writer = csv.writer(self.stdout)
+
+        self.writer.writerow(['short_url', 'long_url', 'nb_of_clicks', 'list_of_dates'])
+
+        for prefix in url_prefixes:
+            for link in Link.objects(prefix=prefix):
+                self.write_stats_for_link(link)
+
+    def write_stats_for_link(self, link):
+        clicks = Click.objects(link=link)
+
+        self.writer.writerow([link.hash, link.long_url, len(clicks), [click.created_at for click in clicks]])
