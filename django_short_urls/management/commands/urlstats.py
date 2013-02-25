@@ -19,4 +19,7 @@ class Command(BaseCommand):
     def write_stats_for_link(self, link):
         clicks = Click.objects(link=link)
 
-        self.writer.writerow([link.hash, link.long_url, len(clicks), [click.created_at for click in clicks]])
+        self.writer.writerow([
+            link.hash, link.long_url, len(clicks),
+            ";".join([click.created_at.strftime('%Y-%m-%d %H:%M:%S') for click in clicks])
+        ])
