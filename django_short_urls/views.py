@@ -12,6 +12,10 @@ from exceptions import ForbiddenKeyword, ShortPathConflict
 
 @require_safe
 def main(request, hash):
+    if hash[-1] == '/':
+        # Removing trailing hash so "/jobs/" and "/jobs" redirect identically
+        hash = hash[:-1]
+
     link = Link.find_by_hash(hash)
 
     if not settings.SITE_READ_ONLY:
