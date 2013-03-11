@@ -12,7 +12,7 @@ from exceptions import ForbiddenKeyword, ShortPathConflict
 
 @require_safe
 def main(request, hash):
-    if hash[-1] == '/':
+    if len(hash) and hash[-1] == '/':
         # Removing trailing hash so "/jobs/" and "/jobs" redirect identically
         hash = hash[:-1]
 
