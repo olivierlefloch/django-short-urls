@@ -34,23 +34,18 @@ class Link(Document):
     creator    = StringField(required=True)
     created_at = DateTimeField(required=True)
     nb_tries_to_generate = IntField()
-    # FIXME: Switch to using strings as dbrefs http://mongoengine-odm.readthedocs.org/en/latest/upgrade.html#referencefields
-    scheduler_link       = ReferenceField('self', dbref=True)
     act_as_proxy = BooleanField()
 
     @classmethod
-    def shorten(cls, long_url, creator, short_path=None, prefix=None, scheduler_url=None):
+    def shorten(cls, long_url, creator, short_path=None, prefix=None):
         # This intermediate public method hides the private _ignore_bans parameter
-        return cls.__shorten(long_url=long_url, creator=creator, short_path=short_path, prefix=prefix, scheduler_url=scheduler_url)
+        return cls.__shorten(long_url=long_url, creator=creator, short_path=short_path, prefix=prefix)
 
     @classmethod
-    def __shorten(cls, long_url, creator, _ignore_bans=False, short_path=None, prefix=None, scheduler_url=None):
+    def __shorten(cls, long_url, creator, _ignore_bans=False, short_path=None, prefix=None):
         if not _ignore_bans:
             ForbiddenKeyword.raise_if_banned(short_path)
             ForbiddenKeyword.raise_if_banned(prefix)
-
-        if scheduler_url is not None and prefix is not None:
-            raise Exception('You may not provide both a prefix and a scheduler_url.')
 
         if prefix is None:
             prefix = ''
@@ -67,12 +62,6 @@ class Link(Document):
                 raise ShortPathConflict(link)
 
         link.save()
-
-        if scheduler_url is not None:
-            link.scheduler_link = cls.__shorten(
-                long_url=scheduler_url, creator=creator,
-                short_path='share', prefix=link.short_path,
-                _ignore_bans=True)
 
         return link
 

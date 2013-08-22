@@ -7,7 +7,7 @@ class DatabaseWriteDenied(DatabaseError):
 class ForbiddenKeyword(Exception):
     ban_words = [
         'admin', 'refer', 'share', 'settings', 'jobs', 'careers', 'apply',
-        'mobile', 'signup', 'login', 'register', 'install'
+        'mobile', 'signup', 'login', 'register', 'install', 'recruiter', 'search'
     ]
 
     @classmethod
