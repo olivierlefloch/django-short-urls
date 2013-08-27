@@ -27,7 +27,7 @@ class ValidateUrlTestCase(unittest.TestCase):
         self.assertEqual(validate_url('ftp://work4labs.com')[0], False)
         self.assertEqual(validate_url('http://app:bar@work4labs.com')[0], False)
 
-from valid_redirect_path import get_hash_from, add_parameter
+from redirection import get_hash_from, append_url_parameter, REDIRECT_PARAM_NAME
 
 class ValidRedirectPathTestCase(unittest.TestCase):
     def test__get_hash_from(self):
@@ -43,19 +43,24 @@ class ValidRedirectPathTestCase(unittest.TestCase):
         self.assertEqual(get_hash_from('some/hashshare'), ('some/hashshare', None))
         self.assertEqual(get_hash_from('some/hashsearch'), ('some/hashsearch', None))
 
-    def test__add_parameter(self):
-        self.assertEqual(add_parameter('http://workfor.us', None), 'http://workfor.us')
-        self.assertEqual(add_parameter('http://workfor.us', 'toto'), 'http://workfor.us?short_redirect=toto')
-
+    def test__append_url_parameter(self):
         self.assertEqual(
-            add_parameter('http://www.theuselessweb.com/', 'search'),
-            'http://www.theuselessweb.com/?short_redirect=search'
+            append_url_parameter('http://workfor.us', None),
+            'http://workfor.us'
+        )
+        self.assertEqual(
+            append_url_parameter('http://workfor.us', 'toto'),
+            'http://workfor.us?%s=toto' % REDIRECT_PARAM_NAME
+        )
+        self.assertEqual(
+            append_url_parameter('http://www.theuselessweb.com/', 'search'),
+            'http://www.theuselessweb.com/?%s=search' % REDIRECT_PARAM_NAME
         )
         self.assertRegexpMatches(
-            add_parameter('http://www.theuselessweb.com?a=1&b=2&z=5', 'search'),
-            r'^http://www.theuselessweb.com\?.*&short_redirect=search&.*$'
+            append_url_parameter('http://www.theuselessweb.com?a=1&b=2&z=5', 'search'),
+            r'^http://www.theuselessweb.com\?.*&%s=search&.*$' % REDIRECT_PARAM_NAME
         )
         self.assertEqual(
-            add_parameter('http://www.theuselessweb.com?short_redirect=4', 'search'),
-            'http://www.theuselessweb.com?short_redirect=search'
+            append_url_parameter('http://www.theuselessweb.com?%s=4' % REDIRECT_PARAM_NAME, 'search'),
+            'http://www.theuselessweb.com?%s=search' % REDIRECT_PARAM_NAME
         )

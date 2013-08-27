@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 from django.utils.log import getLogger
 from django.views.decorators.http import require_safe, require_POST
 
-import valid_redirect_path
+import redirection
 from w4l_http import *
 from models import Link, User, Click
 from exceptions import ForbiddenKeyword, ShortPathConflict
@@ -14,11 +14,10 @@ from exceptions import ForbiddenKeyword, ShortPathConflict
 @require_safe
 def main(request, path):
     if len(path) and path[-1] == '/':
-        # Removing trailing path so "/jobs/" and "/jobs" redirect identically
+        # Removing trailing slash so "/jobs/" and "/jobs" redirect identically
         path = path[:-1]
 
-    _hash, redirect_path = valid_redirect_path.get_hash_from(path)
-    link = Link.find_by_hash(_hash)
+    link, redirect_target = Link.find_by_hash(path)
 
     if not settings.SITE_READ_ONLY:
         Click(
@@ -37,9 +36,12 @@ def main(request, path):
     if link is None:
         raise Http404
 
-    return (proxy if link.act_as_proxy else redirect)(
-        valid_redirect_path.add_parameter(url=link.long_url, redirect_param=redirect_path)
+    url = (
+        link.long_url if redirect_target is None
+        else redirection.append_url_parameter(link.long_url, app_data=redirect_target)
     )
+
+    return (proxy if link.act_as_proxy else redirect)(url)
 
 @require_POST
 def new(request):
