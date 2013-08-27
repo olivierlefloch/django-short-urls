@@ -47,8 +47,15 @@ class ValidRedirectPathTestCase(unittest.TestCase):
         self.assertEqual(add_parameter('http://workfor.us', None), 'http://workfor.us')
         self.assertEqual(add_parameter('http://workfor.us', 'toto'), 'http://workfor.us?short_redirect=toto')
 
-        self.assertEqual(add_parameter('http://www.theuselessweb.com/', 'search'), 'http://www.theuselessweb.com/?short_redirect=search')
+        self.assertEqual(
+            add_parameter('http://www.theuselessweb.com/', 'search'),
+            'http://www.theuselessweb.com/?short_redirect=search'
+        )
         self.assertRegexpMatches(
             add_parameter('http://www.theuselessweb.com?a=1&b=2&z=5', 'search'),
             r'^http://www.theuselessweb.com\?.*&short_redirect=search&.*$'
+        )
+        self.assertEqual(
+            add_parameter('http://www.theuselessweb.com?short_redirect=4', 'search'),
+            'http://www.theuselessweb.com?short_redirect=search'
         )
