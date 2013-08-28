@@ -1,3 +1,4 @@
+import re
 from django.db.utils import DatabaseError
 
 # FIXME: Move to a dedicated ServiceUnavailable app
@@ -5,14 +6,15 @@ class DatabaseWriteDenied(DatabaseError):
     pass
 
 class ForbiddenKeyword(Exception):
-    ban_words = [
+    ban_words = (
         'admin', 'refer', 'share', 'settings', 'jobs', 'careers', 'apply',
         'mobile', 'signup', 'login', 'register', 'install', 'recruiter', 'search'
-    ]
+    )
+    ban_regex = re.compile(r'^(%s)$' % ('|'.join(ban_words)))
 
     @classmethod
     def is_banned(cls, keyword):
-        return keyword is not None and keyword.lower() in cls.ban_words
+        return keyword is not None and cls.ban_regex.match(keyword.lower())
 
     @classmethod
     def raise_if_banned(cls, keyword):
