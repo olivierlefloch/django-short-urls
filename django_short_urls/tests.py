@@ -27,7 +27,7 @@ class ValidateUrlTestCase(unittest.TestCase):
         self.assertEqual(validate_url('ftp://work4labs.com')[0], False)
         self.assertEqual(validate_url('http://app:bar@work4labs.com')[0], False)
 
-from redirection import get_hash_from, append_url_parameter, REDIRECT_PARAM_NAME
+from suffix_catchall import get_hash_from, append_url_parameter, REDIRECT_PARAM_NAME
 
 class ValidRedirectPathTestCase(unittest.TestCase):
     def test__get_hash_from(self):

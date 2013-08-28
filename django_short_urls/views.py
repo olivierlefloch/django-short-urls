@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 from django.utils.log import getLogger
 from django.views.decorators.http import require_safe, require_POST
 
-import redirection
+import suffix_catchall
 from w4l_http import *
 from models import Link, User, Click
 from exceptions import ForbiddenKeyword, ShortPathConflict
@@ -38,7 +38,7 @@ def main(request, path):
 
     url = (
         link.long_url if redirect_target is None
-        else redirection.append_url_parameter(link.long_url, app_data=redirect_target)
+        else suffix_catchall.append_url_parameter(link.long_url, app_data=redirect_target)
     )
 
     return (proxy if link.act_as_proxy else redirect)(url)

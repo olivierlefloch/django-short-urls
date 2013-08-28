@@ -5,7 +5,7 @@ from mongoengine import *
 import re
 
 import int_to_alnum
-import redirection
+import suffix_catchall
 from exceptions import ForbiddenKeyword, ShortPathConflict
 
 class User(Document):
@@ -114,13 +114,13 @@ class Link(Document):
     @classmethod
     def find_by_hash(cls, path):
         ''' Try to find the corresponding url, using first the ``path`` as hash
-        if no match is found it tries to look for a redirection and to retrieve
+        if no match is found it tries to look for a known suffix and to retrieve
         the link using the new hash
         '''
         link = cls.objects(hash=path.lower()).first()
         if link:
             return link, None
-        _hash, redirect_param = redirection.get_hash_from(path)
+        _hash, redirect_param = suffix_catchall.get_hash_from(path)
         return cls.objects(hash=_hash.lower()).first(), redirect_param
 
     def build_relative_path(self):
