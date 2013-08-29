@@ -8,7 +8,8 @@ class DatabaseWriteDenied(DatabaseError):
 class ForbiddenKeyword(Exception):
     ban_words = (
         'admin', 'refer', 'share', 'settings', 'jobs', 'careers', 'apply',
-        'mobile', 'signup', 'login', 'register', 'install', 'recruiter', 'search'
+        'mobile', 'signup', 'login', 'register', 'install', 'recruiter', 'search',
+        'network', 'career', 'register', 'signin', 'password', 'welcome'
     )
     ban_regex = re.compile(r'^(%s)$' % ('|'.join(ban_words)))
 
