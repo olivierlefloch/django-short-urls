@@ -26,3 +26,41 @@ class ValidateUrlTestCase(unittest.TestCase):
         self.assertEqual(validate_url('jobs?job_id=42')[0], False)
         self.assertEqual(validate_url('ftp://work4labs.com')[0], False)
         self.assertEqual(validate_url('http://app:bar@work4labs.com')[0], False)
+
+from suffix_catchall import get_hash_from, append_url_parameter, REDIRECT_PARAM_NAME
+
+class ValidRedirectPathTestCase(unittest.TestCase):
+    def test__get_hash_from(self):
+        self.assertEqual(get_hash_from('azertyuiop'), ('azertyuiop', None))
+        self.assertEqual(get_hash_from('azerty/uiop'), ('azerty/uiop', None))
+        self.assertEqual(get_hash_from('a/z/e/r/t/y/u/i/o/p'), ('a/z/e/r/t/y/u/i/o/p', None))
+
+        self.assertEqual(get_hash_from('some/hash/recruiter'), ('some/hash', 'recruiter'))
+        self.assertEqual(get_hash_from('some/hash/share'), ('some/hash', 'share'))
+        self.assertEqual(get_hash_from('some/hash/search'), ('some/hash', 'search'))
+
+        self.assertEqual(get_hash_from('some/hashrecruiter'), ('some/hashrecruiter', None))
+        self.assertEqual(get_hash_from('some/hashshare'), ('some/hashshare', None))
+        self.assertEqual(get_hash_from('some/hashsearch'), ('some/hashsearch', None))
+
+    def test__append_url_parameter(self):
+        self.assertEqual(
+            append_url_parameter('http://workfor.us', None),
+            'http://workfor.us'
+        )
+        self.assertEqual(
+            append_url_parameter('http://workfor.us', 'toto'),
+            'http://workfor.us?%s=toto' % REDIRECT_PARAM_NAME
+        )
+        self.assertEqual(
+            append_url_parameter('http://www.theuselessweb.com/', 'search'),
+            'http://www.theuselessweb.com/?%s=search' % REDIRECT_PARAM_NAME
+        )
+        self.assertRegexpMatches(
+            append_url_parameter('http://www.theuselessweb.com?a=1&b=2&z=5', 'search'),
+            r'^http://www.theuselessweb.com\?.*&%s=search&.*$' % REDIRECT_PARAM_NAME
+        )
+        self.assertEqual(
+            append_url_parameter('http://www.theuselessweb.com?%s=4' % REDIRECT_PARAM_NAME, 'search'),
+            'http://www.theuselessweb.com?%s=search' % REDIRECT_PARAM_NAME
+        )
