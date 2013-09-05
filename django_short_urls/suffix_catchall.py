@@ -4,7 +4,7 @@ from django.http import QueryDict
 
 
 VALID_REDIRECTIONS = ('recruiter', 'share', 'search')
-REDIRECT_PARAM_NAME = 'suffix_from_shortener'
+REDIRECT_PARAM_NAME = 'redirect_suffix'
 
 
 
@@ -28,6 +28,7 @@ def append_url_parameter(url, app_data):
 
     query = QueryDict(query, mutable=True)
     query[REDIRECT_PARAM_NAME] = app_data
+    query['ref'] = 'shortener'
 
     return urlparse.urlunparse((
         scheme, netloc, path, params,
