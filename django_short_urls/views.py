@@ -20,7 +20,7 @@ def main(request, path):
     link, redirect_target = Link.find_by_hash(path)
     query = request.GET.copy()
     if redirect_target is not None:
-        get_params[suffix_catchall.REDIRECT_PARAM_NAME] = redirect_target
+        query[suffix_catchall.REDIRECT_PARAM_NAME] = redirect_target
 
     if not settings.SITE_READ_ONLY:
         Click(
