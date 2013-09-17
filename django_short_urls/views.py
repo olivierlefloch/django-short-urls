@@ -5,7 +5,6 @@ from django.http import Http404
 from django.shortcuts import redirect
 from django.utils.log import getLogger
 from django.views.decorators.http import require_safe, require_POST
-from django.http import QueryDict
 
 import suffix_catchall
 from w4l_http import *
@@ -19,7 +18,7 @@ def main(request, path):
         path = path[:-1]
 
     link, redirect_target = Link.find_by_hash(path)
-    get_params = get_params=request.GET.copy()
+    query = request.GET.copy()
     if redirect_target is not None:
         get_params[suffix_catchall.REDIRECT_PARAM_NAME] = redirect_target
 
@@ -42,7 +41,7 @@ def main(request, path):
 
     url = (
         link.long_url if redirect_target is None
-        else suffix_catchall.append_url_parameter(link.long_url, get_params=get_params)
+        else suffix_catchall.append_url_parameter(link.long_url, query=query)
     )
 
     return (proxy if link.act_as_proxy else redirect)(url)
