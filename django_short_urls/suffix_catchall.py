@@ -5,6 +5,7 @@ from django.http import QueryDict
 
 VALID_REDIRECTIONS = ('recruiter', 'share', 'search')
 REDIRECT_PARAM_NAME = 'redirect_suffix'
+REF_PARAM_NAME      = 'ref'
 
 
 
@@ -17,22 +18,21 @@ def get_hash_from(path):
     return match.group(1), match.group(2)
 
 
-def append_url_parameter(url, app_data):
-    ''' Appends the parameter REDIRECT_PARAM_NAME with the value ``app_data``
+def append_url_parameter(url, get_params):
+    ''' Appends the get_params with the REDIRECT_PARAM_NAME parameter
     to the url ``url``
     '''
-    if not app_data:
+    if REDIRECT_PARAM_NAME not in get_params:
         return url
 
     (scheme, netloc, path, params, query, fragment) = urlparse.urlparse(url)
 
-    query = QueryDict(query, mutable=True)
-    query[REDIRECT_PARAM_NAME] = app_data
-    query['ref'] = 'shortener'
+    if REF_PARAM_NAME not in get_params:
+        get_params[REF_PARAM_NAME] = 'shortener'
 
     return urlparse.urlunparse((
         scheme, netloc, path, params,
-        query.urlencode(),
+        get_params.urlencode(),
         fragment
     ))
 
