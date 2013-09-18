@@ -1,9 +1,10 @@
 import urlparse
 import re
-from django.http import QueryDict
+from urlparse         import parse_qsl
+from urllib           import urlencode
 
 
-VALID_REDIRECTIONS = ('recruiter', 'share', 'search')
+VALID_REDIRECTIONS  = ('recruiter', 'share', 'search')
 REDIRECT_PARAM_NAME = 'redirect_suffix'
 REF_PARAM_NAME      = 'ref'
 
@@ -22,6 +23,7 @@ def append_url_parameter(url, shorten_query):
     ''' Appends the get_params with the REDIRECT_PARAM_NAME parameter
     to the url ``url``
     '''
+    shorten_query = dict(parse_qsl(shorten_query))
     if REDIRECT_PARAM_NAME not in shorten_query:
         return url
 
@@ -29,15 +31,12 @@ def append_url_parameter(url, shorten_query):
         shorten_query[REF_PARAM_NAME] = 'shortener'
 
     (scheme, netloc, path, params, link_query, fragment) = urlparse.urlparse(url)
-    link_query = QueryDict(link_query, mutable=True)
-
-    for key, value in link_query.iteritems():
-        if key not in shorten_query:
-            shorten_query[key] = value
+    link_query = dict(parse_qsl(link_query))
+    link_query.update(shorten_query)
 
     return urlparse.urlunparse((
         scheme, netloc, path, params,
-        shorten_query.urlencode(),
+        urlencode(shorten_query),
         fragment
     ))
 
