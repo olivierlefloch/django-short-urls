@@ -1,7 +1,7 @@
 import urlparse
 import re
-from urlparse         import parse_qsl
-from urllib           import urlencode
+from urlparse import parse_qsl
+from urllib   import urlencode
 
 
 VALID_REDIRECTIONS  = ('recruiter', 'share', 'search')
