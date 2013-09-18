@@ -31,9 +31,9 @@ def append_url_parameter(url, shorten_query):
     (scheme, netloc, path, params, link_query, fragment) = urlparse.urlparse(url)
     link_query = QueryDict(link_query, mutable=True)
 
-    for gk, gv in link_query.iteritems():
-        if gk not in shorten_query:
-            shorten_query[gk] = gv
+    for key, value in link_query.iteritems():
+        if key not in shorten_query:
+            shorten_query[key] = value
 
     return urlparse.urlunparse((
         scheme, netloc, path, params,
