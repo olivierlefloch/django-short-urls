@@ -18,21 +18,26 @@ def get_hash_from(path):
     return match.group(1), match.group(2)
 
 
-def append_url_parameter(url, query):
+def append_url_parameter(url, shorten_query):
     ''' Appends the get_params with the REDIRECT_PARAM_NAME parameter
     to the url ``url``
     '''
-    if REDIRECT_PARAM_NAME not in query:
+    if REDIRECT_PARAM_NAME not in shorten_query:
         return url
 
-    (scheme, netloc, path, params, query, fragment) = urlparse.urlparse(url)
+    if REF_PARAM_NAME not in shorten_query:
+        shorten_query[REF_PARAM_NAME] = 'shortener'
 
-    if REF_PARAM_NAME not in query:
-        query[REF_PARAM_NAME] = 'shortener'
+    (scheme, netloc, path, params, link_query, fragment) = urlparse.urlparse(url)
+    link_query = QueryDict(link_query, mutable=True)
+
+    for gk, gv in link_query.iteritems():
+        if gk not in shorten_query:
+            shorten_query[gk] = gv
 
     return urlparse.urlunparse((
         scheme, netloc, path, params,
-        query.urlencode(),
+        shorten_query.urlencode(),
         fragment
     ))
 
