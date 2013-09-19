@@ -5,7 +5,6 @@ from urllib import urlencode
 
 VALID_REDIRECTIONS  = ('recruiter', 'share', 'search')
 REDIRECT_PARAM_NAME = 'redirect_suffix'
-REF_PARAM_NAME      = 'ref'
 
 
 
@@ -25,9 +24,6 @@ def append_url_parameter(url, shorten_query):
     shorten_query = dict(urlparse.parse_qsl(shorten_query))
     if REDIRECT_PARAM_NAME not in shorten_query:
         return url
-
-    if REF_PARAM_NAME not in shorten_query:
-        shorten_query[REF_PARAM_NAME] = 'shortener'
 
     (scheme, netloc, path, params, link_query, fragment) = urlparse.urlparse(url)
     link_query = dict(urlparse.parse_qsl(link_query))
