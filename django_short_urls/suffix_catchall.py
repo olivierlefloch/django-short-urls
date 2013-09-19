@@ -1,7 +1,6 @@
 import urlparse
 import re
-from urlparse import parse_qsl
-from urllib   import urlencode
+from urllib import urlencode
 
 
 VALID_REDIRECTIONS  = ('recruiter', 'share', 'search')
@@ -20,10 +19,10 @@ def get_hash_from(path):
 
 
 def append_url_parameter(url, shorten_query):
-    ''' Appends the get_params with the REDIRECT_PARAM_NAME parameter
-    to the url ``url``
+    ''' Appends REDIRECT_PARAM_NAME param and the shorten's GET params
+    to the long URL
     '''
-    shorten_query = dict(parse_qsl(shorten_query))
+    shorten_query = dict(urlparse.parse_qsl(shorten_query))
     if REDIRECT_PARAM_NAME not in shorten_query:
         return url
 
