@@ -21,11 +21,17 @@ def append_url_parameter(url, shorten_query):
     ''' Appends REDIRECT_PARAM_NAME param and the shorten's GET params
     to the long URL
     '''
+
+    # Convert a shorten query from a=1&b=3
+    # to a dict { a : 1 , b : 3}
     shorten_query = dict(urlparse.parse_qsl(shorten_query))
+
     if REDIRECT_PARAM_NAME not in shorten_query:
         return url
 
     (scheme, netloc, path, params, link_query, fragment) = urlparse.urlparse(url)
+
+    # Convert a link query to a dict
     link_query = dict(urlparse.parse_qsl(link_query))
     link_query.update(shorten_query)
 
