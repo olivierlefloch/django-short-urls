@@ -11,6 +11,9 @@ from w4l_http import *
 from models import Link, User, Click
 from exceptions import ForbiddenKeyword, ShortPathConflict
 
+REF_PARAM_NAME  = 'ref'
+REF_PARAM_VALUE = 'shortener'
+
 @require_safe
 def main(request, path):
     if len(path) and path[-1] == '/':
@@ -38,6 +41,9 @@ def main(request, path):
 
     if link is None:
         raise Http404
+
+    if REF_PARAM_NAME not in query:
+        query[REF_PARAM_NAME] = REF_PARAM_VALUE
 
     url = (
         link.long_url if redirect_target is None
