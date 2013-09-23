@@ -19,27 +19,25 @@ def get_hash_from(path):
     return match.group(1), match.group(2)
 
 
-def url_append_parameters(url, shorten_query):
+def url_append_parameters(url, params_to_append):
     '''
     Appends the REDIRECT_PARAM_NAME param and the shorten's GET params
     to the long URL
     '''
 
-    # Convert a shorten query from a=1&b=3
-    # to a dict { a : 1 , b : 3}
-    shorten_query = dict(urlparse.parse_qsl(shorten_query))
+    params_to_append = dict(params_to_append)
 
-    if REDIRECT_PARAM_NAME not in shorten_query:
+    if REDIRECT_PARAM_NAME not in params_to_append:
         return url
 
     (scheme, netloc, path, params, link_query, fragment) = urlparse.urlparse(url)
 
     # Convert a link query to a dict
     link_query = dict(urlparse.parse_qsl(link_query))
-    link_query.update(shorten_query)
+    link_query.update(params_to_append)
 
     return urlparse.urlunparse((
         scheme, netloc, path, params,
-        urlencode(shorten_query),
+        urlencode(params_to_append),
         fragment
     ))
