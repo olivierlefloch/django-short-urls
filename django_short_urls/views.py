@@ -71,7 +71,7 @@ def main(request, path):
     if redirect_suffix is not None:
         query[REDIRECT_PARAM_NAME] = redirect_suffix
 
-    if bool(query):
+    if bool(query) and REF_PARAM_NAME not in query:
         # If we specify a non empty query, indicate that the shortener tweaked the url
         query[REF_PARAM_NAME] = REF_PARAM_DEFAULT_VALUE
 
