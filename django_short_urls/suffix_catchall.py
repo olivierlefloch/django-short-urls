@@ -38,6 +38,6 @@ def url_append_parameters(url, params_to_append):
 
     return urlparse.urlunparse((
         scheme, netloc, path, params,
-        urlencode(params_to_append),
+        urlencode(link_query),
         fragment
     ))
