@@ -1,3 +1,10 @@
+'''
+Views for Django Short Urls:
+
+  - main is the redirect view
+  - new is the API view to create shortened urls
+'''
+
 from datetime import datetime
 
 from django.conf import settings
@@ -11,13 +18,34 @@ from w4l_http import *
 from models import Link, User, Click
 from exceptions import ForbiddenKeyword, ShortPathConflict
 
+
+REF_PARAM_NAME  = 'ref'
+REF_PARAM_DEFAULT_VALUE = 'shortener'
+
+REDIRECT_PARAM_NAME = 'redirect_suffix'
+
+
 @require_safe
 def main(request, path):
+    '''
+    Search for a long link matching the `path` and redirect
+    '''
+
     if len(path) and path[-1] == '/':
         # Removing trailing slash so "/jobs/" and "/jobs" redirect identically
         path = path[:-1]
 
-    link, redirect_target = Link.find_by_hash(path)
+    link = Link.find_by_hash(path)
+
+    if link is None:
+        # Try to find a matching short link by removing valid "catchall" suffixes
+        path_prefix, redirect_suffix = suffix_catchall.get_hash_from(path)
+
+        if redirect_suffix is not None:
+            # If we found a suffix, we try to find a link again with the prefix
+            link = Link.find_by_hash(path_prefix)
+    else:
+        redirect_suffix = None
 
     if not settings.SITE_READ_ONLY:
         Click(
@@ -36,15 +64,31 @@ def main(request, path):
     if link is None:
         raise Http404
 
-    url = (
-        link.long_url if redirect_target is None
-        else suffix_catchall.append_url_parameter(link.long_url, app_data=redirect_target)
+    # Tweak the redirection link based on the query string, redirection suffix, etc.
+    query = request.GET.copy()
+
+    if redirect_suffix is not None:
+        query[REDIRECT_PARAM_NAME] = redirect_suffix
+
+    if bool(query) and REF_PARAM_NAME:
+        # If we specify a non empty query, indicate that the shortener tweaked the url
+        query[REF_PARAM_NAME] = REF_PARAM_DEFAULT_VALUE
+
+    target_url = url_append_parameters(
+        link.long_url,
+        params_to_replace=query,
+        defaults={REF_PARAM_NAME: REF_PARAM_DEFAULT_VALUE}
     )
 
-    return (proxy if link.act_as_proxy else redirect)(url)
+    # Either redirect the user, or load the target page and display it directly
+    return (proxy if link.act_as_proxy else redirect)(target_url)
 
 @require_POST
 def new(request):
+    '''
+    Create a new short url based on the POST parameters
+    '''
+
     if 'login' in request.REQUEST and 'api_key' in request.REQUEST:
         login   = request.REQUEST['login']
         api_key = request.REQUEST['api_key']

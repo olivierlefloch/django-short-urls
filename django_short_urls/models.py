@@ -113,15 +113,7 @@ class Link(Document):
 
     @classmethod
     def find_by_hash(cls, path):
-        ''' Try to find the corresponding url, using first the ``path`` as hash
-        if no match is found it tries to look for a known suffix and to retrieve
-        the link using the new hash
-        '''
-        link = cls.objects(hash=path.lower()).first()
-        if link:
-            return link, None
-        _hash, redirect_param = suffix_catchall.get_hash_from(path)
-        return cls.objects(hash=_hash.lower()).first(), redirect_param
+        return cls.objects(hash=path.lower()).first()
 
     def build_relative_path(self):
         return ('/%s/%%s' % self.prefix if self.prefix else '/%s') % self.short_path

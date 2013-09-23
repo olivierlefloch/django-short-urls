@@ -15,9 +15,10 @@ class ValidRandomShortPathsTestCase(unittest.TestCase):
         self.assertEqual(Link.is_valid_random_short_path("crap42"), False)
         self.assertEqual(Link.is_valid_random_short_path("abe4abe"), False)
 
-from w4l_http import validate_url
 
-class ValidateUrlTestCase(unittest.TestCase):
+from w4l_http import validate_url, url_append_parameters
+
+class W4lHttpTestCase(unittest.TestCase):
     def test(self):
         self.assertEqual(validate_url('http://workfor.us'), (True, None))
         self.assertEqual(validate_url('http://app.work4labs.com/jobs?job_id=42'), (True, None))
@@ -27,7 +28,30 @@ class ValidateUrlTestCase(unittest.TestCase):
         self.assertEqual(validate_url('ftp://work4labs.com')[0], False)
         self.assertEqual(validate_url('http://app:bar@work4labs.com')[0], False)
 
-from suffix_catchall import get_hash_from, append_url_parameter, REDIRECT_PARAM_NAME
+    def test__url_append_parameters(self):
+        self.assertEqual(
+            url_append_parameters('http://workfor.us', dict(), dict()),
+            'http://workfor.us'
+        )
+        self.assertEqual(
+            url_append_parameters('http://workfor.us', {'toto': 'tata'}, dict()),
+            'http://workfor.us?toto=tata'
+        )
+        self.assertEqual(
+            url_append_parameters('http://www.theuselessweb.com/', {'foo': 'search'}, {'foo': 'bar'}),
+            'http://www.theuselessweb.com/?foo=search'
+        )
+        self.assertEqual(
+            url_append_parameters('http://www.theuselessweb.com?a=1&b=2&z=5', {'foo': 'search'}, {'b': '3'}),
+            'http://www.theuselessweb.com?a=1&b=2&z=5&foo=search'
+        )
+        self.assertEqual(
+            url_append_parameters('http://www.theuselessweb.com?foo=4', {'foo': 'search'}, {'c': '42'}),
+            'http://www.theuselessweb.com?c=42&foo=search'
+        )
+
+
+from suffix_catchall import get_hash_from
 
 class ValidRedirectPathTestCase(unittest.TestCase):
     def test__get_hash_from(self):
@@ -42,25 +66,3 @@ class ValidRedirectPathTestCase(unittest.TestCase):
         self.assertEqual(get_hash_from('some/hashrecruiter'), ('some/hashrecruiter', None))
         self.assertEqual(get_hash_from('some/hashshare'), ('some/hashshare', None))
         self.assertEqual(get_hash_from('some/hashsearch'), ('some/hashsearch', None))
-
-    def test__append_url_parameter(self):
-        self.assertEqual(
-            append_url_parameter('http://workfor.us', None),
-            'http://workfor.us'
-        )
-        self.assertEqual(
-            append_url_parameter('http://workfor.us', 'toto'),
-            'http://workfor.us?%s=toto' % REDIRECT_PARAM_NAME
-        )
-        self.assertEqual(
-            append_url_parameter('http://www.theuselessweb.com/', 'search'),
-            'http://www.theuselessweb.com/?%s=search' % REDIRECT_PARAM_NAME
-        )
-        self.assertRegexpMatches(
-            append_url_parameter('http://www.theuselessweb.com?a=1&b=2&z=5', 'search'),
-            r'^http://www.theuselessweb.com\?.*&%s=search&.*$' % REDIRECT_PARAM_NAME
-        )
-        self.assertEqual(
-            append_url_parameter('http://www.theuselessweb.com?%s=4' % REDIRECT_PARAM_NAME, 'search'),
-            'http://www.theuselessweb.com?%s=search' % REDIRECT_PARAM_NAME
-        )
