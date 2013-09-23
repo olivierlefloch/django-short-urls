@@ -27,7 +27,7 @@ def url_append_parameters(url, params_to_append):
 
     params_to_append = dict(params_to_append)
 
-    if REDIRECT_PARAM_NAME not in params_to_append:
+    if not params_to_append:
         return url
 
     (scheme, netloc, path, params, link_query, fragment) = urlparse.urlparse(url)
