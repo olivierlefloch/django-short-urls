@@ -13,6 +13,5 @@ def get_hash_from(path):
 
     if not match:
         return path, None
+
     return match.group(1), match.group(2)
-
-
