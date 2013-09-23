@@ -1,3 +1,10 @@
+'''
+Views for Django Short Urls:
+
+  - main is the redirect view
+  - new is the API view to create shortened urls
+'''
+
 from datetime import datetime
 
 from django.conf import settings
@@ -20,6 +27,10 @@ REDIRECT_PARAM_NAME = 'redirect_suffix'
 
 @require_safe
 def main(request, path):
+    '''
+    Search for a long link matching the `path` and redirect
+    '''
+
     if len(path) and path[-1] == '/':
         # Removing trailing slash so "/jobs/" and "/jobs" redirect identically
         path = path[:-1]
@@ -69,6 +80,10 @@ def main(request, path):
 
 @require_POST
 def new(request):
+    '''
+    Create a new short url based on the POST parameters
+    '''
+
     if 'login' in request.REQUEST and 'api_key' in request.REQUEST:
         login   = request.REQUEST['login']
         api_key = request.REQUEST['api_key']
