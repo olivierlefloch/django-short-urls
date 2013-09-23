@@ -49,12 +49,7 @@ def main(request, path):
     if REF_PARAM_NAME not in query:
         query[REF_PARAM_NAME] = REF_PARAM_VALUE
 
-    url = (
-        link.long_url if redirect_target is None
-        else url_append_parameters(link.long_url, query)
-    )
-
-    return (proxy if link.act_as_proxy else redirect)(url)
+    return (proxy if link.act_as_proxy else redirect)(url_append_parameters(link.long_url, query))
 
 @require_POST
 def new(request):
