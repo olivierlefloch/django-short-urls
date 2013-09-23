@@ -19,8 +19,9 @@ def get_hash_from(path):
     return match.group(1), match.group(2)
 
 
-def append_url_parameter(url, shorten_query):
-    ''' Appends REDIRECT_PARAM_NAME param and the shorten's GET params
+def url_append_parameters(url, shorten_query):
+    '''
+    Appends the REDIRECT_PARAM_NAME param and the shorten's GET params
     to the long URL
     '''
 
