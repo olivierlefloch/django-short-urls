@@ -20,7 +20,7 @@ from exceptions import ForbiddenKeyword, ShortPathConflict
 
 
 REF_PARAM_NAME  = 'ref'
-REF_PARAM_VALUE = 'shortener'
+REF_PARAM_DEFAULT_VALUE = 'shortener'
 
 REDIRECT_PARAM_NAME = 'redirect_suffix'
 
@@ -71,7 +71,7 @@ def main(request, path):
         query[REDIRECT_PARAM_NAME] = redirect_suffix
 
     if REF_PARAM_NAME not in query:
-        query[REF_PARAM_NAME] = REF_PARAM_VALUE
+        query[REF_PARAM_NAME] = REF_PARAM_DEFAULT_VALUE
 
     target_url = url_append_parameters(link.long_url, query)
 
