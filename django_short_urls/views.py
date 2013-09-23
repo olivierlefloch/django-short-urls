@@ -65,7 +65,8 @@ def main(request, path):
         raise Http404
 
     # Tweak the redirection link based on the query string, redirection suffix, etc.
-    query = request.GET.copy()
+    # FIXME: Handle multiple parameters with the same name in the `url`
+    query = dict(request.GET.copy())
 
     if redirect_suffix is not None:
         query[REDIRECT_PARAM_NAME] = redirect_suffix
