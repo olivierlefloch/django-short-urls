@@ -1,9 +1,7 @@
-import urlparse
 import re
-from urllib import urlencode
 
 
-VALID_REDIRECTIONS  = ('recruiter', 'share', 'search')
+VALID_REDIRECTIONS = ('recruiter', 'share', 'search')
 
 
 def get_hash_from(path):
@@ -18,25 +16,3 @@ def get_hash_from(path):
     return match.group(1), match.group(2)
 
 
-def url_append_parameters(url, params_to_append):
-    '''
-    Appends the REDIRECT_PARAM_NAME param and the shorten's GET params
-    to the long URL
-    '''
-
-    params_to_append = dict(params_to_append)
-
-    if not params_to_append:
-        return url
-
-    (scheme, netloc, path, params, link_query, fragment) = urlparse.urlparse(url)
-
-    # Convert a link query to a dict
-    link_query = dict(urlparse.parse_qsl(link_query))
-    link_query.update(params_to_append)
-
-    return urlparse.urlunparse((
-        scheme, netloc, path, params,
-        urlencode(link_query),
-        fragment
-    ))

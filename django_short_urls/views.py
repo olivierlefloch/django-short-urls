@@ -51,7 +51,7 @@ def main(request, path):
 
     url = (
         link.long_url if redirect_target is None
-        else suffix_catchall.url_append_parameters(link.long_url, query)
+        else url_append_parameters(link.long_url, query)
     )
 
     return (proxy if link.act_as_proxy else redirect)(url)
