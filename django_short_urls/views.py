@@ -66,12 +66,12 @@ def main(request, path):
 
     # Tweak the redirection link based on the query string, redirection suffix, etc.
     # FIXME: Handle multiple parameters with the same name in the `url`
-    query = dict(request.GET.copy())
+    query = request.GET.copy()
 
     if redirect_suffix is not None:
         query[REDIRECT_PARAM_NAME] = redirect_suffix
 
-    if bool(query) and REF_PARAM_NAME:
+    if bool(query):
         # If we specify a non empty query, indicate that the shortener tweaked the url
         query[REF_PARAM_NAME] = REF_PARAM_DEFAULT_VALUE
 

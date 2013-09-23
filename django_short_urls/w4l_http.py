@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, QueryDict
 from django.template import loader
 import json
 import requests
@@ -31,31 +31,27 @@ def validate_url(url):
 def url_append_parameters(url, params_to_replace, defaults):
     '''
     Appends the REDIRECT_PARAM_NAME param and the shorten's GET params
-    to the long URL
+    to the long URL.
+    Takes QueryDicts as parameters
     '''
-
-    params_to_replace = dict(params_to_replace)
-    defaults = dict(defaults)
 
     if not params_to_replace and not defaults:
         return url
 
     (scheme, netloc, path, params, link_query, fragment) = urlparse.urlparse(url)
 
-    # Convert a link query to a dict
-    # FIXME: Handle multiple parameters with the same name in the `url`
-    link_query = dict(urlparse.parse_qsl(link_query))
+    link_query = QueryDict(link_query).copy()
 
-    # Replace parameters in `link_query` with parameters in `params_to_replace`
-    link_query.update(params_to_replace)
+    for key, value in params_to_replace.iteritems():
+        link_query[key] = value
 
-    # Combine with the default values
-    defaults.update(link_query)
+    for key, value in defaults.iteritems():
+        if key not in link_query:
+            link_query[key] = value
 
-    # `defaults` contains the final list of parameters
     return urlparse.urlunparse((
         scheme, netloc, path, params,
-        urlencode(defaults),
+        urlencode(link_query),
         fragment
     ))
 
