@@ -70,10 +70,15 @@ def main(request, path):
     if redirect_suffix is not None:
         query[REDIRECT_PARAM_NAME] = redirect_suffix
 
-    if REF_PARAM_NAME not in query:
+    if bool(query) and REF_PARAM_NAME:
+        # If we specify a non empty query, indicate that the shortener tweaked the url
         query[REF_PARAM_NAME] = REF_PARAM_DEFAULT_VALUE
 
-    target_url = url_append_parameters(link.long_url, query)
+    target_url = url_append_parameters(
+        link.long_url,
+        params_to_replace=query,
+        defaults={REF_PARAM_NAME: REF_PARAM_DEFAULT_VALUE}
+    )
 
     # Either redirect the user, or load the target page and display it directly
     return (proxy if link.act_as_proxy else redirect)(target_url)

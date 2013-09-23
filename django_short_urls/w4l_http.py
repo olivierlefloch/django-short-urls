@@ -28,26 +28,34 @@ def validate_url(url):
     return (True, None)
 
 
-def url_append_parameters(url, params_to_append):
+def url_append_parameters(url, params_to_replace, defaults):
     '''
     Appends the REDIRECT_PARAM_NAME param and the shorten's GET params
     to the long URL
     '''
 
-    params_to_append = dict(params_to_append)
+    params_to_replace = dict(params_to_replace)
+    defaults = dict(defaults)
 
-    if not params_to_append:
+    if not params_to_replace and not defaults:
         return url
 
     (scheme, netloc, path, params, link_query, fragment) = urlparse.urlparse(url)
 
     # Convert a link query to a dict
+    # FIXME: Handle multiple parameters with the same name in the `url`
     link_query = dict(urlparse.parse_qsl(link_query))
-    link_query.update(params_to_append)
 
+    # Replace parameters in `link_query` with parameters in `params_to_replace`
+    link_query.update(params_to_replace)
+
+    # Combine with the default values
+    defaults.update(link_query)
+
+    # `defaults` contains the final list of parameters
     return urlparse.urlunparse((
         scheme, netloc, path, params,
-        urlencode(link_query),
+        urlencode(defaults),
         fragment
     ))
 
