@@ -4,7 +4,6 @@ from urllib import urlencode
 
 
 VALID_REDIRECTIONS  = ('recruiter', 'share', 'search')
-REDIRECT_PARAM_NAME = 'redirect_suffix'
 
 
 def get_hash_from(path):

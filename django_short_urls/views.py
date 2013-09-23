@@ -11,8 +11,12 @@ from w4l_http import *
 from models import Link, User, Click
 from exceptions import ForbiddenKeyword, ShortPathConflict
 
+
 REF_PARAM_NAME  = 'ref'
 REF_PARAM_VALUE = 'shortener'
+
+REDIRECT_PARAM_NAME = 'redirect_suffix'
+
 
 @require_safe
 def main(request, path):
@@ -23,7 +27,7 @@ def main(request, path):
     link, redirect_target = Link.find_by_hash(path)
     query = request.GET.copy()
     if redirect_target is not None:
-        query[suffix_catchall.REDIRECT_PARAM_NAME] = redirect_target
+        query[REDIRECT_PARAM_NAME] = redirect_target
 
     if not settings.SITE_READ_ONLY:
         Click(
