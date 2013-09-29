@@ -129,7 +129,8 @@ class Click(Document):
         'allow_inheritance': False,
         'auto_create_index': settings.MONGO_AUTO_CREATE_INDEXES,
         'cascade': False,
-        'indexes': [('full_path', 'created_at'), ('link', 'created_at')]
+        'indexes': [('full_path', 'created_at'), ('link', 'created_at')],
+        'max_size': '100000000'
     }
 
     server     = StringField(required=True)
