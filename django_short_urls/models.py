@@ -130,7 +130,7 @@ class Click(Document):
         'auto_create_index': settings.MONGO_AUTO_CREATE_INDEXES,
         'cascade': False,
         'indexes': [('full_path', 'created_at'), ('link', 'created_at')],
-        'max_size': '97557560'
+        'max_size': 100000000
     }
 
     server     = StringField(required=True)
