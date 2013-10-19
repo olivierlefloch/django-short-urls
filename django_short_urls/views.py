@@ -9,8 +9,6 @@ Views for Django Short Urls:
 
 from __future__ import unicode_literals
 
-from datetime import datetime
-
 from django.conf import settings
 from django.http import Http404
 from django.shortcuts import redirect
@@ -57,19 +55,7 @@ def main(request, path):
         redirect_suffix = None
 
     if not settings.SITE_READ_ONLY:
-        Click(
-            server="%s:%s" % (request.META['SERVER_NAME'], request.META['SERVER_PORT']),
-            full_path=request.get_full_path(),
-            link=link,
-            created_at=datetime.utcnow(),
-            ip=request.META['REMOTE_ADDR'],
-            browser=(
-                ''.join([x if ord(x) < 128 else '?' for x in request.META['HTTP_USER_AGENT']])
-                if 'HTTP_USER_AGENT' in request.META else None
-            ),
-            referer=request.META['HTTP_REFERER'] if 'HTTP_REFERER' in request.META else None,
-            lang=request.META['HTTP_ACCEPT_LANGUAGE'] if 'HTTP_ACCEPT_LANGUAGE' in request else None
-        ).save()
+        Click.register(request, link)
 
     if link is None:
         raise Http404

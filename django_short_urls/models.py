@@ -161,3 +161,21 @@ class Click(Document):
     browser    = StringField()
     referer    = StringField()
     lang       = StringField()
+
+    @classmethod
+    def register(cls, request, link):
+        """Registers a click from request on link"""
+
+        return cls(
+            server="%s:%s" % (request.META['SERVER_NAME'], request.META['SERVER_PORT']),
+            full_path=request.get_full_path(),
+            link=link,
+            created_at=datetime.utcnow(),
+            ip=request.META['REMOTE_ADDR'],
+            browser=(
+                ''.join([x if ord(x) < 128 else '?' for x in request.META['HTTP_USER_AGENT']])
+                if 'HTTP_USER_AGENT' in request.META else None
+            ),
+            referer=request.META['HTTP_REFERER'] if 'HTTP_REFERER' in request.META else None,
+            lang=request.META['HTTP_ACCEPT_LANGUAGE'] if 'HTTP_ACCEPT_LANGUAGE' in request else None
+        ).save()
