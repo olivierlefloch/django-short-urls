@@ -1,5 +1,6 @@
 from datetime import datetime
 from django.conf import settings
+from django.utils.log import getLogger
 from hashlib import sha1
 from mongoengine import *
 import re
@@ -142,3 +143,12 @@ class Click(Document):
     browser    = StringField()
     referer    = StringField()
     lang       = StringField()
+
+    def __unicode__(self):
+        return "Click: (%s, %s, %s)" % (self.full_path, self.created_at, self.ip)
+
+    def save(self, **kwargs):
+        try:
+            super(Click, self).save(**kwargs)
+        except Exception as e:
+            getLogger('app').error('Failed to save %s with exception %s' % (self, e))
