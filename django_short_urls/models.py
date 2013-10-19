@@ -47,16 +47,10 @@ class Link(Document):
 
     @classmethod
     def shorten(cls, long_url, creator, short_path=None, prefix=None):
-        """Public API to create a short """
-        # This intermediate public method hides the private _ignore_bans parameter
-        return cls.__shorten(long_url=long_url, creator=creator, short_path=short_path, prefix=prefix)
+        """Public API to create a short link"""
 
-    @classmethod
-    def __shorten(cls, long_url, creator, _ignore_bans=False, short_path=None, prefix=None):
-        """Do the actual shortening work"""
-        if not _ignore_bans:
-            ForbiddenKeyword.raise_if_banned(short_path)
-            ForbiddenKeyword.raise_if_banned(prefix)
+        ForbiddenKeyword.raise_if_banned(short_path)
+        ForbiddenKeyword.raise_if_banned(prefix)
 
         if prefix is None:
             prefix = ''
