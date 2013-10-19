@@ -1,10 +1,10 @@
 """Urls for the django short urls application"""
 
 from django.conf.urls import patterns, url
-from django.views.generic.simple import direct_to_template
+from django.views.generic.base import TemplateView
 
 
-# pylint: disable=C0103
+# pylint: disable=C0103, E1120
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -12,8 +12,7 @@ from django.views.generic.simple import direct_to_template
 
 urlpatterns = patterns(
     '',
-    (r'^robots\.txt$', direct_to_template,
-        {'template': 'robots.txt', 'mimetype': 'text/plain'}),
+    (r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt')),
 
     url(r'^api/v1/new$', 'django_short_urls.views.new', name='new'),
     url(r'^(.*)$', 'django_short_urls.views.main', name='main'),
