@@ -154,7 +154,8 @@ class Click(Document):
 
     server     = StringField(required=True)
     full_path  = StringField(required=True)
-    # FIXME: Switch to using strings as dbrefs
+    # pylint: disable=W0511
+    # TODO: Switch to using strings as dbrefs and upgrade mongoengine
     # http://mongoengine-odm.readthedocs.org/en/latest/upgrade.html#referencefields
     link       = ReferenceField('Link', dbref=True)
     created_at = DateTimeField(required=True)

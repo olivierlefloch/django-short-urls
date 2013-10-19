@@ -1,6 +1,7 @@
 """Shared middleware for the Django Short Urls application"""
 
-# FIXME: Move to a dedicated ServiceUnavailable app
+# pylint: disable=W0511
+# TODO: Move to a dedicated ServiceUnavailable app
 from django.conf import settings
 
 from django.utils.log import getLogger
@@ -34,9 +35,9 @@ class ServiceUnavailableMiddleware:
         """
         try:
             return view_func(request, *view_args, **view_kwargs)
-        except (mongoengine.connection.ConnectionError, DatabaseWriteDenied) as e:
-            # FIXME: Raise a DatabaseWriteDenied exception when trying to write to the database when in readonly mode.
+        except (mongoengine.connection.ConnectionError, DatabaseWriteDenied) as err:
+            # TODO: Raise a DatabaseWriteDenied exception when trying to write to the database when in readonly mode.
             # Currently we rely on the developer checking settings.SITE_READ_ONLY in GET views.
-            getLogger('app').error('Database access error: %s' % e)
+            getLogger('app').error('Database access error: %s' % err)
 
             return reponse_service_unavailable()
