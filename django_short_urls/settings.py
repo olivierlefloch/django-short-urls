@@ -165,6 +165,6 @@ try:
     mongoengine.connect(**MONGOENGINE)
 
     SERVICE_UNAVAILABLE = False
-except mongoengine.connection.ConnectionError, e:
-    logging.error('MongoEngine ConnectionError: %s' % e)
+except mongoengine.connection.ConnectionError, err:
+    logging.error('MongoEngine ConnectionError: %s', err)
     SERVICE_UNAVAILABLE = True
