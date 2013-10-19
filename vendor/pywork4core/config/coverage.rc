@@ -1,0 +1,8 @@
+[run]
+
+branch = true
+data_file = temp/coverage.data
+omit = venv*,*django_app/tests*
+
+[html]
+directory = temp/coverage_html
