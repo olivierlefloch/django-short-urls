@@ -21,6 +21,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_short_urls.settings")
 # file. This includes Django's development server, if the WSGI_APPLICATION
 # setting points here.
 from django.core.wsgi import get_wsgi_application
+# pylint: disable=C0103
 application = get_wsgi_application()
 
 # Apply WSGI middleware here.
