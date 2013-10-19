@@ -13,10 +13,14 @@ from django.shortcuts import redirect
 from django.utils.log import getLogger
 from django.views.decorators.http import require_safe, require_POST
 
-import suffix_catchall
-from w4l_http import *
-from models import Link, User, Click
-from exceptions import ForbiddenKeyword, ShortPathConflict
+import django_short_urls.suffix_catchall as suffix_catchall
+from django_short_urls.models import Link, User, Click
+from django_short_urls.exceptions import ForbiddenKeyword, ShortPathConflict
+
+from django_short_urls.w4l_http import (
+    validate_url, url_append_parameters, response, proxy,
+    HTTP_UNAUTHORIZED, HTTP_BAD_REQUEST, HTTP_CONFLICT, HTTP_FORBIDDEN
+)
 
 
 REF_PARAM_NAME  = 'ref'
@@ -25,6 +29,7 @@ REF_PARAM_DEFAULT_VALUE = 'shortener'
 REDIRECT_PARAM_NAME = 'redirect_suffix'
 
 
+# pylint: disable=E1101, W0511
 @require_safe
 def main(request, path):
     '''
@@ -86,6 +91,7 @@ def main(request, path):
     return (proxy if link.act_as_proxy else redirect)(target_url)
 
 
+# pylint: disable=W0142, R0912
 @require_POST
 def new(request):
     '''
@@ -103,50 +109,45 @@ def new(request):
     if user is None:
         return response(status=HTTP_UNAUTHORIZED, message="Invalid credentials.")
 
-    params = {
-        'creator': user.login
-    }
+    params = {'creator': user.login}
 
     if 'long_url' in request.REQUEST:
         params['long_url'] = request.REQUEST['long_url']
 
         (is_valid, error_message) = validate_url(params['long_url'])
-
-        if not is_valid:
-            return response(status=HTTP_BAD_REQUEST, message=error_message)
     else:
-        return response(
-            status=HTTP_BAD_REQUEST,
-            message="Missing parameter: 'long_url'")
+        (is_valid, error_message) = (False, "Missing parameter: 'long_url'")
+
+    if not is_valid:
+        return response(status=HTTP_BAD_REQUEST, message=error_message)
 
     if 'short_path' in request.REQUEST:
         params['short_path'] = request.REQUEST['short_path']
 
-        if '/' in params['short_path']:
-            return response(
-                status=HTTP_BAD_REQUEST,
-                message="short_path may not contain a '/' character.")
-
     if 'prefix' in request.REQUEST:
         params['prefix'] = request.REQUEST['prefix']
 
-        if '/' in params['prefix']:
+    for key in ['short_path', 'prefix']:
+        if key in params and '/' in params[key]:
             return response(
                 status=HTTP_BAD_REQUEST,
-                message="prefix may not contain a '/' character.")
+                message="%s may not contain a '/' character." % key)
 
     try:
         link = Link.shorten(**params)
-    except ShortPathConflict, e:
+    except ShortPathConflict, err:
         del params['short_path'], params['long_url']
+
         if 'prefix' in params:
             del params['prefix']
-        params['hash'] = e.link.hash
 
-        return response(status=HTTP_CONFLICT, message=str(e), **params)
-    except ForbiddenKeyword, e:
-        getLogger('app').warning('Attempt to use forbidden keyword "%s" in a short url.' % e.keyword)
-        return response(status=HTTP_FORBIDDEN, message=str(e), **params)
+        params['hash'] = err.link.hash
+
+        return response(status=HTTP_CONFLICT, message=str(err), **params)
+    except ForbiddenKeyword, err:
+        getLogger('app').warning('Attempt to use forbidden keyword "%s" in a short url.' % err.keyword)
+
+        return response(status=HTTP_FORBIDDEN, message=str(err), **params)
 
     params['short_path'] = link.short_path
 
