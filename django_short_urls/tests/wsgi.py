@@ -1,10 +1,11 @@
 from __future__ import unicode_literals
 
+from django.core.handlers.wsgi import WSGIHandler
 from django.utils import unittest
 
-import django_short_urls.wsgi
+from django_short_urls.wsgi import application
 
 
 class WsgiTestCase(unittest.TestCase):
     def test(self):
-        pass
+        self.assertIs(type(application), WSGIHandler)
