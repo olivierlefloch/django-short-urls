@@ -10,7 +10,7 @@ import sys
 
 if __name__ == "__main__":
     # we can not use setdefault since it will not work when calling from another python script
-    os.environ['DJANGO_SETTINGS_MODULE'] = "salesops.settings"
+    os.environ['DJANGO_SETTINGS_MODULE'] = "django_short_urls.settings"
 
     from django.core.management import execute_from_command_line
 
