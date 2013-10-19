@@ -35,6 +35,8 @@ class ForbiddenKeyword(Exception):
             raise cls(keyword)
 
     def __init__(self, keyword):
+        super(ForbiddenKeyword, self).__init__()
+
         self.keyword = keyword
 
     def __str__(self):
@@ -45,6 +47,8 @@ class ShortPathConflict(Exception):
     """Raised when attempting to reuse an existing short link with a different long_url"""
 
     def __init__(self, link):
+        super(ShortPathConflict, self).__init__()
+
         self.link = link
 
     def __str__(self):
