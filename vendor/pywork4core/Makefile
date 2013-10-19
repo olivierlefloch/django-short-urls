@@ -98,8 +98,10 @@ deep_clean: deep_clean_ask confirm deep_clean_do
 deep_clean_ask:
 	echo "This will remove any unversioned files, except for the settings file"
 
-deep_clean_do:
+deep_clean_do: clean_pyc
 	rm -rf ${TEMP_DIR} ${PYTHONHOME}
+
+clean_pyc:
 	find ${PROJECT_DIR} -name "*.pyc" -exec rm -f {} \;
 
 
