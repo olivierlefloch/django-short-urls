@@ -161,6 +161,7 @@ DATABASES = {
 import mongoengine
 
 try:
+    # pylint: disable=W0142
     mongoengine.connect(**MONGOENGINE)
 
     SERVICE_UNAVAILABLE = False
