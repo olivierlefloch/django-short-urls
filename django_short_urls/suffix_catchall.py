@@ -1,3 +1,5 @@
+"""Functions to extract portions of urls (django short urls specific)"""
+
 import re
 
 

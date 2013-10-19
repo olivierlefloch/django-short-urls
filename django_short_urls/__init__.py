@@ -1,0 +1,1 @@
+"""Django Short Urls application"""

@@ -1,3 +1,5 @@
+"""Local Settings for the Django Short Urls application"""
+
 DEBUG = True
 
 ADMINS = (

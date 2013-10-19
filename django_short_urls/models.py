@@ -1,3 +1,5 @@
+"""Models for the django short urls application"""
+
 from datetime import datetime
 from django.conf import settings
 from hashlib import sha1
@@ -10,6 +12,8 @@ from exceptions import ForbiddenKeyword, ShortPathConflict
 
 
 class User(Document):
+    """Collection representing a user with access to the API"""
+
     meta = {
         'allow_inheritance': False,
         'auto_create_index': settings.MONGO_AUTO_CREATE_INDEXES,
@@ -22,7 +26,7 @@ class User(Document):
 
 
 class Link(Document):
-    # FIXME: Add unit tests - WFU-1527
+    """Collection representing a shortened url"""
 
     meta = {
         'allow_inheritance': False,
@@ -41,11 +45,13 @@ class Link(Document):
 
     @classmethod
     def shorten(cls, long_url, creator, short_path=None, prefix=None):
+        """Public API to create a short """
         # This intermediate public method hides the private _ignore_bans parameter
         return cls.__shorten(long_url=long_url, creator=creator, short_path=short_path, prefix=prefix)
 
     @classmethod
     def __shorten(cls, long_url, creator, _ignore_bans=False, short_path=None, prefix=None):
+        """Do the actual shortening work"""
         if not _ignore_bans:
             ForbiddenKeyword.raise_if_banned(short_path)
             ForbiddenKeyword.raise_if_banned(prefix)
@@ -70,6 +76,7 @@ class Link(Document):
 
     @classmethod
     def __create_with_random_short_path(cls, long_url, prefix, creator):
+        """Generate an unused, valid random short path for prefix"""
         while True:
             # Generate a seed from the long url and the current date (with milliseconds)
             seed     = long_url + str(datetime.utcnow())
@@ -96,11 +103,13 @@ class Link(Document):
 
     @classmethod
     def is_valid_random_short_path(cls, short_path):
+        """Checks if the random short path is valid (does not contain words)"""
         # We don't check for ForbiddenKeywords because the constraints make that redundant
         return cls.RE_VALID_RANDOM_SHORT_PATHS.match(short_path) is not None
 
     @classmethod
     def __get_or_create(cls, prefix, short_path, long_url, creator):
+        """Retrieves or Creates a Link object by (prefix, short_path)"""
         return cls.objects.get_or_create(
             hash=Link.hash_for_prefix_and_short_path(prefix, short_path),
             defaults={
@@ -112,16 +121,20 @@ class Link(Document):
 
     @classmethod
     def hash_for_prefix_and_short_path(cls, prefix, short_path):
+        """Returns the hash for a combination of prefix and short_path"""
         return ('%s%s' % ('%s/' % prefix if prefix != '' else '', short_path)).lower()
 
     @classmethod
     def find_by_hash(cls, path):
+        """Searches for a Link object by hash"""
         return cls.objects(hash=path.lower()).first()
 
     def build_relative_path(self):
+        """Builds the relative path for the current url, using prefix information if present"""
         return ('/%s/%%s' % self.prefix if self.prefix else '/%s') % self.short_path
 
     def build_absolute_uri(self, request):
+        """Builds the absolute url for the target link (including full server url)"""
         return request.build_absolute_uri(self.build_relative_path())
 
     def __str__(self):
@@ -129,6 +142,8 @@ class Link(Document):
 
 
 class Click(Document):
+    """Collection to store clicks, including url, time, ip, browser, etc."""
+
     meta = {
         'allow_inheritance': False,
         'auto_create_index': settings.MONGO_AUTO_CREATE_INDEXES,

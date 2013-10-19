@@ -1,7 +1,11 @@
+"""Converts an integer to an alphanumerical string"""
+
 ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyz"
 
 
 def encode(decoded, alphabet=ALPHABET):
+    """Converts an int to an alphanumerical string"""
+
     if decoded == 0:
         return alphabet[0]
 
@@ -17,6 +21,8 @@ def encode(decoded, alphabet=ALPHABET):
 
 
 def decode(encoded, alphabet=ALPHABET):
+    """Converts an alphanumerical string to an int"""
+
     base = len(alphabet)
     decoded = 0
     power = 1

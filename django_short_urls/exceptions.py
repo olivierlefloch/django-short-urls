@@ -1,13 +1,18 @@
+"""Shared exceptions for the Django Short Urls application"""
+
 import re
 from django.db.utils import DatabaseError
 
 
 # FIXME: Move to a dedicated ServiceUnavailable app
 class DatabaseWriteDenied(DatabaseError):
+    """Exception raised when attempting to write to the database when in readonly mode"""
     pass
 
 
 class ForbiddenKeyword(Exception):
+    """Exception raised when attempting to shorten a link containing an reserved keyword"""
+
     ban_words = (
         'admin', 'refer', 'share', 'settings', 'jobs', 'careers', 'apply',
         'mobile', 'signup', 'login', 'register', 'install', 'recruiter', 'search',
@@ -17,10 +22,14 @@ class ForbiddenKeyword(Exception):
 
     @classmethod
     def is_banned(cls, keyword):
+        """Returns true if the keyword is reserved"""
+
         return keyword is not None and cls.ban_regex.match(keyword.lower())
 
     @classmethod
     def raise_if_banned(cls, keyword):
+        """Raises a ForbiddenKeyword exception if the keyword is reserved"""
+
         if cls.is_banned(keyword):
             raise cls(keyword)
 
@@ -32,6 +41,8 @@ class ForbiddenKeyword(Exception):
 
 
 class ShortPathConflict(Exception):
+    """Raised when attempting to reuse an existing short link with a different long_url"""
+
     def __init__(self, link):
         self.link = link
 
