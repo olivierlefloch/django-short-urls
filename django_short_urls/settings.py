@@ -150,7 +150,7 @@ LOGGING = {
 # Databases
 
 DATABASES = {
-   'default': {
+    'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': '',
     }

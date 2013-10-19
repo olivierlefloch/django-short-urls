@@ -1,5 +1,6 @@
 ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyz"
 
+
 def encode(decoded, alphabet=ALPHABET):
     if decoded == 0:
         return alphabet[0]
@@ -14,6 +15,7 @@ def encode(decoded, alphabet=ALPHABET):
     encoded.reverse()
     return ''.join(encoded)
 
+
 def decode(encoded, alphabet=ALPHABET):
     base = len(alphabet)
     decoded = 0
@@ -27,6 +29,7 @@ def decode(encoded, alphabet=ALPHABET):
         power *= base
 
     return decoded
+
 
 if __name__ == "__main__":
     TEST = 123456789

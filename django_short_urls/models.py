@@ -8,6 +8,7 @@ import int_to_alnum
 import suffix_catchall
 from exceptions import ForbiddenKeyword, ShortPathConflict
 
+
 class User(Document):
     meta = {
         'allow_inheritance': False,
@@ -18,6 +19,7 @@ class User(Document):
     login   = StringField(required=True, unique=True)
     api_key = StringField(required=True)
     email   = StringField(required=True)
+
 
 class Link(Document):
     # FIXME: Add unit tests - WFU-1527
@@ -91,6 +93,7 @@ class Link(Document):
                     return link
 
     RE_VALID_RANDOM_SHORT_PATHS = re.compile(r'^([a-z]{0,2}\d)+[a-z]{0,2}$')
+
     @classmethod
     def is_valid_random_short_path(cls, short_path):
         # We don't check for ForbiddenKeywords because the constraints make that redundant
@@ -124,6 +127,7 @@ class Link(Document):
     def __str__(self):
         return "%s -> %s\n" % (self.hash, self.long_url)
 
+
 class Click(Document):
     meta = {
         'allow_inheritance': False,
@@ -135,7 +139,8 @@ class Click(Document):
 
     server     = StringField(required=True)
     full_path  = StringField(required=True)
-    # FIXME: Switch to using strings as dbrefs http://mongoengine-odm.readthedocs.org/en/latest/upgrade.html#referencefields
+    # FIXME: Switch to using strings as dbrefs
+    # http://mongoengine-odm.readthedocs.org/en/latest/upgrade.html#referencefields
     link       = ReferenceField('Link', dbref=True)
     created_at = DateTimeField(required=True)
     ip         = StringField(required=True)

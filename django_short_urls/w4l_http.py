@@ -13,6 +13,7 @@ HTTP_CONFLICT            = 409
 HTTP_SERVER_ERROR        = 500
 HTTP_SERVICE_UNAVAILABLE = 503
 
+
 def validate_url(url):
     parsed_url = urlparse.urlparse(url)
 

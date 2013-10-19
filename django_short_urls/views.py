@@ -56,7 +56,8 @@ def main(request, path):
             ip=request.META['REMOTE_ADDR'],
             browser=(
                 ''.join([x if ord(x) < 128 else '?' for x in request.META['HTTP_USER_AGENT']])
-                    if 'HTTP_USER_AGENT' in request.META else None),
+                if 'HTTP_USER_AGENT' in request.META else None
+            ),
             referer=request.META['HTTP_REFERER'] if 'HTTP_REFERER' in request.META else None,
             lang=request.META['HTTP_ACCEPT_LANGUAGE'] if 'HTTP_ACCEPT_LANGUAGE' in request else None
         ).save()
@@ -83,6 +84,7 @@ def main(request, path):
 
     # Either redirect the user, or load the target page and display it directly
     return (proxy if link.act_as_proxy else redirect)(target_url)
+
 
 @require_POST
 def new(request):

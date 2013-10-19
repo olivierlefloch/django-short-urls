@@ -2,6 +2,7 @@ from django.utils import unittest
 
 from django_short_urls.models import Link
 
+
 class ValidRandomShortPathsTestCase(unittest.TestCase):
     def test(self):
         self.assertEqual(Link.is_valid_random_short_path("ab2cd"), True)
@@ -17,6 +18,7 @@ class ValidRandomShortPathsTestCase(unittest.TestCase):
 
 
 from w4l_http import validate_url, url_append_parameters
+
 
 class W4lHttpTestCase(unittest.TestCase):
     def test(self):
@@ -52,6 +54,7 @@ class W4lHttpTestCase(unittest.TestCase):
 
 
 from suffix_catchall import get_hash_from
+
 
 class ValidRedirectPathTestCase(unittest.TestCase):
     def test__get_hash_from(self):

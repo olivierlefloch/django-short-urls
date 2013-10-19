@@ -1,9 +1,11 @@
 import re
 from django.db.utils import DatabaseError
 
+
 # FIXME: Move to a dedicated ServiceUnavailable app
 class DatabaseWriteDenied(DatabaseError):
     pass
+
 
 class ForbiddenKeyword(Exception):
     ban_words = (
@@ -27,6 +29,7 @@ class ForbiddenKeyword(Exception):
 
     def __str__(self):
         return 'Keyword "%s" cannot be used as a short path or a prefix.' % self.keyword
+
 
 class ShortPathConflict(Exception):
     def __init__(self, link):
