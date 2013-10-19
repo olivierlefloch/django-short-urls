@@ -1,3 +1,5 @@
+# coding=utf-8
+
 '''
 Views for Django Short Urls:
 

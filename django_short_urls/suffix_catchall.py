@@ -1,3 +1,5 @@
+# coding=utf-8
+
 """Functions to extract portions of urls (django short urls specific)"""
 
 from __future__ import unicode_literals

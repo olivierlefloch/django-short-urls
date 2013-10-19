@@ -1,3 +1,5 @@
+# coding=utf-8
+
 """Local Settings for the Django Short Urls application"""
 
 from __future__ import unicode_literals

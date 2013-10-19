@@ -1,3 +1,5 @@
+# coding=utf-8
+
 """Module to manipulate requests, HTML and HTTP concepts"""
 
 from __future__ import unicode_literals

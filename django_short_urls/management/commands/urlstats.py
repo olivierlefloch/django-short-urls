@@ -1,3 +1,5 @@
+# coding=utf-8
+
 """
 This command extracts click data about urls
 """
