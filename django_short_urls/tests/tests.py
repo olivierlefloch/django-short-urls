@@ -17,7 +17,7 @@ class ValidRandomShortPathsTestCase(unittest.TestCase):
         self.assertEqual(Link.is_valid_random_short_path("abe4abe"), False)
 
 
-from w4l_http import validate_url, url_append_parameters
+from django_short_urls.w4l_http import validate_url, url_append_parameters
 
 
 class W4lHttpTestCase(unittest.TestCase):
@@ -53,7 +53,7 @@ class W4lHttpTestCase(unittest.TestCase):
         )
 
 
-from suffix_catchall import get_hash_from
+from django_short_urls.suffix_catchall import get_hash_from
 
 
 class ValidRedirectPathTestCase(unittest.TestCase):
