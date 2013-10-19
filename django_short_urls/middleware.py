@@ -7,8 +7,8 @@ from django.conf import settings
 from django.utils.log import getLogger
 import mongoengine
 
-from exceptions import DatabaseWriteDenied
-from w4l_http import reponse_service_unavailable
+from django_short_urls.exceptions import DatabaseWriteDenied
+from django_short_urls.w4l_http import reponse_service_unavailable
 
 
 class ServiceUnavailableMiddleware:

@@ -3,7 +3,8 @@
 import os
 import logging
 
-from local_settings import *
+# pylint: disable=W0614, W0401
+from django_short_urls.local_settings import *
 
 TEMPLATE_DEBUG = DEBUG
 

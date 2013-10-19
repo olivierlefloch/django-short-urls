@@ -3,12 +3,11 @@
 from datetime import datetime
 from django.conf import settings
 from hashlib import sha1
-from mongoengine import *
+from mongoengine import Document, StringField, DateTimeField, IntField, BooleanField, ReferenceField
 import re
 
-import int_to_alnum
-import suffix_catchall
-from exceptions import ForbiddenKeyword, ShortPathConflict
+import django_short_urls.int_to_alnum as int_to_alnum
+from django_short_urls.exceptions import ForbiddenKeyword, ShortPathConflict
 
 
 class User(Document):
