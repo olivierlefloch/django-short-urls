@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from django.utils import unittest
 
 from django_short_urls.suffix_catchall import get_hash_from

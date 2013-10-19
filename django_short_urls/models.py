@@ -1,5 +1,7 @@
 """Models for the django short urls application"""
 
+from __future__ import unicode_literals
+
 from datetime import datetime
 from django.conf import settings
 from hashlib import sha1

@@ -1,5 +1,7 @@
 """Shared middleware for the Django Short Urls application"""
 
+from __future__ import unicode_literals
+
 # pylint: disable=W0511
 # TODO: Move to a dedicated ServiceUnavailable app
 from django.conf import settings

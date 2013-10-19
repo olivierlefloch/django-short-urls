@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from django.utils import unittest
 
 from django_short_urls.w4l_http import validate_url, url_append_parameters

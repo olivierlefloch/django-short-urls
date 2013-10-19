@@ -2,6 +2,8 @@
 This command extracts click data about urls
 """
 
+from __future__ import unicode_literals
+
 import csv
 
 from django.core.management.base import BaseCommand

@@ -5,6 +5,8 @@ Views for Django Short Urls:
   - new is the API view to create shortened urls
 '''
 
+from __future__ import unicode_literals
+
 from datetime import datetime
 
 from django.conf import settings

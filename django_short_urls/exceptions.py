@@ -1,5 +1,7 @@
 """Shared exceptions for the Django Short Urls application"""
 
+from __future__ import unicode_literals
+
 import re
 from django.db.utils import DatabaseError
 

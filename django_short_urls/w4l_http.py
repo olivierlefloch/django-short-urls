@@ -1,5 +1,7 @@
 """Module to manipulate requests, HTML and HTTP concepts"""
 
+from __future__ import unicode_literals
+
 from django.http import HttpResponse, QueryDict
 from django.template import loader
 import json

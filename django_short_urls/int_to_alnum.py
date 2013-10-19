@@ -1,5 +1,7 @@
 """Converts an integer to an alphanumerical string"""
 
+from __future__ import unicode_literals
+
 ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyz"
 
 

@@ -1,5 +1,7 @@
 """Django settings for django_short_urls project."""
 
+from __future__ import unicode_literals
+
 import os
 import logging
 
