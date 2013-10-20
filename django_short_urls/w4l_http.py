@@ -86,6 +86,6 @@ def proxy(url):
         mimetype=resp.headers['Content-Type'])
 
 
-def reponse_service_unavailable():
+def response_service_unavailable():
     """Returns a 503 error based on a static template"""
     return HttpResponse(loader.render_to_string('503.html'), status=HTTP_SERVICE_UNAVAILABLE)

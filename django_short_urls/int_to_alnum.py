@@ -39,9 +39,3 @@ def decode(encoded, alphabet=ALPHABET):
         power *= base
 
     return decoded
-
-
-if __name__ == "__main__":
-    TEST = 123456789
-
-    print "Test: %d == %d" % (TEST, decode(encode(TEST)))

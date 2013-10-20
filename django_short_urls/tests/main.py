@@ -10,7 +10,7 @@ from django_short_urls.views import main
 from django_short_urls.models import Link
 
 
-class ViewsTestCase(MongoTestCase):
+class ViewMainTestCase(MongoTestCase):
     def setUp(self):
         self.factory = RequestFactory()
 
@@ -32,7 +32,7 @@ class ViewsTestCase(MongoTestCase):
         path404 = self.path + 'foobar'
 
         with self.assertRaises(Http404):
-            print main(self.factory.get('/%s' % path404), path404)
+            main(self.factory.get('/%s' % path404), path404)
 
         with self.assertRaises(Http404):
             main(self.factory.get('/%s/' % path404), path404 + '/')

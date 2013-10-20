@@ -48,6 +48,6 @@ try:
     mongoengine.connect(**MONGOENGINE)
 
     SERVICE_UNAVAILABLE = False
-except mongoengine.connection.ConnectionError, err:
+except mongoengine.connection.ConnectionError, err:  # pragma: no cover
     logging.error('MongoEngine ConnectionError: %s', err)
     SERVICE_UNAVAILABLE = True

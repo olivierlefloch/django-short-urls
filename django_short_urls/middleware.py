@@ -12,7 +12,7 @@ from django.utils.log import getLogger
 import mongoengine
 
 from django_short_urls.exceptions import DatabaseWriteDenied
-from django_short_urls.w4l_http import reponse_service_unavailable
+from django_short_urls.w4l_http import response_service_unavailable
 
 
 # pylint: disable=W0232, R0201, W0142
@@ -32,7 +32,7 @@ class ServiceUnavailableMiddleware:
             or (settings.SITE_READ_ONLY and request.method not in ("GET", "HEAD"))
         ):
             # Can't use render because there is no context
-            return reponse_service_unavailable()
+            return response_service_unavailable()
 
     def process_view(self, request, view_func, view_args, view_kwargs):
         """
@@ -45,4 +45,4 @@ class ServiceUnavailableMiddleware:
             # Currently we rely on the developer checking settings.SITE_READ_ONLY in GET views.
             getLogger('app').error('Database access error: %s' % err)
 
-            return reponse_service_unavailable()
+            return response_service_unavailable()
