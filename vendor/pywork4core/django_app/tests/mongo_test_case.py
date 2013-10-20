@@ -7,4 +7,6 @@ from django_app import mongo_test_case
 
 class MongoTestCaseTestCase(mongo_test_case.MongoTestCase):
     def test(self):
-        pass
+        self.database.test_collection.insert({'foo': 'bar'})
+
+        self.assertEqual(1, 1)

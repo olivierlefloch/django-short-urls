@@ -9,4 +9,4 @@ It currently:
   - automatically sets up a virtualenv
   - integrates pep8 and pylint for code validation, coverage.py for tests
   - uses make to manage the app's development cycle
-"""
+"""  # pragma: no cover

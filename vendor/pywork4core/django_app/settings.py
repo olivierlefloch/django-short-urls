@@ -39,7 +39,7 @@ import mongoengine
 try:
     # pylint: disable=W0142
     mongoengine.connect(**MONGOENGINE)
-except mongoengine.connection.ConnectionError, err:
+except mongoengine.connection.ConnectionError, err:  # pragma: no cover
     logging.error('MongoEngine ConnectionError: %s', err)
 
 INSTALLED_APPS = (APP_NAME,)

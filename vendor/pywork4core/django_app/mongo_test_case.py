@@ -9,7 +9,7 @@ MongoEngine's license: https://github.com/MongoEngine/mongoengine/blob/master/LI
 
 from __future__ import unicode_literals
 
-from unittest import TestCase
+from django.test import TestCase
 from django.conf import settings
 from mongoengine.connection import connect, disconnect
 

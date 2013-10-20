@@ -8,7 +8,7 @@ import os
 import sys
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     # we can not use setdefault since it will not work when calling from another python script
     os.environ['DJANGO_SETTINGS_MODULE'] = "django_app.settings"
 

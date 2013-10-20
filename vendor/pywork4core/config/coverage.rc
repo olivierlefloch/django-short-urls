@@ -6,7 +6,7 @@ omit = venv*,*django_app/tests*
 
 [report]
 
-omit=venv*,*django_app/tests*,__init__.py,manage.py
+omit=venv*,*django_app/tests*
 
 [html]
 directory = temp/coverage_html
