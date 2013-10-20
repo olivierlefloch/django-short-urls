@@ -66,6 +66,10 @@ all: clean install lint test
 # Installation #
 ################
 
+ifeq ($(wildcard $(PROJECT_DIR)requirements.txt),)
+	PROJECT_REQUIREMENTS=-r $(PROJECT_DIR)requirements.txt
+endif
+
 install: install_pre install_do install_project install_post
 
 install_pre:
@@ -73,8 +77,7 @@ install_pre:
 install_do:
 	mkdir -p ${TEMP_DIR}
 	(test -d ${PYTHONHOME} || virtualenv ${PYTHONHOME})
-	${CFLAGS} ${PYTHONHOME}bin/pip install --upgrade -r ${WORK4CORE_DIR}requirements.txt
-	(test -f ${PROJECT_DIR}requirements.txt && ${CFLAGS} ${PYTHONHOME}bin/pip install --upgrade -r ${PROJECT_DIR}requirements.txt) || true
+	${CFLAGS} ${PYTHONHOME}bin/pip install --upgrade -r ${WORK4CORE_DIR}requirements.txt ${PROJECT_REQUIREMENTS}
 	(test -d ${VENV_WRAPPER_DIR} || mkdir -p ${VENV_WRAPPER_DIR})
 	# Explicit bash call required for virtualenvwrapper compatibility
 	# https://bitbucket.org/dhellmann/virtualenvwrapper#rst-header-supported-shells
