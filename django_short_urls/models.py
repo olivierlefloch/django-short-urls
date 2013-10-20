@@ -61,7 +61,7 @@ class Link(Document):
             link = cls.objects(long_url=long_url, prefix=prefix).first()
 
             if link is None:
-                link = cls.__create_with_random_short_path(long_url, prefix, creator)
+                link = cls.create_with_random_short_path(long_url, prefix, creator)
         else:
             link, created = cls.__get_or_create(prefix, short_path, long_url, creator)
 
@@ -73,14 +73,15 @@ class Link(Document):
         return link
 
     @classmethod
-    def __create_with_random_short_path(cls, long_url, prefix, creator):
+    def create_with_random_short_path(cls, long_url, prefix, creator):
         """Generate an unused, valid random short path for prefix"""
+        nb_tries = 0
+
         while True:
             # Generate a seed from the long url and the current date (with milliseconds)
-            seed     = long_url + str(datetime.utcnow())
-            hashed   = int(sha1(seed).hexdigest(), 16)
-            mod      = 1
-            nb_tries = 0
+            seed   = "%s%s%s" % (long_url, datetime.utcnow(), nb_tries)
+            hashed = int(sha1(seed).hexdigest(), 16)
+            mod    = 1
 
             while hashed > mod:
                 mod       *= 10
