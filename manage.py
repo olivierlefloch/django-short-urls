@@ -14,7 +14,8 @@ import os
 import sys
 
 
-# here we need to override the docstring (the current value is the shebang)
+# pylint: disable=W0622
+# We need to override the docstring because the current value is the shebang
 __doc__ = '''Wrapper around django-admin.py, it will set the DJANGO_SETTING_MODULES environment variable.'''
 
 if __name__ == "__main__":
