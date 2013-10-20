@@ -1,6 +1,7 @@
 coverage
 dateutils
 Django==1.5
+freezegun
 mock
 mongoengine
 nose
