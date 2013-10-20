@@ -19,7 +19,6 @@ class User(Document):
     """Collection representing a user with access to the API"""
 
     meta = {
-        'allow_inheritance': False,
         'auto_create_index': settings.MONGO_AUTO_CREATE_INDEXES,
         'indexes': [('login',)]
     }
@@ -33,7 +32,6 @@ class Link(Document):
     """Collection representing a shortened url"""
 
     meta = {
-        'allow_inheritance': False,
         'auto_create_index': settings.MONGO_AUTO_CREATE_INDEXES,
         'indexes': [('prefix', 'long_url'), ('hash',)]
     }
@@ -144,7 +142,6 @@ class Click(Document):
     """Collection to store clicks, including url, time, ip, browser, etc."""
 
     meta = {
-        'allow_inheritance': False,
         'auto_create_index': settings.MONGO_AUTO_CREATE_INDEXES,
         'cascade': False,
         'indexes': [('full_path', 'created_at'), ('link', 'created_at')],
