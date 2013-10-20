@@ -1,2 +1,1 @@
 -r ./vendor/pywork4core/requirements.txt
-mongoengine==0.7.5

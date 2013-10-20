@@ -6,15 +6,11 @@ import io
 
 from django.core import management
 from django.test import TestCase
-from django.test.client import RequestFactory
 
 from django_short_urls.models import Link
 
 
 class UrlStatsTestCase(TestCase):
-    def setUp(self):
-        self.factory = RequestFactory()
-
     def test_generate_args_output(self):
         prefix = 'work4'
 

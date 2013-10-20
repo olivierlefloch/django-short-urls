@@ -7,7 +7,7 @@ import os
 from unittest import TestCase
 from mock import patch
 
-from pywork4core.utils import gui, path, tmp
+from utils import gui, path, tmp
 
 
 class UtilsTest(TestCase):
@@ -26,7 +26,7 @@ class UtilsTest(TestCase):
         temp_dir = 'temp'
 
         # pylint: disable=W0612
-        with patch('pywork4core.utils.tmp.settings', TEMP_DIR=temp_dir) as settings:
+        with patch('utils.tmp.settings', TEMP_DIR=temp_dir) as settings:
             nb_temp_files_before = len(os.listdir(temp_dir))
 
             temp_filename = tmp.get_temp_filename()

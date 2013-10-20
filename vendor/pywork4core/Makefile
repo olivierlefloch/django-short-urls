@@ -8,10 +8,9 @@ APP_TESTS_DIR = ${APP_DIR}tests/
 
 WORK4CORE_DIR = $(dir $(lastword $(MAKEFILE_LIST)))
 WORK4CORE_BIN = ${WORK4CORE_DIR}bin/
-WORK4CORE_TESTS_DIR = ${WORK4CORE_DIR}tests/
+WORK4CORE_TESTS_DIR = ${WORK4CORE_DIR}django_app/tests/
 
 TEMP_DIR = ${PROJECT_DIR}temp/
-VENDOR_DIR = ${PROJECT_DIR}vendor/
 PYTHONHOME ?= ${PROJECT_DIR}venv/
 VENV_WRAPPER_DIR = $(abspath ${PYTHONHOME})/.virtualenvs/
 
@@ -22,6 +21,12 @@ ifeq (${WORK4CORE_DIR}, ${PROJECT_DIR})
 	IN_WORK4CORE_PROJECT = TRUE
 else
 	IN_WORK4CORE_PROJECT = FALSE
+endif
+
+ifeq (${IN_WORK4CORE_PROJECT}, TRUE)
+	VENDOR_DIR = ${PROJECT_DIR}
+else
+	VENDOR_DIR = ${PROJECT_DIR}vendor/
 endif
 
 ACTIVATE_VENV = . ${PYTHONHOME}bin/activate
@@ -42,7 +47,7 @@ endif
 UNAME_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
 
 ifeq (${UNAME_S}, Darwin)
-CFLAGS = CFLAGS="-I /opt/local/include -L /opt/local/lib"
+	CFLAGS = CFLAGS="-I /opt/local/include -L /opt/local/lib"
 endif
 
 ##########
@@ -131,13 +136,8 @@ endif
 
 COVERAGE_RC = ${WORK4CORE_DIR}config/coverage.rc
 
-ifeq (${IN_WORK4CORE_PROJECT}, TRUE)
-	TEST_CMD = ${PYTHONHOME}bin/nosetests --exclude "django_app"
-else
-	TEST_CMD = ${PROJECT_DIR}manage.py test --traceback --noinput
-endif
 test: pep8
-	${RUN_CMD} ${PYTHONHOME}bin/coverage run --rcfile=${COVERAGE_RC} --source=${APP_DIR},${WORK4CORE_DIR} ${TEST_CMD}
+	${RUN_CMD} ${PYTHONHOME}bin/coverage run --rcfile=${COVERAGE_RC} --source=${APP_DIR},${WORK4CORE_DIR} ${PROJECT_DIR}manage.py test --traceback --noinput
 	@${PYTHONHOME}bin/coverage report --rcfile=${COVERAGE_RC} --fail-under=100 || (printf "\033[31mTest coverage is less than 100%%!\033[0m\n" && exit 1)
 
 test_report:
