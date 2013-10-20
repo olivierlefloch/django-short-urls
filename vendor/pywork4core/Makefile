@@ -24,9 +24,9 @@ else
 endif
 
 ifeq (${IN_WORK4CORE_PROJECT}, TRUE)
-	VENDOR_DIR = ${PROJECT_DIR}
+	PW4C_DIR = ${PROJECT_DIR}
 else
-	VENDOR_DIR = ${PROJECT_DIR}vendor/
+	PW4C_DIR = ${PROJECT_DIR}vendor/pywork4core
 endif
 
 ACTIVATE_VENV = . ${PYTHONHOME}bin/activate
@@ -82,7 +82,7 @@ install_do:
 	# Explicit bash call required for virtualenvwrapper compatibility
 	# https://bitbucket.org/dhellmann/virtualenvwrapper#rst-header-supported-shells
 	# virtualenvwrapper needs to be sourced for add2virtualenv
-	bash -c "${ACTIVATE_VENV} && WORKON_HOME='${VENV_WRAPPER_DIR}' source ${PYTHONHOME}bin/virtualenvwrapper.sh && add2virtualenv ${VENDOR_DIR}"
+	bash -c "${ACTIVATE_VENV} && WORKON_HOME='${VENV_WRAPPER_DIR}' source ${PYTHONHOME}bin/virtualenvwrapper.sh && add2virtualenv ${PW4C_DIR}"
 
 install_project::
 

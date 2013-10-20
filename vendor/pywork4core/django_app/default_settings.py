@@ -29,7 +29,7 @@ def init_settings(APP_NAME, DEBUG):
     globals()['APP_NAME'] = APP_NAME
     globals()['DEBUG'] = DEBUG
 
-    INSTALLED_APPS = ('pywork4core.django_app', APP_NAME)
+    INSTALLED_APPS = ('django_app', APP_NAME)
 
     # Directories
 
