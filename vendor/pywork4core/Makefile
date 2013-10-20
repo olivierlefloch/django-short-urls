@@ -158,7 +158,7 @@ run:
 ifeq (${USE_FOREMAN},TRUE)
 	${RUNNER} start
 else
-	${PROJECT_DIR}manage.py run_server
+	${PROJECT_DIR}manage.py runserver
 endif
 
 shell:
