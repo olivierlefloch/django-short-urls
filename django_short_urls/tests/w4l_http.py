@@ -2,6 +2,7 @@
 
 from __future__ import unicode_literals
 
+from django.http import HttpResponse
 from django.utils import unittest
 from mock import patch
 
@@ -46,9 +47,9 @@ class W4lHttpTestCase(unittest.TestCase):
         url = 'http://www.work4labs.com'
 
         with patch('django_short_urls.w4l_http.requests.get') as requests_get:
-            proxy(url)
+            self.assertEqual(type(proxy(url)), HttpResponse)
 
         requests_get.assert_called_once_with(url)
 
-    def test_response_service_unavailable(self):
+    def test_unavailable(self):
         self.assertEquals(response_service_unavailable().status_code, HTTP_SERVICE_UNAVAILABLE)

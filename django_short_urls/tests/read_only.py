@@ -46,6 +46,7 @@ class ReadOnlyTestCase(MongoTestCase):
             ServiceUnavailableMiddleware().process_view(None, lambda x: True, [], {})
         )
 
+        # pylint: disable=W0613
         def raise_write_denied(self):
             raise DatabaseWriteDenied()
 
