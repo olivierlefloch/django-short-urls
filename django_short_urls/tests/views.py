@@ -15,18 +15,24 @@ class ViewsTestCase(MongoTestCase):
         self.factory = RequestFactory()
 
         self.path = 'test42'
-
-    def test404(self):
-
-        with self.assertRaises(Http404):
-            print main(self.factory.get('/%s' % self.path), self.path)
-
-        with self.assertRaises(Http404):
-            main(self.factory.get('/%s/' % self.path), self.path + '/')
+        self.link = Link.shorten('http://www.work4.com/jobs', 'olefloch', short_path=self.path)
 
     def test_redirect(self):
-        Link.shorten('http://www.work4.com/jobs', 'olefloch', short_path=self.path)
+        self.assertEqual(
+            main(self.factory.get('/%s' % self.path), self.path).status_code,
+            302
+        )
 
-        response = main(self.factory.get('/%s' % self.path), self.path)
+    def test_redirect_suffix(self):
+        response = main(self.factory.get('/%s/recruiter' % self.path), self.path + '/recruiter')
 
         self.assertEqual(response.status_code, 302)
+
+    def test_404(self):
+        path404 = self.path + 'foobar'
+
+        with self.assertRaises(Http404):
+            print main(self.factory.get('/%s' % path404), path404)
+
+        with self.assertRaises(Http404):
+            main(self.factory.get('/%s/' % path404), path404 + '/')
