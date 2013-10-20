@@ -14,6 +14,7 @@ from django.conf import settings
 from mongoengine.connection import connect, disconnect
 
 
+# pylint: disable=R0904
 class MongoTestCase(TestCase):
     """
     TestCase class that clears the collection between the tests
