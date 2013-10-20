@@ -14,7 +14,7 @@ import django_short_urls.int_to_alnum as int_to_alnum
 from django_short_urls.exceptions import ForbiddenKeyword, ShortPathConflict
 
 
-# pylint: disable=R0924, E1101
+# pylint: disable=R0904, R0924, E1101
 class User(Document):
     """Collection representing a user with access to the API"""
 
