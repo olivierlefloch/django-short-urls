@@ -4,5 +4,9 @@ branch = true
 data_file = temp/coverage.data
 omit = venv*,*django_app/tests*
 
+[report]
+
+omit=venv*,*django_app/tests*,__init__.py
+
 [html]
 directory = temp/coverage_html
