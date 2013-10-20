@@ -151,8 +151,7 @@ class Click(Document):
     server     = StringField(required=True)
     full_path  = StringField(required=True)
     # pylint: disable=W0511
-    # TODO: Switch to using strings as dbrefs and upgrade mongoengine
-    # http://mongoengine-odm.readthedocs.org/en/latest/upgrade.html#referencefields
+    # TODO: Switch to using ObjectIds instead of DBRefs https://work4labs.atlassian.net/browse/OPS-1521
     link       = ReferenceField('Link', dbref=True)
     created_at = DateTimeField(required=True)
     ip         = StringField(required=True)
