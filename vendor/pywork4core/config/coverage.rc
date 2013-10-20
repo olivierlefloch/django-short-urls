@@ -6,7 +6,7 @@ omit = venv*,*django_app/tests*
 
 [report]
 
-omit=venv*,*django_app/tests*
+omit=venv*,*django_app/tests*,vendor/pywork4core/manage.py,vendor/pywork4core/django_app/settings.py
 
 [html]
 directory = temp/coverage_html
