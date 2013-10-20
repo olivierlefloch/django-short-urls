@@ -6,11 +6,11 @@ from __future__ import unicode_literals
 
 import logging
 
-
 from django_app.default_settings import init_settings
 
 # pylint: disable=W0614, W0401
 from django_short_urls.local_settings import *
+
 
 APP_NAME = 'django_short_urls'
 
