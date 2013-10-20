@@ -42,7 +42,7 @@ endif
 UNAME_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
 
 ifeq (${UNAME_S}, Darwin)
-	CFLAGS = CFLAGS="-I /opt/local/include -L /opt/local/lib"
+CFLAGS = CFLAGS="-I /opt/local/include -L /opt/local/lib"
 endif
 
 ##########
