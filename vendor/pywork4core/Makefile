@@ -34,8 +34,10 @@ ACTIVATE_VENV = . ${PYTHONHOME}bin/activate
 RUNNER = ${ACTIVATE_VENV} &&
 
 ifeq ($(wildcard $(PROJECT_DIR).env),)
+	USE_FORMAN = FALSE
 	RUN_CMD = ${RUNNER}
 else
+	USE_FORMAN = TRUE
 	RUN_CMD = ${RUNNER} foreman run
 endif
 
@@ -153,10 +155,10 @@ test_report:
 ################################
 
 run:
-ifeq (${RUNNER},)
-	${PROJECT_DIR}manage.py run_server
-else
+ifeq (${USE_FOREMAN},TRUE)
 	${RUNNER} start
+else
+	${PROJECT_DIR}manage.py run_server
 endif
 
 shell:
