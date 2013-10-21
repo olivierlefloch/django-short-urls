@@ -48,6 +48,7 @@ class Link(Document):
 
     @classmethod
     def find_for_prefix(cls, prefix):
+        """Retrieves all Link objects where the hash starts with a specific prefix"""
         return cls.objects(hash__startswith=('%s/' % prefix))
 
     @classmethod
