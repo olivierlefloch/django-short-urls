@@ -27,4 +27,5 @@ class ClickTestCase(MongoTestCase):
 
         mongoengine_save.assert_called_once_with()
 
+        # pylint: disable=E1101
         self.assertEqual(Click.objects.count(), 0)
