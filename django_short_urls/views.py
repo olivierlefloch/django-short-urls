@@ -81,7 +81,7 @@ def main(request, path):
     return (proxy if link.act_as_proxy else redirect)(target_url)
 
 
-# pylint: disable=W0142, R0912
+# pylint: disable=W0142
 @require_POST
 def new(request):
     '''
@@ -111,17 +111,14 @@ def new(request):
     if not is_valid:
         return response(status=HTTP_BAD_REQUEST, message=error_message)
 
-    if 'short_path' in request.REQUEST:
-        params['short_path'] = request.REQUEST['short_path']
-
-    if 'prefix' in request.REQUEST:
-        params['prefix'] = request.REQUEST['prefix']
-
     for key in ['short_path', 'prefix']:
-        if key in params and '/' in params[key]:
-            return response(
-                status=HTTP_BAD_REQUEST,
-                message="%s may not contain a '/' character." % key)
+        if key in request.REQUEST:
+            params[key] = request.REQUEST[key]
+
+            if '/' in params[key]:
+                return response(
+                    status=HTTP_BAD_REQUEST,
+                    message="%s may not contain a '/' character." % key)
 
     try:
         link = Link.shorten(**params)
