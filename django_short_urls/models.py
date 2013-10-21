@@ -168,14 +168,15 @@ class Click(Document):
     def save(self, **kwargs):
         try:
             super(Click, self).save(**kwargs)
-        except Exception as e:
-            getLogger('app').error('Failed to save %s with exception %s' % (self, e))
+        # pylint: disable=W0703
+        except Exception as err:
+            getLogger('app').error('Failed to save %s with exception %s' % (self, err))
 
     @classmethod
     def register(cls, request, link):
         """Registers a click from request on link"""
 
-        return cls(
+        click = cls(
             server="%s:%s" % (request.META['SERVER_NAME'], request.META['SERVER_PORT']),
             full_path=request.get_full_path(),
             link=link,
@@ -187,4 +188,8 @@ class Click(Document):
             ),
             referer=request.META['HTTP_REFERER'] if 'HTTP_REFERER' in request.META else None,
             lang=request.META['HTTP_ACCEPT_LANGUAGE'] if 'HTTP_ACCEPT_LANGUAGE' in request else None
-        ).save()
+        )
+
+        click.save()
+
+        return click
