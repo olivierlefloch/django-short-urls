@@ -107,6 +107,8 @@ class Link(Document):
     @classmethod
     def __get_or_create(cls, prefix, short_path, long_url, creator):
         """Retrieves or Creates a Link object by (prefix, short_path)"""
+        # pylint: disable=W0511
+        # FIXME: Deprecated in MongoEngine 0.8 - https://work4labs.atlassian.net/browse/OPS-1529
         return cls.objects.get_or_create(
             hash=Link.hash_for_prefix_and_short_path(prefix, short_path),
             defaults={
