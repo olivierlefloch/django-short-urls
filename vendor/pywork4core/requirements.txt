@@ -1,0 +1,13 @@
+coverage
+dateutils
+Django==1.5
+freezegun
+mock
+mongoengine
+nose
+pep8
+pylint!=1.0.0
+PyTZ==2013b
+PyYAML
+requests
+virtualenvwrapper

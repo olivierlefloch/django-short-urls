@@ -1,3 +1,9 @@
+# coding=utf-8
+
+"""Module to manipulate requests, HTML and HTTP concepts"""
+
+from __future__ import unicode_literals
+
 from django.http import HttpResponse, QueryDict
 from django.template import loader
 import json
@@ -13,7 +19,10 @@ HTTP_CONFLICT            = 409
 HTTP_SERVER_ERROR        = 500
 HTTP_SERVICE_UNAVAILABLE = 503
 
+
 def validate_url(url):
+    """Validates that a url has a valid structure"""
+
     parsed_url = urlparse.urlparse(url)
 
     if not parsed_url.netloc:
@@ -57,6 +66,7 @@ def url_append_parameters(url, params_to_replace, defaults):
 
 
 def response(message=None, status=HTTP_OK, **kwargs):
+    """Builds a json response with the kwargs object and some additional standardized fields"""
     kwargs.update({
         "status_code": status,
         "error": status != HTTP_OK,
@@ -67,13 +77,15 @@ def response(message=None, status=HTTP_OK, **kwargs):
 
 
 def proxy(url):
-    r = requests.get(url)
+    """Loads url and returns its contents as a proxied web page"""
+    resp = requests.get(url)
 
     return HttpResponse(
-        r.content,
-        status=r.status_code,
-        mimetype=r.headers['Content-Type'])
+        resp.content,
+        status=resp.status_code,
+        mimetype=resp.headers['Content-Type'])
 
 
-def reponse_service_unavailable():
+def response_service_unavailable():
+    """Returns a 503 error based on a static template"""
     return HttpResponse(loader.render_to_string('503.html'), status=HTTP_SERVICE_UNAVAILABLE)

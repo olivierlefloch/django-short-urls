@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# Attempts to open file using the default application handling that file type.
+# Currently only implemented in Mac OS X.
+
+echo "Opening file: \"$1\"..."
+
+UNAME=$(uname -s)
+if [[ "$UNAME" == "Darwin" ]]; then
+    open -g "$1"
+else
+    echo "No method to open this file type on this platform."
+fi
