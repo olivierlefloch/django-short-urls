@@ -14,6 +14,9 @@ class UrlStatsTestCase(TestCase):
     def test_generate_args_output(self):
         prefix = 'work4'
 
+        # Generate a link that won't appear in the results (wrong prefix)
+        Link.shorten(long_url='http://www.work4labs.com', creator='olefloch', prefix='work4labs').save()
+        # Generate the link that will be used in the output
         link = Link.shorten(long_url='http://www.work4labs.com', creator='olefloch', prefix=prefix).save()
 
         header_row = 'short_url,long_url,nb_of_clicks,list_of_dates'

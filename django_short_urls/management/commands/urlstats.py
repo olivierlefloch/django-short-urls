@@ -25,7 +25,7 @@ class Command(BaseCommand):
         self.writer.writerow(['short_url', 'long_url', 'nb_of_clicks', 'list_of_dates'])
 
         for prefix in url_prefixes:
-            for link in Link.objects(prefix=prefix):
+            for link in Link.find_for_prefix(prefix):
                 self.write_stats_for_link(link)
 
     def write_stats_for_link(self, link):

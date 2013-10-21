@@ -34,17 +34,21 @@ class Link(Document):
 
     meta = {
         'auto_create_index': settings.MONGO_AUTO_CREATE_INDEXES,
-        'indexes': [('prefix', 'long_url'), ('hash',)]
+        # We can't used a "hashed" index on hash because it needs to be unique
+        # Index on long_url is not listed because MongoEngine does not support hashed indexes, see db/schema.js!
+        'indexes': [('hash',)]
     }
 
-    hash       = StringField(required=True, unique=True)
-    prefix     = StringField(required=True)
-    short_path = StringField(required=True)
-    long_url   = StringField(required=True)
-    creator    = StringField(required=True)
-    created_at = DateTimeField(required=True)
+    hash                 = StringField(required=True, unique=True)
+    long_url             = StringField(required=True)
+    creator              = StringField(required=True)
+    created_at           = DateTimeField(required=True)
     nb_tries_to_generate = IntField()
-    act_as_proxy = BooleanField()
+    act_as_proxy         = BooleanField()
+
+    @classmethod
+    def find_for_prefix(cls, prefix):
+        return cls.objects(hash__startswith=('%s/' % prefix))
 
     @classmethod
     def shorten(cls, long_url, creator, short_path=None, prefix=None):
@@ -57,7 +61,7 @@ class Link(Document):
             prefix = ''
 
         if short_path is None or not len(short_path):
-            link = cls.objects(long_url=long_url, prefix=prefix).first()
+            link = cls.find_for_prefix(prefix).filter(long_url=long_url).first()
 
             if link is None:
                 link = cls.create_with_random_short_path(long_url, prefix, creator)
@@ -113,11 +117,11 @@ class Link(Document):
         return cls.objects.get_or_create(
             hash=Link.hash_for_prefix_and_short_path(prefix, short_path),
             defaults={
-                'short_path': short_path,
-                'prefix': prefix,
                 'long_url': long_url,
                 'creator': creator,
-                'created_at': datetime.utcnow()})
+                'created_at': datetime.utcnow()
+            }
+        )
 
     @classmethod
     def hash_for_prefix_and_short_path(cls, prefix, short_path):
@@ -130,8 +134,8 @@ class Link(Document):
         return cls.objects(hash=path.lower()).first()
 
     def build_relative_path(self):
-        """Builds the relative path for the current url, using prefix information if present"""
-        return ('/%s/%%s' % self.prefix if self.prefix else '/%s') % self.short_path
+        """Builds the relative path for the current url (since we only store the hash, we get a lowercase version)"""
+        return '/%s' % self.hash
 
     def build_absolute_uri(self, request):
         """Builds the absolute url for the target link (including full server url)"""
