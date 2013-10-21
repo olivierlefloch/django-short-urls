@@ -25,6 +25,9 @@ class ReadOnlyTestCase(MongoTestCase):
         self.path = 'test42'
         self.link = Link.shorten('http://www.work4.com/jobs', 'olefloch', short_path=self.path)
 
+    def tearDown(self):
+        settings.SITE_READ_ONLY = self.setting_backup
+
     def test_views(self):
         response = main(self.factory.get('/%s' % self.path), self.path)
 
@@ -54,6 +57,3 @@ class ReadOnlyTestCase(MongoTestCase):
             ServiceUnavailableMiddleware().process_view(None, raise_write_denied, [], {}).status_code,
             HTTP_SERVICE_UNAVAILABLE
         )
-
-    def tearDown(self):
-        settings.SITE_READ_ONLY = self.setting_backup
