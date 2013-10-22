@@ -78,7 +78,7 @@ install_pre:
 
 install_do:
 	mkdir -p ${TEMP_DIR}
-	(test -d ${PYTHONHOME} || virtualenv ${PYTHONHOME})
+	(test -d ${PYTHONHOME} || virtualenv --python=python2.7 ${PYTHONHOME})
 	${CFLAGS} ${PYTHONHOME}bin/pip install --upgrade -r ${WORK4CORE_DIR}requirements.txt ${PROJECT_REQUIREMENTS}
 	(test -d ${VENV_WRAPPER_DIR} || mkdir -p ${VENV_WRAPPER_DIR})
 	# Explicit bash call required for virtualenvwrapper compatibility
