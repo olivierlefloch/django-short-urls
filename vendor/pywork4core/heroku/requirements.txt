@@ -1,0 +1,7 @@
+celery
+dj-database-url
+django-celery
+gevent
+gunicorn
+newrelic
+redis
