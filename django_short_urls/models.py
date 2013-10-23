@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 from datetime import datetime
 from django.conf import settings
+from django.utils.log import getLogger
 from hashlib import sha1
 from mongoengine import Document, StringField, DateTimeField, IntField, BooleanField, ReferenceField
 import re
@@ -161,11 +162,21 @@ class Click(Document):
     referer    = StringField()
     lang       = StringField()
 
+    def __unicode__(self):
+        return "Click: (%s, %s, %s)" % (self.full_path, self.created_at, self.ip)
+
+    def save(self, **kwargs):
+        try:
+            super(Click, self).save(**kwargs)
+        # pylint: disable=W0703
+        except Exception as err:
+            getLogger('app').error('Failed to save %s with exception %s' % (self, err))
+
     @classmethod
     def register(cls, request, link):
         """Registers a click from request on link"""
 
-        return cls(
+        click = cls(
             server="%s:%s" % (request.META['SERVER_NAME'], request.META['SERVER_PORT']),
             full_path=request.get_full_path(),
             link=link,
@@ -177,4 +188,8 @@ class Click(Document):
             ),
             referer=request.META['HTTP_REFERER'] if 'HTTP_REFERER' in request.META else None,
             lang=request.META['HTTP_ACCEPT_LANGUAGE'] if 'HTTP_ACCEPT_LANGUAGE' in request else None
-        ).save()
+        )
+
+        click.save()
+
+        return click
