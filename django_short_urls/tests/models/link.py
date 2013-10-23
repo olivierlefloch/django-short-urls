@@ -24,9 +24,9 @@ class LinkTestCase(TestCase):
     def test_shorten(self):
         link = Link.shorten("http://www.work4labs.com/", 'olefloch')
 
-        self.assertTrue('work4labs' in str(link))
+        self.assertIn('work4labs', str(link))
 
-        self.assertFalse('/' in link.hash)
+        self.assertNotIn('/', link.hash)
         self.assertEqual(link.creator, 'olefloch')
 
     def test_shorten_multiple(self):
@@ -35,13 +35,46 @@ class LinkTestCase(TestCase):
         Link.shorten("http://www.work4labs.com/", 'olefloch', prefix='fooba')
 
         link1 = Link.shorten("http://www.work4labs.com/", 'olefloch', prefix='foobar')
-        self.assertTrue('foobar/' in link1.hash)
-        # Check that we get the same link, not one of the false positives
-        self.assertTrue(Link.shorten("http://www.work4labs.com/", 'olefloch', prefix='foobar').hash, link1.hash)
+        self.assertIn('foobar/', link1.hash)
 
     def test_shorten_with_short_path(self):
         link = Link.shorten("http://www.work4labs.com/", 'olefloch', short_path='FooBar')
         self.assertEqual(link.hash, 'foobar')
+
+    def shorten_twice(self, **kwargs):
+        link1 = Link.shorten("http://www.work4labs.com/", 'olefloch', **kwargs)
+        link2 = Link.shorten("http://www.work4labs.com/", 'olefloch', **kwargs)
+        self.assertEqual(link1.hash, link2.hash)
+
+    def test_shorten_twice_no_prefix(self):
+        self.shorten_twice()
+
+    def test_shorten_twice_with_prefix(self):
+        self.shorten_twice(prefix="olefloch")
+
+    def test_shorten_twice_with_short_path(self):
+        self.shorten_twice(short_path="youpitralala")
+
+    def find_for_prefix(self, prefix):
+        # First, checking we find nothing as nothing there
+        no_links = Link.find_for_prefix(prefix)
+        self.assertEqual(len(no_links), 0)
+        # Create a link with this prefix and another with another prefix
+        true_link = Link.shorten("http://www.work4labs.com/", 'olefloch', prefix=prefix)
+        bad_link  = Link.shorten("http://www.work4labs.com/", 'olefloch', prefix='other_%s' % prefix)
+        # We should only find the true link
+        links = Link.find_for_prefix(prefix)
+        self.assertEqual(len(links), 1)
+        self.assertEqual(links.first().hash, true_link.hash)
+
+    def test_find_for_prefix_no_prefix(self):
+        # Not sure we actually want to allow this to be possible
+        # Probably raising an error in this case would be best
+        # or it could return cls.objects (but it is not correct though)
+        self.find_for_prefix('')
+
+    def test_find_for_prefix_with_prefix(self):
+        self.find_for_prefix('toto')
 
     # Make this test deterministic
     @freeze_time('2013-05-29')
