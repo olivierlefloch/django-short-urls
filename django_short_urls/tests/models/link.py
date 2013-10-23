@@ -26,15 +26,21 @@ class LinkTestCase(TestCase):
 
         self.assertTrue('work4labs' in str(link))
 
-        self.assertEqual(link.prefix, '')
+        self.assertFalse('/' in link.hash)
         self.assertEqual(link.creator, 'olefloch')
 
-        self.assertEqual(Link.shorten("http://www.work4labs.com/", 'olefloch', prefix='foobar').prefix, 'foobar')
-        # Check that we get the same link
-        self.assertEqual(Link.shorten("http://www.work4labs.com/", 'olefloch', prefix='foobar').prefix, 'foobar')
+    def test_shorten_multiple(self):
+        # Generate a couple of links that we should *not* fall on
+        Link.shorten("http://www.work4labs.com/", 'olefloch', prefix='foobarblah')
+        Link.shorten("http://www.work4labs.com/", 'olefloch', prefix='fooba')
 
+        link1 = Link.shorten("http://www.work4labs.com/", 'olefloch', prefix='foobar')
+        self.assertTrue('foobar/' in link1.hash)
+        # Check that we get the same link, not one of the false positives
+        self.assertTrue(Link.shorten("http://www.work4labs.com/", 'olefloch', prefix='foobar').hash, link1.hash)
+
+    def test_shorten_with_short_path(self):
         link = Link.shorten("http://www.work4labs.com/", 'olefloch', short_path='FooBar')
-        self.assertEqual(link.short_path, 'FooBar')
         self.assertEqual(link.hash, 'foobar')
 
     # Make this test deterministic

@@ -136,7 +136,7 @@ def new(request):
 
         return response(status=HTTP_FORBIDDEN, message=str(err), **params)
 
-    params['short_path'] = link.short_path
+    params['short_path'] = link.hash.split('/')[-1]
 
     params['short_url'] = link.build_absolute_uri(request)
 
