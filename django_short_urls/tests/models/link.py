@@ -56,16 +56,18 @@ class LinkTestCase(TestCase):
         self.shorten_twice(short_path="youpitralala")
 
     def find_for_prefix(self, prefix):
-        # First, checking we find nothing as nothing there
-        no_links = Link.find_for_prefix(prefix)
-        self.assertEqual(len(no_links), 0)
+        # First check that there are no links for this prefix
+        self.assertEqual(len(Link.find_for_prefix(prefix)), 0)
+
         # Create a link with this prefix and another with another prefix
         true_link = Link.shorten("http://www.work4labs.com/", 'olefloch', prefix=prefix)
 
-        # bad link
+        # other link
         Link.shorten("http://www.work4labs.com/", 'olefloch', prefix='other_%s' % prefix)
+
         # We should only find the true link
         links = Link.find_for_prefix(prefix)
+
         self.assertEqual(len(links), 1)
         self.assertEqual(links.first().hash, true_link.hash)
 
