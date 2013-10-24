@@ -52,7 +52,7 @@ class LinkTestCase(TestCase):
     def test_shorten_twice_with_prefix(self):
         self.shorten_twice(prefix="olefloch")
 
-    def test_shorten_twice_with_short_path(self):
+    def test_shorten2_with_short_path(self):
         self.shorten_twice(short_path="youpitralala")
 
     def find_for_prefix(self, prefix):
@@ -61,7 +61,9 @@ class LinkTestCase(TestCase):
         self.assertEqual(len(no_links), 0)
         # Create a link with this prefix and another with another prefix
         true_link = Link.shorten("http://www.work4labs.com/", 'olefloch', prefix=prefix)
-        bad_link  = Link.shorten("http://www.work4labs.com/", 'olefloch', prefix='other_%s' % prefix)
+
+        # bad link
+        Link.shorten("http://www.work4labs.com/", 'olefloch', prefix='other_%s' % prefix)
         # We should only find the true link
         links = Link.find_for_prefix(prefix)
         self.assertEqual(len(links), 1)
@@ -73,7 +75,7 @@ class LinkTestCase(TestCase):
         # or it could return cls.objects (but it is not correct though)
         self.find_for_prefix('')
 
-    def test_find_for_prefix_with_prefix(self):
+    def test_prefix_with_prefix(self):
         self.find_for_prefix('toto')
 
     # Make this test deterministic
