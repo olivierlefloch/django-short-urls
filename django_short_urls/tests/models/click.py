@@ -19,11 +19,11 @@ class ClickTestCase(MongoTestCase):
     def test_click(self):
         self.assertTrue('Click: (%s' % (self.request.get_full_path()) in str(Click.register(self.request, self.link)))
 
-    def test_save_exception(self):
+    @patch('django_short_urls.models.Document.save', side_effect=Exception())
+    def test_save_exception(self, mongoengine_save):
         # Mocking mongoengine.Document.save to have it raise an Exception when called
         # (such as because the DB is read only)
-        with patch('django_short_urls.models.Document.save', side_effect=Exception()) as mongoengine_save:
-            Click.register(self.request, self.link)
+        Click.register(self.request, self.link)
 
         mongoengine_save.assert_called_once_with()
 

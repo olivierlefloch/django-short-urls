@@ -43,11 +43,11 @@ class W4lHttpTestCase(unittest.TestCase):
             'http://www.theuselessweb.com?c=42&foo=search'
         )
 
-    def test_proxy(self):
+    @patch('django_short_urls.w4l_http.requests.get')
+    def test_proxy(self, requests_get):
         url = 'http://www.work4labs.com'
 
-        with patch('django_short_urls.w4l_http.requests.get') as requests_get:
-            self.assertEqual(type(proxy(url)), HttpResponse)
+        self.assertEqual(type(proxy(url)), HttpResponse)
 
         requests_get.assert_called_once_with(url)
 
