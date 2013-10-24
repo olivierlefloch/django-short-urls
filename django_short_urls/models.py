@@ -42,14 +42,19 @@ class Link(Document):
     hash                 = StringField(required=True, unique=True)
     long_url             = StringField(required=True)
     creator              = StringField(required=True)
-    created_at           = DateTimeField(required=True)
     nb_tries_to_generate = IntField()
     act_as_proxy         = BooleanField()
 
     @classmethod
     def find_for_prefix(cls, prefix):
-        """Retrieves all Link objects where the hash starts with a specific prefix"""
-        return cls.objects(hash__startswith=('%s/' % prefix))
+        """Retrieves all Link objects where the hash starts with a specific prefix
+           If you do not give a prefix (or prefix='') this is not going to be indexed,
+           so make sure you filter on another field that is actually indexed.
+        """
+        if prefix:
+            return cls.objects(hash__startswith=('%s/' % prefix))
+        else:
+            return cls.objects(hash__not__contains='/')
 
     @classmethod
     def shorten(cls, long_url, creator, short_path=None, prefix=None):
@@ -119,8 +124,7 @@ class Link(Document):
             hash=Link.hash_for_prefix_and_short_path(prefix, short_path),
             defaults={
                 'long_url': long_url,
-                'creator': creator,
-                'created_at': datetime.utcnow()
+                'creator': creator
             }
         )
 
