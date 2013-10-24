@@ -47,7 +47,10 @@ class Link(Document):
 
     @classmethod
     def find_for_prefix(cls, prefix):
-        """Retrieves all Link objects where the hash starts with a specific prefix"""
+        """Retrieves all Link objects where the hash starts with a specific prefix
+           If you do not give a prefix (or prefix='') this is not going to be indexed,
+           so make sure you filter on another field that is actually indexed.
+        """
         if prefix:
             return cls.objects(hash__startswith=('%s/' % prefix))
         else:
