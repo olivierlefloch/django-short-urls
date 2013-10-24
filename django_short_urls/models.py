@@ -42,7 +42,6 @@ class Link(Document):
     hash                 = StringField(required=True, unique=True)
     long_url             = StringField(required=True)
     creator              = StringField(required=True)
-    created_at           = DateTimeField(required=True)
     nb_tries_to_generate = IntField()
     act_as_proxy         = BooleanField()
 
@@ -122,8 +121,7 @@ class Link(Document):
             hash=Link.hash_for_prefix_and_short_path(prefix, short_path),
             defaults={
                 'long_url': long_url,
-                'creator': creator,
-                'created_at': datetime.utcnow()
+                'creator': creator
             }
         )
 
