@@ -2,16 +2,13 @@
 
 from __future__ import unicode_literals
 
-from django.test import TestCase
+from django_app.mongo_test_case import MongoTestCase
 from freezegun import freeze_time
 
 from django_short_urls.models import Link
 
 
-class LinkTestCase(TestCase):
-    def setUp(self):
-        Link.create_index_long_url_hashed()
-
+class LinkTestCase(MongoTestCase):
     def test_valid_short_path(self):
         self.assertEqual(Link.is_valid_random_short_path("ab2cd"), True)
         self.assertEqual(Link.is_valid_random_short_path("ab2"), True)

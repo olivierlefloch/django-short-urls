@@ -12,6 +12,7 @@ from __future__ import unicode_literals
 from django.test import TestCase
 from django.conf import settings
 from mongoengine.connection import connect, disconnect
+from mongoengine import Document
 
 
 # pylint: disable=R0904
@@ -36,5 +37,10 @@ class MongoTestCase(TestCase):
                 continue
 
             self.database.drop_collection(collection)
+
+        # Mongoengine models need to forget about their collection (to recreate indexes). Hackish, I know.
+        for model in Document.__subclasses__():
+            if hasattr(model, '_collection'):
+                del model._collection
 
         disconnect()

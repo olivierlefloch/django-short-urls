@@ -33,11 +33,12 @@ class User(Document):
 class Link(Document):
     """Collection representing a shortened url"""
 
+    long_url_index_spec = [('long_url', 'hashed')]
+
     meta = {
         'auto_create_index': settings.MONGO_AUTO_CREATE_INDEXES,
         # We can't used a "hashed" index on hash because it needs to be unique
-        # Index on long_url is not listed because MongoEngine does not support hashed indexes, see db/schema.js!
-        'indexes': [('hash',)]
+        'indexes': [('hash',), long_url_index_spec]
     }
 
     hash                 = StringField(required=True, unique=True)
@@ -61,16 +62,7 @@ class Link(Document):
     def find_for_prefix_and_long_url(cls, prefix, long_url):
         """Retrieves Link objects for a specific long_url that also match a specific prefix"""
         # For some reason, we need to hint explictly at the index to use
-        return cls.find_for_prefix(prefix).filter(long_url=long_url).hint([('long_url', "hashed")])
-
-    # pylint: disable=W0511
-    # FIXME: Find a better way to implement this, currently used for tests only as the index already existsin  prod
-    @classmethod
-    def create_index_long_url_hashed(cls):
-        """
-        See schema.yml — creates an index that mongoengine does not know how to create
-        """
-        cls._get_collection().create_index([('long_url', pymongo.HASHED)])
+        return cls.find_for_prefix(prefix).filter(long_url=long_url).hint(cls.long_url_index_spec)
 
     @classmethod
     def shorten(cls, long_url, creator, short_path=None, prefix=None):
