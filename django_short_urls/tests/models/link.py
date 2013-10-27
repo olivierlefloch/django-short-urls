@@ -9,6 +9,9 @@ from django_short_urls.models import Link
 
 
 class LinkTestCase(TestCase):
+    def setUp(self):
+        Link.create_index_long_url_hashed()
+
     def test_valid_short_path(self):
         self.assertEqual(Link.is_valid_random_short_path("ab2cd"), True)
         self.assertEqual(Link.is_valid_random_short_path("ab2"), True)
@@ -80,7 +83,18 @@ class LinkTestCase(TestCase):
     def test_prefix_with_prefix(self):
         self.find_for_prefix('toto')
 
-    # Make this test deterministic
+    def test_find_for_p_and_l_u(self):
+        prefix = 'ole'
+        long_url = "http://www.work4labs.com/"
+
+        Link.shorten(long_url, 'olefloch', prefix=prefix)
+
+        self.assertEqual(
+            Link.find_for_prefix_and_long_url(prefix, long_url).explain()['cursor'],
+            u'BtreeCursor long_url_hashed'
+        )
+
+    # Freeze time to make this test deterministic
     @freeze_time('2013-05-29')
     def test_create_random(self):
         link1 = Link.create_with_random_short_path('http://work4labs.com/', 'foo', 'olefloch')

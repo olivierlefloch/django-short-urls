@@ -11,6 +11,9 @@ from django_short_urls.models import Link
 
 
 class UrlStatsTestCase(TestCase):
+    def setUp(self):
+        Link.create_index_long_url_hashed()
+
     def test_generate_args_output(self):
         prefix = 'work4'
 

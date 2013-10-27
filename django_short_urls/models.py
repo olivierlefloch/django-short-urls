@@ -9,6 +9,7 @@ from django.conf import settings
 from django.utils.log import getLogger
 from hashlib import sha1
 from mongoengine import Document, StringField, DateTimeField, IntField, BooleanField, ReferenceField
+import pymongo
 import re
 
 import django_short_urls.int_to_alnum as int_to_alnum
@@ -57,6 +58,21 @@ class Link(Document):
             return cls.objects(hash__not__contains='/')
 
     @classmethod
+    def find_for_prefix_and_long_url(cls, prefix, long_url):
+        """Retrieves Link objects for a specific long_url that also match a specific prefix"""
+        # For some reason, we need to hint explictly at the index to use
+        return cls.find_for_prefix(prefix).filter(long_url=long_url).hint([('long_url', "hashed")])
+
+    # pylint: disable=W0511
+    # FIXME: Find a better way to implement this, currently used for tests only as the index already existsin  prod
+    @classmethod
+    def create_index_long_url_hashed(cls):
+        """
+        See schema.yml — creates an index that mongoengine does not know how to create
+        """
+        cls._get_collection().create_index([('long_url', pymongo.HASHED)])
+
+    @classmethod
     def shorten(cls, long_url, creator, short_path=None, prefix=None):
         """Public API to create a short link"""
 
@@ -67,7 +83,7 @@ class Link(Document):
             prefix = ''
 
         if short_path is None or not len(short_path):
-            link = cls.find_for_prefix(prefix).filter(long_url=long_url).first()
+            link = cls.find_for_prefix_and_long_url(prefix, long_url).first()
 
             if link is None:
                 link = cls.create_with_random_short_path(long_url, prefix, creator)
