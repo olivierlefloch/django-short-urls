@@ -9,7 +9,6 @@ from django.conf import settings
 from django.utils.log import getLogger
 from hashlib import sha1
 from mongoengine import Document, StringField, DateTimeField, IntField, BooleanField, ReferenceField
-import pymongo
 import re
 
 import django_short_urls.int_to_alnum as int_to_alnum

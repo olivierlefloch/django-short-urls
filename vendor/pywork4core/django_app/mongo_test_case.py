@@ -39,6 +39,7 @@ class MongoTestCase(TestCase):
             self.database.drop_collection(collection)
 
         # Mongoengine models need to forget about their collection (to recreate indexes). Hackish, I know.
+        # pylint: disable=E1101
         for model in Document.__subclasses__():
             if hasattr(model, '_collection'):
                 del model._collection
