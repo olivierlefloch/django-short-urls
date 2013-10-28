@@ -18,6 +18,14 @@ framework.
 from __future__ import unicode_literals
 
 import os
+import site
+
+
+# pylint: disable=W0511
+# FIXME: Use PyUnicorn+Foreman...
+site.addsitedir(
+    os.path.join(os.path.dirname(os.path.dirname(__file__)), 'venv/lib/python2.7/site-packages')
+)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_short_urls.settings")
 
@@ -27,7 +35,3 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_short_urls.settings")
 from django.core.wsgi import get_wsgi_application
 # pylint: disable=C0103
 application = get_wsgi_application()
-
-# Apply WSGI middleware here.
-# from helloworld.wsgi import HelloWorldApplication
-# application = HelloWorldApplication(application)
