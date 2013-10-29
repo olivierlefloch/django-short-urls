@@ -20,6 +20,8 @@ MONGOENGINE = {
     'password': 'work4labs'
 }
 
+ALLOWED_HOSTS = ['.workfor.us']
+
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '6r__q4gindk5hzbb^)u!q%4-!d&amp;clxu#%0g3v4m@rg7!xf$#=@'
 
