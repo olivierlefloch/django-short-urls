@@ -23,9 +23,9 @@ import site
 
 # pylint: disable=W0511
 # FIXME: Use PyUnicorn+Foreman...
-site.addsitedir(
-    os.path.join(os.path.dirname(os.path.dirname(__file__)), 'venv/lib/python2.7/site-packages')
-)
+ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
+site.addsitedir(os.path.join(ROOT_DIR, 'venv/lib/python2.7/site-packages'))
+site.addsitedir(ROOT_DIR)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_short_urls.settings")
 
