@@ -42,8 +42,12 @@ class LinkTestCase(MongoTestCase):
         self.assertEqual(link.hash, 'foobar')
 
     def shorten_twice(self, **kwargs):
-        link1 = Link.shorten("http://www.work4labs.com/", 'olefloch', **kwargs)
-        link2 = Link.shorten("http://www.work4labs.com/", 'olefloch', **kwargs)
+        kwargs['long_url'] = "http://www.work4labs.com/"
+        kwargs['creator'] = 'olefloch'
+
+        link1 = Link.shorten(**kwargs)
+        link2 = Link.shorten(**kwargs)
+
         self.assertEqual(link1.hash, link2.hash)
 
     def test_shorten_twice_no_prefix(self):
@@ -51,6 +55,7 @@ class LinkTestCase(MongoTestCase):
 
     def test_shorten_twice_with_prefix(self):
         self.shorten_twice(prefix="olefloch")
+        self.shorten_twice(prefix="FooBar")
 
     def test_shorten2_with_short_path(self):
         self.shorten_twice(short_path="youpitralala")
