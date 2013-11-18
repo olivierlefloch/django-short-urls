@@ -55,6 +55,7 @@ class LinkTestCase(MongoTestCase):
 
     def test_shorten_twice_with_prefix(self):
         self.shorten_twice(prefix="olefloch")
+        self.shorten_twice(prefix="FooBar")
 
     def test_shorten2_with_short_path(self):
         self.shorten_twice(short_path="youpitralala")

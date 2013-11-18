@@ -53,7 +53,7 @@ class Link(Document):
            so make sure you filter on another field that is actually indexed.
         """
         if prefix:
-            return cls.objects(hash__startswith=('%s/' % prefix))
+            return cls.objects(hash__startswith=('%s/' % prefix.lower()))
         else:
             return cls.objects(hash__not__contains='/')
 
