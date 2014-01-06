@@ -100,8 +100,8 @@ class Link(Document):
             mod = 1
 
             while hashed > mod:
-                mod       *= 10
-                nb_tries  += 1
+                mod *= 10
+                nb_tries += 1
                 short_path = int_to_alnum.encode(hashed % mod)
 
                 if not cls.is_valid_random_short_path(short_path):
