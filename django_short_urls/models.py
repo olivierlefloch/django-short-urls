@@ -24,9 +24,9 @@ class User(Document):
         'indexes': [('login',)]
     }
 
-    login   = StringField(required=True, unique=True)
+    login = StringField(required=True, unique=True)
     api_key = StringField(required=True)
-    email   = StringField(required=True)
+    email = StringField(required=True)
 
 
 class Link(Document):
@@ -40,11 +40,11 @@ class Link(Document):
         'indexes': [('hash',), long_url_index_spec]
     }
 
-    hash                 = StringField(required=True, unique=True)
-    long_url             = StringField(required=True)
-    creator              = StringField(required=True)
+    hash = StringField(required=True, unique=True)
+    long_url = StringField(required=True)
+    creator = StringField(required=True)
     nb_tries_to_generate = IntField()
-    act_as_proxy         = BooleanField()
+    act_as_proxy = BooleanField()
 
     @classmethod
     def find_for_prefix(cls, prefix):
@@ -95,9 +95,9 @@ class Link(Document):
 
         while True:
             # Generate a seed from the long url and the current date (with milliseconds)
-            seed   = "%s%s%s" % (long_url, datetime.utcnow(), nb_tries)
+            seed = "%s%s%s" % (long_url, datetime.utcnow(), nb_tries)
             hashed = int(sha1(seed).hexdigest(), 16)
-            mod    = 1
+            mod = 1
 
             while hashed > mod:
                 mod       *= 10
@@ -167,16 +167,16 @@ class Click(Document):
         'max_size': 100000000
     }
 
-    server     = StringField(required=True)
-    full_path  = StringField(required=True)
+    server = StringField(required=True)
+    full_path = StringField(required=True)
     # pylint: disable=W0511
     # TODO: Switch to using ObjectIds instead of DBRefs https://work4labs.atlassian.net/browse/OPS-1521
-    link       = ReferenceField('Link', dbref=True)
+    link = ReferenceField('Link', dbref=True)
     created_at = DateTimeField(required=True)
-    ip         = StringField(required=True)
-    browser    = StringField()
-    referer    = StringField()
-    lang       = StringField()
+    ip = StringField(required=True)
+    browser = StringField()
+    referer = StringField()
+    lang = StringField()
 
     def __unicode__(self):
         return "Click: (%s, %s, %s)" % (self.full_path, self.created_at, self.ip)
