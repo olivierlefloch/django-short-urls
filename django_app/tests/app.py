@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from unittest import TestCase
 
-from pywork4core.django_app import default_settings, models
+from django_app import default_settings, models
 
 
 class DjangoAppTest(TestCase):
@@ -13,11 +13,11 @@ class DjangoAppTest(TestCase):
         APP_NAME = 'django_app'
         DEBUG = True
 
-        settings = dict(default_settings.init_settings(APP_NAME=APP_NAME, DEBUG=DEBUG))
+        settings_dict = dict(default_settings.init_settings(APP_NAME=APP_NAME, DEBUG=DEBUG))
 
-        self.assertEqual(settings['TEMPLATE_DEBUG'], DEBUG)
-        self.assertEqual(settings['TIME_ZONE'], None)
-        self.assertIn(APP_NAME, settings['APP_ROOT_DIR'])
+        self.assertEqual(settings_dict['TEMPLATE_DEBUG'], DEBUG)
+        self.assertEqual(settings_dict['TIME_ZONE'], None)
+        self.assertIn(APP_NAME, settings_dict['APP_ROOT_DIR'])
 
     def test_bool(self):
         self.assertFalse(default_settings.env_to_bool('False'))

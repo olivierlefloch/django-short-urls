@@ -8,12 +8,13 @@ APP_TESTS_DIR = ${APP_DIR}tests/
 
 WORK4CORE_DIR = $(dir $(lastword $(MAKEFILE_LIST)))
 WORK4CORE_BIN = ${WORK4CORE_DIR}bin/
-WORK4CORE_TESTS_DIR = ${WORK4CORE_DIR}tests/
+WORK4CORE_TESTS_DIR = ${WORK4CORE_DIR}django_app/tests/
 
 TEMP_DIR = ${PROJECT_DIR}temp/
-VENDOR_DIR = ${PROJECT_DIR}vendor/
 PYTHONHOME ?= ${PROJECT_DIR}venv/
 VENV_WRAPPER_DIR = $(abspath ${PYTHONHOME})/.virtualenvs/
+USE_PHANTOMJS = FALSE
+PHANTOM_VERSION = 1.9.0
 
 SETTINGS_TPL_FILE = ${APP_DIR}local_settings.tpl.py
 SETTINGS_FILE = ${APP_DIR}local_settings.py
@@ -24,13 +25,21 @@ else
 	IN_WORK4CORE_PROJECT = FALSE
 endif
 
+ifeq (${IN_WORK4CORE_PROJECT}, TRUE)
+	PW4C_DIR = ${PROJECT_DIR}
+else
+	PW4C_DIR = ${PROJECT_DIR}vendor/pywork4core
+endif
+
 ACTIVATE_VENV = . ${PYTHONHOME}bin/activate
 
 RUNNER = ${ACTIVATE_VENV} &&
 
 ifeq ($(wildcard $(PROJECT_DIR).env),)
+	USE_FORMAN = FALSE
 	RUN_CMD = ${RUNNER}
 else
+	USE_FORMAN = TRUE
 	RUN_CMD = ${RUNNER} foreman run
 endif
 
@@ -49,7 +58,7 @@ endif
 # CONFIG #
 ##########
 
-.SILENT: deep_clean_ask confirm install install_pre install_do install_project install_post
+.SILENT: deep_clean_ask confirm install install_pre install_do install_project install_post install_phantomjs
 
 all: clean install lint test
 
@@ -67,16 +76,23 @@ install_pre:
 
 install_do:
 	mkdir -p ${TEMP_DIR}
-	(test -d ${PYTHONHOME} || virtualenv ${PYTHONHOME})
-	${CFLAGS} ${PYTHONHOME}bin/pip install --upgrade -r ${WORK4CORE_DIR}requirements.txt
-	(test -f ${PROJECT_DIR}requirements.txt && ${CFLAGS} ${PYTHONHOME}bin/pip install --upgrade -r ${PROJECT_DIR}requirements.txt) || true
+	(test -d ${PYTHONHOME} || virtualenv --python=python2.7 --no-site-packages ${PYTHONHOME})
+	${CFLAGS} ${PYTHONHOME}bin/pip install --upgrade -r $(PROJECT_DIR)requirements.txt
 	(test -d ${VENV_WRAPPER_DIR} || mkdir -p ${VENV_WRAPPER_DIR})
-	# Explicit bash call required for virtualenvwrapper compatibility
+	# Explicit bash call required for virtualenvwrapper compatibility, make uses sh by default
 	# https://bitbucket.org/dhellmann/virtualenvwrapper#rst-header-supported-shells
 	# virtualenvwrapper needs to be sourced for add2virtualenv
-	bash -c "${ACTIVATE_VENV} && WORKON_HOME='${VENV_WRAPPER_DIR}' source ${PYTHONHOME}bin/virtualenvwrapper.sh && add2virtualenv ${VENDOR_DIR}"
+	bash -c "${ACTIVATE_VENV} && WORKON_HOME='${VENV_WRAPPER_DIR}' source ${PYTHONHOME}bin/virtualenvwrapper.sh && add2virtualenv ${PW4C_DIR}"
 
-install_project::
+install_project:: install_phantomjs
+
+# only install PhantomJS if needed
+install_phantomjs:
+ifeq (${USE_PHANTOMJS}, TRUE)
+	./bin/install_phantomjs ${PHANTOM_VERSION}
+else
+	echo "No need to install PhantomJS"
+endif
 
 install_post:
 	echo "Copying settings..."
@@ -98,9 +114,11 @@ deep_clean: deep_clean_ask confirm deep_clean_do
 deep_clean_ask:
 	echo "This will remove any unversioned files, except for the settings file"
 
-deep_clean_do:
+deep_clean_do: clean_pyc
 	rm -rf ${TEMP_DIR} ${PYTHONHOME}
-	find ${PROJECT_DIR} -name "*.pyc" -exec rm -f {} \;
+
+clean_pyc:
+	find ${PROJECT_DIR} -name "*.pyc" -or -name "*.pyo" -exec rm -f {} \;
 
 
 ###################
@@ -112,7 +130,7 @@ pep8:
 	${PYTHONHOME}bin/pep8 --config=${WORK4CORE_DIR}config/pep8.cfg ${PROJECT_DIR}
 
 PYLINT_RC = ${WORK4CORE_DIR}config/pylint.rc
-EXTRA_ARGS_FOR_TESTS = --method-rgx='([a-z_][a-z0-9_]{2,30}|(setUp|tearDown)(Class)?)$$' --disable=C0111,R0904,C0321
+EXTRA_ARGS_FOR_TESTS = --method-rgx='([a-z_][a-z0-9_]{2,30}|(setUp|tearDown)(Class)?)$$' --disable=C0111,R0904,C0321,W0212
 lint: pep8
 	${PYTHONHOME}bin/pylint --rcfile=${PYLINT_RC} ${WORK4CORE_DIR}
 	${PYTHONHOME}bin/pylint --rcfile=${PYLINT_RC} ${EXTRA_ARGS_FOR_TESTS} ${WORK4CORE_TESTS_DIR}
@@ -129,13 +147,8 @@ endif
 
 COVERAGE_RC = ${WORK4CORE_DIR}config/coverage.rc
 
-ifeq (${IN_WORK4CORE_PROJECT}, TRUE)
-	TEST_CMD = ${PYTHONHOME}bin/nosetests --exclude "django_app"
-else
-	TEST_CMD = ${PROJECT_DIR}manage.py test --traceback --noinput
-endif
 test: pep8
-	${RUN_CMD} ${PYTHONHOME}bin/coverage run --rcfile=${COVERAGE_RC} --source=${APP_DIR},${WORK4CORE_DIR} ${TEST_CMD}
+	${RUN_CMD} ${PYTHONHOME}bin/coverage run --rcfile=${COVERAGE_RC} --source=${APP_DIR},${WORK4CORE_DIR} ${PROJECT_DIR}manage.py test --traceback --noinput
 	@${PYTHONHOME}bin/coverage report --rcfile=${COVERAGE_RC} --fail-under=100 || (printf "\033[31mTest coverage is less than 100%%!\033[0m\n" && exit 1)
 
 test_report:
@@ -148,10 +161,10 @@ test_report:
 ################################
 
 run:
-ifeq (${RUNNER},)
-	${PROJECT_DIR}manage.py run_server
-else
+ifeq (${USE_FOREMAN},TRUE)
 	${RUNNER} start
+else
+	${PROJECT_DIR}manage.py runserver
 endif
 
 shell:

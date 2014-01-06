@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+set -e
+
+ROOTDIR=`readlink -f "$(dirname "$(dirname "$0")")" 2> /dev/null` || ROOTDIR=`pwd`
+VERSION=$1
+TEMP_DIR=$ROOTDIR/temp/
+
+PHANTOMJS=$ROOTDIR/bin/phantomjs
+
+if [[ -a "$PHANTOMJS" ]]; then
+    if [[ $($PHANTOMJS --version) == "$VERSION" ]]; then
+        echo "Requirement already up to date: PhantomJS"
+        exit
+    else
+        echo "Removing outdated PhantomJS install and updating..."
+        rm "$PHANTOMJS"
+    fi
+else
+    echo "PhantomJS is not installed, downloading..."
+fi
+
+cd "$TEMP_DIR"
+
+UNAME=$(uname -s)
+if [[ "$UNAME" == "Linux" ]]; then
+    PLATFORM="linux-$(uname -m)"
+    EXTENSION=".tar.bz2"
+elif [[ "$UNAME" == "Darwin" ]]; then
+    PLATFORM="macosx"
+    EXTENSION=".zip"
+else
+    echo "PhantomJS does not provide a precompiled binary for this platform!"
+    exit 1
+fi
+
+FILENAME="phantomjs-$VERSION-${PLATFORM}${EXTENSION}"
+
+DOWNLOAD_URL="https://phantomjs.googlecode.com/files/$FILENAME"
+
+curl -so "$FILENAME" "$DOWNLOAD_URL"
+
+if [[ "$EXTENSION" == ".tar.bz2" ]]; then
+    tar -jxf "$FILENAME"
+else
+    unzip -q "$FILENAME"
+fi
+
+mv "phantomjs-$VERSION-$PLATFORM/bin/phantomjs" "$PHANTOMJS"
+
+rm -rf "phantomjs-$VERSION-$PLATFORM" "phantomjs-$VERSION-$PLATFORM$EXTENSION"
