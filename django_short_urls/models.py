@@ -173,6 +173,7 @@ class Click(Document):
     # TODO: Switch to using ObjectIds instead of DBRefs https://work4labs.atlassian.net/browse/OPS-1521
     link = ReferenceField('Link', dbref=True)
     created_at = DateTimeField(required=True)
+    # pylint: disable=C0103
     ip = StringField(required=True)
     browser = StringField()
     referer = StringField()
