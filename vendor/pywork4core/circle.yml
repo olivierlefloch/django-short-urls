@@ -1,0 +1,14 @@
+machine:
+  environment:
+    ADMINS: Olivier Le Floch <olefloch@work4labs.com>
+    SECRET_KEY: CgKyhUT9eiTqwrfjPzTKCgKyhUT9eiTqwrfjPzTK
+
+dependencies:
+  override:
+    - pip install --upgrade distribute # To work around mysql-python / virtualenv --distribute incompatibility
+    - make clean install
+
+test:
+  override:
+    - make lint test
+

@@ -19,3 +19,13 @@ Send changes to pywork4core from new-project:
     make git_subtree_push
 
 See also <https://work4labs.atlassian.net/wiki/display/SYS/Integrating+PyWork4Core+into+a+new+project>
+
+Install PhantomJS dependency
+============================
+
+Just write the following line in your project's Makefile:
+
+    USE_PHANTOMJS = TRUE
+
+Then, the phantomjs binary would be installed at pywork4core/bin/phantomjs. You can also specify the
+the version you want installed using PHANTOM_VERSION variable.

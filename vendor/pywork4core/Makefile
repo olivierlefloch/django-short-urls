@@ -13,6 +13,8 @@ WORK4CORE_TESTS_DIR = ${WORK4CORE_DIR}django_app/tests/
 TEMP_DIR = ${PROJECT_DIR}temp/
 PYTHONHOME ?= ${PROJECT_DIR}venv/
 VENV_WRAPPER_DIR = $(abspath ${PYTHONHOME})/.virtualenvs/
+USE_PHANTOMJS = FALSE
+PHANTOM_VERSION = 1.9.0
 
 SETTINGS_TPL_FILE = ${APP_DIR}local_settings.tpl.py
 SETTINGS_FILE = ${APP_DIR}local_settings.py
@@ -56,7 +58,7 @@ endif
 # CONFIG #
 ##########
 
-.SILENT: deep_clean_ask confirm install install_pre install_do install_project install_post
+.SILENT: deep_clean_ask confirm install install_pre install_do install_project install_post install_phantomjs
 
 all: clean install lint test
 
@@ -68,10 +70,6 @@ all: clean install lint test
 # Installation #
 ################
 
-ifeq ($(wildcard $(PROJECT_DIR)requirements.txt),)
-	PROJECT_REQUIREMENTS=-r $(PROJECT_DIR)requirements.txt
-endif
-
 install: install_pre install_do install_project install_post
 
 install_pre:
@@ -79,14 +77,22 @@ install_pre:
 install_do:
 	mkdir -p ${TEMP_DIR}
 	(test -d ${PYTHONHOME} || virtualenv --python=python2.7 --no-site-packages ${PYTHONHOME})
-	${CFLAGS} ${PYTHONHOME}bin/pip install --upgrade -r ${WORK4CORE_DIR}requirements.txt ${PROJECT_REQUIREMENTS}
+	${CFLAGS} ${PYTHONHOME}bin/pip install --upgrade -r $(PROJECT_DIR)requirements.txt
 	(test -d ${VENV_WRAPPER_DIR} || mkdir -p ${VENV_WRAPPER_DIR})
-	# Explicit bash call required for virtualenvwrapper compatibility
+	# Explicit bash call required for virtualenvwrapper compatibility, make uses sh by default
 	# https://bitbucket.org/dhellmann/virtualenvwrapper#rst-header-supported-shells
 	# virtualenvwrapper needs to be sourced for add2virtualenv
 	bash -c "${ACTIVATE_VENV} && WORKON_HOME='${VENV_WRAPPER_DIR}' source ${PYTHONHOME}bin/virtualenvwrapper.sh && add2virtualenv ${PW4C_DIR}"
 
-install_project::
+install_project:: install_phantomjs
+
+# only install PhantomJS if needed
+install_phantomjs:
+ifeq (${USE_PHANTOMJS}, TRUE)
+	./bin/install_phantomjs ${PHANTOM_VERSION}
+else
+	echo "No need to install PhantomJS"
+endif
 
 install_post:
 	echo "Copying settings..."
@@ -112,7 +118,7 @@ deep_clean_do: clean_pyc
 	rm -rf ${TEMP_DIR} ${PYTHONHOME}
 
 clean_pyc:
-	find ${PROJECT_DIR} -name "*.pyc" -exec rm -f {} \;
+	find ${PROJECT_DIR} -name "*.pyc" -or -name "*.pyo" -exec rm -f {} \;
 
 
 ###################
@@ -124,7 +130,7 @@ pep8:
 	${PYTHONHOME}bin/pep8 --config=${WORK4CORE_DIR}config/pep8.cfg ${PROJECT_DIR}
 
 PYLINT_RC = ${WORK4CORE_DIR}config/pylint.rc
-EXTRA_ARGS_FOR_TESTS = --method-rgx='([a-z_][a-z0-9_]{2,30}|(setUp|tearDown)(Class)?)$$' --disable=C0111,R0904,C0321
+EXTRA_ARGS_FOR_TESTS = --method-rgx='([a-z_][a-z0-9_]{2,30}|(setUp|tearDown)(Class)?)$$' --disable=C0111,R0904,C0321,W0212
 lint: pep8
 	${PYTHONHOME}bin/pylint --rcfile=${PYLINT_RC} ${WORK4CORE_DIR}
 	${PYTHONHOME}bin/pylint --rcfile=${PYLINT_RC} ${EXTRA_ARGS_FOR_TESTS} ${WORK4CORE_TESTS_DIR}

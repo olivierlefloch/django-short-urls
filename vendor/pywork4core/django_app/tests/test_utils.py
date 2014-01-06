@@ -4,8 +4,8 @@ from __future__ import unicode_literals
 
 import os
 
-from unittest import TestCase
 from mock import patch
+from unittest import TestCase
 
 from utils import gui, path, tmp
 

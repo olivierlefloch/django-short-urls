@@ -52,6 +52,14 @@ def init_settings(APP_NAME, DEBUG):
         }
     }
 
+    MONGOENGINE = os.environ.get('MONGOENGINE', {
+        'db': APP_NAME,
+        'host': 'localhost',
+        'port': 27017,
+        'username': '',
+        'password': ''
+    })
+
     # Timezone management
     # Use operating system's timezone
     TIME_ZONE = None
