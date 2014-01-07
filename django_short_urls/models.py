@@ -6,9 +6,8 @@ from __future__ import unicode_literals
 
 from datetime import datetime
 from django.conf import settings
-from django.utils.log import getLogger
 from hashlib import sha1
-from mongoengine import Document, StringField, DateTimeField, IntField, BooleanField, ReferenceField
+from mongoengine import Document, StringField, IntField, BooleanField
 import re
 
 import django_short_urls.int_to_alnum as int_to_alnum
@@ -45,6 +44,7 @@ class Link(Document):
     creator = StringField(required=True)
     nb_tries_to_generate = IntField()
     act_as_proxy = BooleanField()
+    clicks = IntField(default=0)
 
     @classmethod
     def find_for_prefix(cls, prefix):
@@ -145,6 +145,19 @@ class Link(Document):
         """Searches for a Link object by hash"""
         return cls.objects(hash=path.lower()).first()
 
+    @property
+    def prefix(self):
+        """If present, return the prefix"""
+        if '/' not in self.hash:
+            return ''
+
+        return self.hash.split('/')[0]
+
+    def click(self):
+        """Register a click on this link"""
+        self.clicks += 1
+        self.save()
+
     def build_relative_path(self):
         """Builds the relative path for the current url (since we only store the hash, we get a lowercase version)"""
         return '/%s' % self.hash
@@ -155,58 +168,3 @@ class Link(Document):
 
     def __str__(self):
         return "%s -> %s\n" % (self.hash, self.long_url)
-
-
-class Click(Document):
-    """Collection to store clicks, including url, time, ip, browser, etc."""
-
-    meta = {
-        'auto_create_index': settings.MONGO_AUTO_CREATE_INDEXES,
-        'cascade': False,
-        'indexes': [('full_path', 'created_at'), ('link', 'created_at')],
-        'max_size': 100000000
-    }
-
-    server = StringField(required=True)
-    full_path = StringField(required=True)
-    # pylint: disable=W0511
-    # TODO: Switch to using ObjectIds instead of DBRefs https://work4labs.atlassian.net/browse/OPS-1521
-    link = ReferenceField('Link', dbref=True)
-    created_at = DateTimeField(required=True)
-    # pylint: disable=C0103
-    ip = StringField(required=True)
-    browser = StringField()
-    referer = StringField()
-    lang = StringField()
-
-    def __unicode__(self):
-        return "Click: (%s, %s, %s)" % (self.full_path, self.created_at, self.ip)
-
-    def save(self, **kwargs):
-        try:
-            super(Click, self).save(**kwargs)
-        # pylint: disable=W0703
-        except Exception as err:
-            getLogger('app').error('Failed to save %s with exception %s' % (self, err))
-
-    @classmethod
-    def register(cls, request, link):
-        """Registers a click from request on link"""
-
-        click = cls(
-            server="%s:%s" % (request.META['SERVER_NAME'], request.META['SERVER_PORT']),
-            full_path=request.get_full_path(),
-            link=link,
-            created_at=datetime.utcnow(),
-            ip=request.META['REMOTE_ADDR'],
-            browser=(
-                ''.join([x if ord(x) < 128 else '?' for x in request.META['HTTP_USER_AGENT']])
-                if 'HTTP_USER_AGENT' in request.META else None
-            ),
-            referer=request.META['HTTP_REFERER'] if 'HTTP_REFERER' in request.META else None,
-            lang=request.META['HTTP_ACCEPT_LANGUAGE'] if 'HTTP_ACCEPT_LANGUAGE' in request else None
-        )
-
-        click.save()
-
-        return click

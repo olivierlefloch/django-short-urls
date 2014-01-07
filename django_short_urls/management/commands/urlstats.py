@@ -9,7 +9,7 @@ from __future__ import unicode_literals
 import csv
 
 from django.core.management.base import BaseCommand
-from django_short_urls.models import Click, Link
+from django_short_urls.models import Link
 
 
 # pylint: disable=E1101, W0201
@@ -22,17 +22,8 @@ class Command(BaseCommand):
     def handle(self, *url_prefixes, **options):
         self.writer = csv.writer(self.stdout)
 
-        self.writer.writerow(['short_url', 'long_url', 'nb_of_clicks', 'list_of_dates'])
+        self.writer.writerow(['hash', 'long_url', 'nb_of_clicks'])
 
         for prefix in url_prefixes:
             for link in Link.find_for_prefix(prefix):
-                self.write_stats_for_link(link)
-
-    def write_stats_for_link(self, link):
-        """Writes out one csv row per click on link"""
-        clicks = Click.objects(link=link)
-
-        self.writer.writerow([
-            link.hash, link.long_url, len(clicks),
-            ";".join([click.created_at.strftime('%Y-%m-%d %H:%M:%S') for click in clicks])
-        ])
+                self.writer.writerow([link.hash, link.long_url, link.clicks])

@@ -9,6 +9,8 @@ from django_short_urls.models import Link
 
 
 class LinkTestCase(MongoTestCase):
+    URL = "http://www.work4labs.com/"
+
     def test_valid_short_path(self):
         self.assertEqual(Link.is_valid_random_short_path("ab2cd"), True)
         self.assertEqual(Link.is_valid_random_short_path("ab2"), True)
@@ -107,3 +109,9 @@ class LinkTestCase(MongoTestCase):
         for iteration in xrange(1, 10):
             # We loop 10 times in hopes of encountering an invalid short path
             Link.create_with_random_short_path('http://work4labs.com/', 'foo', 'olefloch')
+
+    def test_prefix(self):
+        self.assertEqual(Link.shorten(self.URL, 'olefloch').prefix, '')
+
+        prefix = 'foo'
+        self.assertEqual(Link.shorten(self.URL, 'olefloch', prefix=prefix).prefix, prefix)

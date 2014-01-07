@@ -14,13 +14,13 @@ from django.http import Http404
 from django.shortcuts import redirect
 from django.utils.log import getLogger
 from django.views.decorators.http import require_safe, require_POST
+from statsd import statsd
 
 import django_short_urls.suffix_catchall as suffix_catchall
-from django_short_urls.models import Link, User, Click
+from django_short_urls.models import Link, User
 from django_short_urls.exceptions import ForbiddenKeyword, ShortPathConflict
-
 from django_short_urls.w4l_http import (
-    validate_url, url_append_parameters, response, proxy,
+    validate_url, url_append_parameters, response, proxy, get_browser, get_client_ip,
     HTTP_UNAUTHORIZED, HTTP_BAD_REQUEST, HTTP_CONFLICT, HTTP_FORBIDDEN
 )
 
@@ -54,11 +54,18 @@ def main(request, path):
     else:
         redirect_suffix = None
 
-    if not settings.SITE_READ_ONLY:
-        Click.register(request, link)
+    # Instrumentation
+    prefix_tag = 'prefix:' + link.prefix if link else 'Http404'
 
+    statsd.increment('workforus.clicks', tags=[prefix_tag])
+    statsd.set('workforus.unique_links', link.hash if link else 'Http404', tags=[prefix_tag])
+    statsd.set('workforus.unique_ips', get_client_ip(request), tags=['browser:' + get_browser(request)])
+
+    # 404 if link not found or register a click if the DB is not in readonly mode
     if link is None:
         raise Http404
+    elif not settings.SITE_READ_ONLY:
+        link.click()
 
     # Tweak the redirection link based on the query string, redirection suffix, etc.
     # FIXME: Handle multiple parameters with the same name in the `url`

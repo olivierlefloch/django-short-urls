@@ -8,7 +8,7 @@ from django_app.mongo_test_case import MongoTestCase
 
 from django_short_urls.exceptions import DatabaseWriteDenied
 from django_short_urls.middleware import ServiceUnavailableMiddleware
-from django_short_urls.models import Link, Click
+from django_short_urls.models import Link
 from django_short_urls.views import main
 from django_short_urls.w4l_http import HTTP_SERVICE_UNAVAILABLE
 
@@ -34,7 +34,7 @@ class ReadOnlyTestCase(MongoTestCase):
         # Make sure we're still redirecting
         self.assertEqual(response.status_code, 302)
         # But not logging clicks
-        self.assertEqual(Click.objects.count(), 0)
+        self.assertEqual(self.link.clicks, 0)
 
     def test_middleware_process_request(self):
         self.assertEqual(

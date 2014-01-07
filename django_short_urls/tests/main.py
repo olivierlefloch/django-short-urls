@@ -22,6 +22,7 @@ class ViewMainTestCase(MongoTestCase):
             main(self.factory.get('/%s' % self.path), self.path).status_code,
             302
         )
+        self.assertEqual(self.link.reload().clicks, 1)
 
     def test_redirect_suffix(self):
         response = main(self.factory.get('/%s/recruiter' % self.path), self.path + '/recruiter')
