@@ -1,0 +1,32 @@
+# coding=utf-8
+
+"""Template used to deploy the settings on prod"""
+
+from __future__ import unicode_literals
+
+DEBUG = False
+
+ADMINS = (
+    ('Work4 Labs Root', 'root@work4labs.com'),
+)
+
+SERVER_EMAIL = "root@work4labs.com"
+
+MONGOENGINE = {
+    'db': '<%= @creds["db"]["name"] %>',
+    'host': '<%= @creds["db"]["host"] %>',
+    'port': <%= @creds["db"]["port"] %>,
+    'username': '<%= @creds["db"]["username"] %>',
+    'password': '<%= @creds["db"]["password"] %>'
+}
+
+ALLOWED_HOSTS = ['.workfor.us']
+
+# Make this unique, and don't share it with anybody.
+SECRET_KEY = '<%= @creds["secret_key"] %>'
+
+# Do *not* set to True if you're connecting to the production database!
+MONGO_AUTO_CREATE_INDEXES = False
+
+# If true, then do not log clicks or allow creating new short links
+SITE_READ_ONLY = False
