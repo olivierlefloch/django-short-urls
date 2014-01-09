@@ -37,7 +37,7 @@ for (key, value) in init_settings(APP_NAME=APP_NAME, DEBUG=DEBUG):
 import mongoengine
 
 try:
-    # pylint: disable=W0142,E0602
+    # pylint: disable=W0142
     mongoengine.connect(**MONGOENGINE)
 except mongoengine.connection.ConnectionError, err:  # pragma: no cover
     logging.error('MongoEngine ConnectionError: %s', err)
