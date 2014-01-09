@@ -13,7 +13,6 @@ WORK4CORE_TESTS_DIR = ${WORK4CORE_DIR}django_app/tests/
 TEMP_DIR = ${PROJECT_DIR}temp/
 PYTHONHOME ?= ${PROJECT_DIR}venv/
 VENV_WRAPPER_DIR = $(abspath ${PYTHONHOME})/.virtualenvs/
-USE_PHANTOMJS = FALSE
 PHANTOM_VERSION = 1.9.0
 
 SETTINGS_TPL_FILE = ${APP_DIR}local_settings.tpl.py
@@ -58,7 +57,7 @@ endif
 # CONFIG #
 ##########
 
-.SILENT: deep_clean_ask confirm install install_pre install_do install_project install_post install_phantomjs
+.SILENT: deep_clean_ask confirm install install_pre install_do install_project install_post
 
 all: clean install lint test
 
@@ -84,15 +83,10 @@ install_do:
 	# virtualenvwrapper needs to be sourced for add2virtualenv
 	bash -c "${ACTIVATE_VENV} && WORKON_HOME='${VENV_WRAPPER_DIR}' source ${PYTHONHOME}bin/virtualenvwrapper.sh && add2virtualenv ${PW4C_DIR}"
 
-install_project:: install_phantomjs
+install_project::
 
-# only install PhantomJS if needed
 install_phantomjs:
-ifeq (${USE_PHANTOMJS}, TRUE)
 	./bin/install_phantomjs ${PHANTOM_VERSION}
-else
-	echo "No need to install PhantomJS"
-endif
 
 install_post:
 	echo "Copying settings..."
