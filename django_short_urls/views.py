@@ -25,7 +25,7 @@ from django_short_urls.w4l_http import (
 )
 
 
-REF_PARAM_NAME  = 'ref'
+REF_PARAM_NAME = 'ref'
 REF_PARAM_DEFAULT_VALUE = 'shortener'
 
 REDIRECT_PARAM_NAME = 'redirect_suffix'
@@ -89,7 +89,7 @@ def new(request):
     '''
 
     if 'login' in request.REQUEST and 'api_key' in request.REQUEST:
-        login   = request.REQUEST['login']
+        login = request.REQUEST['login']
         api_key = request.REQUEST['api_key']
 
         user = User.objects(login=login, api_key=api_key).first()

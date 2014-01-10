@@ -16,7 +16,7 @@ from django_short_urls.w4l_http import response_service_unavailable
 
 
 # pylint: disable=W0232, R0201, W0142
-class ServiceUnavailableMiddleware:
+class ServiceUnavailableMiddleware(object):
     """
     Middleware to handle application settings disabling database write access or the entire website (maintenance mode)
     """

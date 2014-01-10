@@ -11,12 +11,12 @@ import requests
 from urllib import urlencode
 import urlparse
 
-HTTP_OK                  = 200
-HTTP_BAD_REQUEST         = 400
-HTTP_UNAUTHORIZED        = 401
-HTTP_FORBIDDEN           = 403
-HTTP_CONFLICT            = 409
-HTTP_SERVER_ERROR        = 500
+HTTP_OK = 200
+HTTP_BAD_REQUEST = 400
+HTTP_UNAUTHORIZED = 401
+HTTP_FORBIDDEN = 403
+HTTP_CONFLICT = 409
+HTTP_SERVER_ERROR = 500
 HTTP_SERVICE_UNAVAILABLE = 503
 
 
@@ -47,6 +47,7 @@ def url_append_parameters(url, params_to_replace, defaults):
     if not params_to_replace and not defaults:
         return url
 
+    # pylint: disable=W0633
     (scheme, netloc, path, params, link_query, fragment) = urlparse.urlparse(url)
 
     link_query = QueryDict(link_query).copy()

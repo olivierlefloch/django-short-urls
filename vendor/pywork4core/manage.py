@@ -17,7 +17,8 @@ import sys
 # We need to override the docstring because the current value is the shebang
 __doc__ = '''Wrapper around django-admin.py, it will set the DJANGO_SETTING_MODULES environment variable.'''
 
-if __name__ == "__main__":
+
+if __name__ == "__main__":  # pragma: no cover
     # we can not use setdefault since it will not work when calling from another python script
     os.environ['DJANGO_SETTINGS_MODULE'] = "django_app.settings"
 
