@@ -19,8 +19,8 @@ class UrlStatsTestCase(TestCase):
         # Generate the link that will be used in the output
         link = Link.shorten(long_url='http://www.work4labs.com', creator='olefloch', prefix=prefix).save()
 
-        header_row = 'short_url,long_url,nb_of_clicks,list_of_dates'
-        first_row = '%s,%s,0,' % (link.hash, link.long_url)
+        header_row = 'hash,long_url,nb_of_clicks'
+        first_row = '%s,%s,0' % (link.hash, link.long_url)
 
         with io.BytesIO() as stdout, io.BytesIO() as stderr:
             management.call_command('urlstats', prefix, stdout=stdout, stderr=stderr)
