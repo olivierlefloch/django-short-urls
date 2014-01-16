@@ -155,8 +155,7 @@ class Link(Document):
 
     def click(self):
         """Register a click on this link"""
-        self.clicks += 1
-        self.save()
+        self.__class__.objects(hash=self.hash).update_one(inc__clicks=1)
 
     def build_relative_path(self):
         """Builds the relative path for the current url (since we only store the hash, we get a lowercase version)"""
