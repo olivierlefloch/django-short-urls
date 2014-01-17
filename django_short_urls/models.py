@@ -9,6 +9,7 @@ from django.conf import settings
 from hashlib import sha1
 from mongoengine import Document, StringField, IntField, BooleanField
 import re
+from statsd import statsd
 
 import django_short_urls.int_to_alnum as int_to_alnum
 from django_short_urls.exceptions import ForbiddenKeyword, ShortPathConflict
@@ -42,7 +43,6 @@ class Link(Document):
     hash = StringField(required=True, unique=True)
     long_url = StringField(required=True)
     creator = StringField(required=True)
-    nb_tries_to_generate = IntField()
     act_as_proxy = BooleanField()
     clicks = IntField(default=0)
 
@@ -111,7 +111,7 @@ class Link(Document):
 
                 if created:
                     # Short path didn't exist, store number of tries and we're done
-                    link.nb_tries_to_generate = nb_tries
+                    statsd.histogram('workforus.nb_tries_to_generate', nb_tries, tags=['prefix:' + prefix])
                     return link
 
     RE_VALID_RANDOM_SHORT_PATHS = re.compile(r'^([a-z]{0,2}\d)+[a-z]{0,2}$')

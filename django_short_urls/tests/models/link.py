@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 from django_app.mongo_test_case import MongoTestCase
 from freezegun import freeze_time
+from mock import patch
 
 from django_short_urls.models import Link
 
@@ -47,8 +48,12 @@ class LinkTestCase(MongoTestCase):
         kwargs['long_url'] = "http://www.work4labs.com/"
         kwargs['creator'] = 'olefloch'
 
-        link1 = Link.shorten(**kwargs)
-        link2 = Link.shorten(**kwargs)
+        # statsd.histogram should only be created at creation
+        with patch('django_short_urls.models.statsd') as mock_statsd:
+            link1 = Link.shorten(**kwargs)
+            mock_statsd.histogram.assertCalledOnce()
+            link2 = Link.shorten(**kwargs)
+            mock_statsd.histogram.assertCalledOnce()
 
         self.assertEqual(link1.hash, link2.hash)
 
