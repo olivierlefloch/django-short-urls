@@ -106,7 +106,7 @@ def new(request):
     if user is None:
         return response(status=HTTP_UNAUTHORIZED, message="Invalid credentials.")
 
-    params = {'creator': user.login}
+    params = {}
 
     if 'long_url' in request.REQUEST:
         params['long_url'] = request.REQUEST['long_url']
