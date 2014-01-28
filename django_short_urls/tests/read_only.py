@@ -23,7 +23,7 @@ class ReadOnlyTestCase(MongoTestCase):
         self.factory = RequestFactory()
 
         self.path = 'test42'
-        self.link = Link.shorten('http://www.work4.com/jobs', 'olefloch', short_path=self.path)
+        self.link = Link.shorten('http://www.work4.com/jobs', short_path=self.path)
 
     def tearDown(self):
         settings.SITE_READ_ONLY = self.setting_backup

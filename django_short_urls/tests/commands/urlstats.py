@@ -15,9 +15,9 @@ class UrlStatsTestCase(TestCase):
         prefix = 'work4'
 
         # Generate a link that won't appear in the results (wrong prefix)
-        Link.shorten(long_url='http://www.work4labs.com', creator='olefloch', prefix='work4labs').save()
+        Link.shorten(long_url='http://www.work4labs.com', prefix='work4labs').save()
         # Generate the link that will be used in the output
-        link = Link.shorten(long_url='http://www.work4labs.com', creator='olefloch', prefix=prefix).save()
+        link = Link.shorten(long_url='http://www.work4labs.com', prefix=prefix).save()
 
         header_row = 'hash,long_url,nb_of_clicks'
         first_row = '%s,%s,0' % (link.hash, link.long_url)

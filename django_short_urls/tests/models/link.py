@@ -25,28 +25,26 @@ class LinkTestCase(MongoTestCase):
         self.assertEqual(Link.is_valid_random_short_path("abe4abe"), False)
 
     def test_shorten(self):
-        link = Link.shorten("http://www.work4labs.com/", 'olefloch')
+        link = Link.shorten("http://www.work4labs.com/")
 
         self.assertIn('work4labs', str(link))
 
         self.assertNotIn('/', link.hash)
-        self.assertEqual(link.creator, 'olefloch')
 
     def test_shorten_multiple(self):
         # Generate a couple of links that we should *not* fall on
-        Link.shorten("http://www.work4labs.com/", 'olefloch', prefix='foobarblah')
-        Link.shorten("http://www.work4labs.com/", 'olefloch', prefix='fooba')
+        Link.shorten("http://www.work4labs.com/", prefix='foobarblah')
+        Link.shorten("http://www.work4labs.com/", prefix='fooba')
 
-        link1 = Link.shorten("http://www.work4labs.com/", 'olefloch', prefix='foobar')
+        link1 = Link.shorten("http://www.work4labs.com/", prefix='foobar')
         self.assertIn('foobar/', link1.hash)
 
     def test_shorten_with_short_path(self):
-        link = Link.shorten("http://www.work4labs.com/", 'olefloch', short_path='FooBar')
+        link = Link.shorten("http://www.work4labs.com/", short_path='FooBar')
         self.assertEqual(link.hash, 'foobar')
 
     def shorten_twice(self, **kwargs):
         kwargs['long_url'] = "http://www.work4labs.com/"
-        kwargs['creator'] = 'olefloch'
 
         # statsd.histogram should only be created at creation
         with patch('django_short_urls.models.statsd') as mock_statsd:
@@ -72,10 +70,10 @@ class LinkTestCase(MongoTestCase):
         self.assertEqual(len(Link.find_for_prefix(prefix)), 0)
 
         # Create a link with this prefix and another with another prefix
-        true_link = Link.shorten("http://www.work4labs.com/", 'olefloch', prefix=prefix)
+        true_link = Link.shorten("http://www.work4labs.com/", prefix=prefix)
 
         # other link
-        Link.shorten("http://www.work4labs.com/", 'olefloch', prefix='other_%s' % prefix)
+        Link.shorten("http://www.work4labs.com/", prefix='other_%s' % prefix)
 
         # We should only find the true link
         links = Link.find_for_prefix(prefix)
@@ -96,7 +94,7 @@ class LinkTestCase(MongoTestCase):
         prefix = 'ole'
         long_url = "http://www.work4labs.com/"
 
-        Link.shorten(long_url, 'olefloch', prefix=prefix)
+        Link.shorten(long_url, prefix=prefix)
 
         self.assertEqual(
             Link.find_for_prefix_and_long_url(prefix, long_url).explain()['cursor'],
@@ -106,17 +104,17 @@ class LinkTestCase(MongoTestCase):
     # Freeze time to make this test deterministic
     @freeze_time('2013-05-29')
     def test_create_random(self):
-        link1 = Link.create_with_random_short_path('http://work4labs.com/', 'foo', 'olefloch')
+        link1 = Link.create_with_random_short_path(self.URL, 'foo')
 
-        self.assertEqual(link1.creator, 'olefloch')
+        self.assertEqual(link1.long_url, self.URL)
 
         # pylint: disable=W0612
         for iteration in xrange(1, 10):
             # We loop 10 times in hopes of encountering an invalid short path
-            Link.create_with_random_short_path('http://work4labs.com/', 'foo', 'olefloch')
+            Link.create_with_random_short_path(self.URL, 'foo')
 
     def test_prefix(self):
-        self.assertEqual(Link.shorten(self.URL, 'olefloch').prefix, '')
+        self.assertEqual(Link.shorten(self.URL).prefix, '')
 
         prefix = 'foo'
-        self.assertEqual(Link.shorten(self.URL, 'olefloch', prefix=prefix).prefix, prefix)
+        self.assertEqual(Link.shorten(self.URL, prefix=prefix).prefix, prefix)
