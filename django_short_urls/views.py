@@ -129,6 +129,8 @@ def new(request):
 
     try:
         link = Link.shorten(**params)
+
+        getLogger('app').info('Successfully shortened %s into %s for user %s', link.long_url, link.hash, login)
     except ShortPathConflict, err:
         del params['short_path'], params['long_url']
 
