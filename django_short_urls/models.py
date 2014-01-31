@@ -42,7 +42,6 @@ class Link(Document):
 
     hash = StringField(required=True, unique=True)
     long_url = StringField(required=True)
-    creator = StringField(required=True)
     act_as_proxy = BooleanField()
     clicks = IntField(default=0)
 
@@ -64,7 +63,7 @@ class Link(Document):
         return cls.find_for_prefix(prefix).filter(long_url=long_url).hint(cls.long_url_index_spec)
 
     @classmethod
-    def shorten(cls, long_url, creator, short_path=None, prefix=None):
+    def shorten(cls, long_url, short_path=None, prefix=None):
         """Public API to create a short link"""
 
         ForbiddenKeyword.raise_if_banned(short_path)
@@ -77,9 +76,9 @@ class Link(Document):
             link = cls.find_for_prefix_and_long_url(prefix, long_url).first()
 
             if link is None:
-                link = cls.create_with_random_short_path(long_url, prefix, creator)
+                link = cls.create_with_random_short_path(long_url, prefix)
         else:
-            link, created = cls.__get_or_create(prefix, short_path, long_url, creator)
+            link, created = cls.__get_or_create(prefix, short_path, long_url)
 
             if not created and link.long_url != long_url:
                 raise ShortPathConflict(link)
@@ -89,7 +88,7 @@ class Link(Document):
         return link
 
     @classmethod
-    def create_with_random_short_path(cls, long_url, prefix, creator):
+    def create_with_random_short_path(cls, long_url, prefix):
         """Generate an unused, valid random short path for prefix"""
         nb_tries = 0
 
@@ -107,7 +106,7 @@ class Link(Document):
                 if not cls.is_valid_random_short_path(short_path):
                     continue
 
-                link, created = cls.__get_or_create(prefix, short_path, long_url, creator)
+                link, created = cls.__get_or_create(prefix, short_path, long_url)
 
                 if created:
                     # Short path didn't exist, store number of tries and we're done
@@ -123,16 +122,13 @@ class Link(Document):
         return cls.RE_VALID_RANDOM_SHORT_PATHS.match(short_path) is not None
 
     @classmethod
-    def __get_or_create(cls, prefix, short_path, long_url, creator):
+    def __get_or_create(cls, prefix, short_path, long_url):
         """Retrieves or Creates a Link object by (prefix, short_path)"""
         # pylint: disable=W0511
         # FIXME: Deprecated in MongoEngine 0.8 - https://work4labs.atlassian.net/browse/OPS-1529
         return cls.objects.get_or_create(
             hash=Link.hash_for_prefix_and_short_path(prefix, short_path),
-            defaults={
-                'long_url': long_url,
-                'creator': creator
-            }
+            defaults={'long_url': long_url}
         )
 
     @classmethod

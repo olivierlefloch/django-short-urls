@@ -106,7 +106,7 @@ def new(request):
     if user is None:
         return response(status=HTTP_UNAUTHORIZED, message="Invalid credentials.")
 
-    params = {'creator': user.login}
+    params = {}
 
     if 'long_url' in request.REQUEST:
         params['long_url'] = request.REQUEST['long_url']
@@ -129,6 +129,8 @@ def new(request):
 
     try:
         link = Link.shorten(**params)
+
+        getLogger('app').info('Successfully shortened %s into %s for user %s', link.long_url, link.hash, login)
     except ShortPathConflict, err:
         del params['short_path'], params['long_url']
 

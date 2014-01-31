@@ -16,7 +16,7 @@ class ViewMainTestCase(MongoTestCase):
         self.factory = RequestFactory()
 
         self.path = 'test42'
-        self.link = Link.shorten('http://www.work4.com/jobs', 'olefloch', short_path=self.path)
+        self.link = Link.shorten('http://www.work4.com/jobs', short_path=self.path)
 
     @patch('django_short_urls.views.statsd')
     def test_redirect(self, mock_statsd):
