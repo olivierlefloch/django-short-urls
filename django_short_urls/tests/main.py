@@ -25,7 +25,7 @@ class ViewMainTestCase(MongoTestCase):
             302
         )
         self.assertEqual(self.link.reload().clicks, 1)
-        mock_statsd.increment.assertCalledOnce()
+        mock_statsd.increment.assert_called_once()
 
     def test_redirect_suffix(self):
         response = main(self.factory.get('/%s/recruiter' % self.path), self.path + '/recruiter')
