@@ -20,6 +20,17 @@ Send changes to pywork4core from new-project:
 
 See also <https://work4labs.atlassian.net/wiki/display/SYS/Integrating+PyWork4Core+into+a+new+project>
 
+Typical usage
+=============
+
+  - Installation
+
+        make install
+
+  - Lint and tests
+
+        make lint_and_test_report
+
 Install PhantomJS dependency
 ============================
 

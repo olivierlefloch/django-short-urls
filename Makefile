@@ -2,22 +2,30 @@
 # VARIABLES #
 #############
 
-PROJECT_DIR = $(dir $(firstword $(MAKEFILE_LIST)))
+#----
+# PLATFORM DEPENDENT
+UNAME_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
+
+ifeq (${UNAME_S}, Darwin)
+	CFLAGS = CFLAGS="-I /opt/local/include -L /opt/local/lib"
+endif
+#-----
+
+
+PROJECT_DIR := $(dir $(firstword $(MAKEFILE_LIST)))
 APP_DIR = ${PROJECT_DIR}${APP_NAME}/
 APP_TESTS_DIR = ${APP_DIR}tests/
 
-WORK4CORE_DIR = $(dir $(lastword $(MAKEFILE_LIST)))
+WORK4CORE_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 WORK4CORE_BIN = ${WORK4CORE_DIR}bin/
 WORK4CORE_TESTS_DIR = ${WORK4CORE_DIR}django_app/tests/
 
 TEMP_DIR = ${PROJECT_DIR}temp/
-PYTHONHOME ?= ${PROJECT_DIR}venv/
+PYTHONHOME ?= ${PROJECT_DIR}venv
 VENV_WRAPPER_DIR = $(abspath ${PYTHONHOME})/.virtualenvs/
+
 USE_PHANTOMJS = FALSE
 PHANTOM_VERSION = 1.9.0
-
-SETTINGS_TPL_FILE = ${APP_DIR}local_settings.tpl.py
-SETTINGS_FILE = ${APP_DIR}local_settings.py
 
 ifeq (${WORK4CORE_DIR}, ${PROJECT_DIR})
 	IN_WORK4CORE_PROJECT = TRUE
@@ -31,28 +39,26 @@ else
 	PW4C_DIR = ${PROJECT_DIR}vendor/pywork4core
 endif
 
-ACTIVATE_VENV = . ${PYTHONHOME}bin/activate
+## Specific to virtualenv
+include ${WORK4CORE_DIR}/virtualenv/Makefile
 
 RUNNER = ${ACTIVATE_VENV} &&
 
 ifeq ($(wildcard $(PROJECT_DIR).env),)
-	USE_FORMAN = FALSE
+	USE_FOREMAN = FALSE
 	RUN_CMD = ${RUNNER}
+
+	SETTINGS_TPL_FILE = ${APP_DIR}local_settings.tpl.py
+	SETTINGS_FILE = ${APP_DIR}local_settings.py
 else
-	USE_FORMAN = TRUE
+	USE_FOREMAN = TRUE
 	RUN_CMD = ${RUNNER} foreman run
+	START_CMD = ${RUNNER} foreman start
+
+	SETTINGS_TPL_FILE = ${PROJECT_DIR}env.tpl
+	SETTINGS_FILE = ${PROJECT_DIR}.env
 endif
 
-
-######################
-# PLATFORM DEPENDENT #
-######################
-
-UNAME_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
-
-ifeq (${UNAME_S}, Darwin)
-	CFLAGS = CFLAGS="-I /opt/local/include -L /opt/local/lib"
-endif
 
 ##########
 # CONFIG #
@@ -74,15 +80,8 @@ install: install_pre install_do install_project install_post
 
 install_pre:
 
-install_do:
+install_do: venv
 	mkdir -p ${TEMP_DIR}
-	(test -d ${PYTHONHOME} || virtualenv --python=python2.7 --no-site-packages ${PYTHONHOME})
-	${CFLAGS} ${PYTHONHOME}bin/pip install --upgrade -r $(PROJECT_DIR)requirements.txt
-	(test -d ${VENV_WRAPPER_DIR} || mkdir -p ${VENV_WRAPPER_DIR})
-	# Explicit bash call required for virtualenvwrapper compatibility, make uses sh by default
-	# https://bitbucket.org/dhellmann/virtualenvwrapper#rst-header-supported-shells
-	# virtualenvwrapper needs to be sourced for add2virtualenv
-	bash -c "${ACTIVATE_VENV} && WORKON_HOME='${VENV_WRAPPER_DIR}' source ${PYTHONHOME}bin/virtualenvwrapper.sh && add2virtualenv ${PW4C_DIR}"
 
 install_project:: install_phantomjs
 
@@ -96,7 +95,7 @@ endif
 
 install_post:
 	echo "Copying settings..."
-	([ ! -f ${SETTINGS_TPL_FILE} ] && echo "Project does not have any local settings.") || \
+	([ ! -f ${SETTINGS_TPL_FILE} ] && echo "Project does not have a settings file.") || \
 		([ -f ${SETTINGS_FILE} ] && echo "Settings file already exists.") || \
 			(cp -n ${SETTINGS_TPL_FILE} ${SETTINGS_FILE} && vi ${SETTINGS_FILE})
 
@@ -118,26 +117,24 @@ deep_clean_do: clean_pyc
 	rm -rf ${TEMP_DIR} ${PYTHONHOME}
 
 clean_pyc:
-	find ${PROJECT_DIR} -name "*.pyc" -or -name "*.pyo" -exec rm -f {} \;
+	# -print0 doesn't seem to work
+	find ${PROJECT_DIR} -name "*.pyc" -or -name "*.pyo" | tr "\n" "\000" | xargs -0 rm -f
 
 
 ###################
 # Code validation #
 ###################
 
-pep8:
-	# Please ensure pep8 is happy first (before tests or linting)
-	${PYTHONHOME}bin/pep8 --config=${WORK4CORE_DIR}config/pep8.cfg ${PROJECT_DIR}
-
 PYLINT_RC = ${WORK4CORE_DIR}config/pylint.rc
 EXTRA_ARGS_FOR_TESTS = --method-rgx='([a-z_][a-z0-9_]{2,30}|(setUp|tearDown)(Class)?)$$' --disable=C0111,R0904,C0321,W0212
-lint: pep8
-	${PYTHONHOME}bin/pylint --rcfile=${PYLINT_RC} ${WORK4CORE_DIR}
-	${PYTHONHOME}bin/pylint --rcfile=${PYLINT_RC} ${EXTRA_ARGS_FOR_TESTS} ${WORK4CORE_TESTS_DIR}
+lint:
+	${PYTHONHOME}/bin/pep8 --config=${WORK4CORE_DIR}config/pep8.cfg ${PROJECT_DIR}
+	${PYTHONHOME}/bin/pylint --rcfile=${PYLINT_RC} ${WORK4CORE_DIR}
+	${PYTHONHOME}/bin/pylint --rcfile=${PYLINT_RC} ${EXTRA_ARGS_FOR_TESTS} ${WORK4CORE_TESTS_DIR}
 ifeq (${IN_WORK4CORE_PROJECT}, TRUE)
 else
-	${PYTHONHOME}bin/pylint --rcfile=${PYLINT_RC} ${APP_DIR}
-	${PYTHONHOME}bin/pylint --rcfile=${PYLINT_RC} ${EXTRA_ARGS_FOR_TESTS} ${APP_TESTS_DIR}
+	${PYTHONHOME}/bin/pylint --rcfile=${PYLINT_RC} ${APP_DIR}
+	${PYTHONHOME}/bin/pylint --rcfile=${PYLINT_RC} ${EXTRA_ARGS_FOR_TESTS} ${APP_TESTS_DIR}
 endif
 
 
@@ -147,28 +144,35 @@ endif
 
 COVERAGE_RC = ${WORK4CORE_DIR}config/coverage.rc
 
-test: pep8
-	${RUN_CMD} ${PYTHONHOME}bin/coverage run --rcfile=${COVERAGE_RC} --source=${APP_DIR},${WORK4CORE_DIR} ${PROJECT_DIR}manage.py test --traceback --noinput
-	@${PYTHONHOME}bin/coverage report --rcfile=${COVERAGE_RC} --fail-under=100 || (printf "\033[31mTest coverage is less than 100%%!\033[0m\n" && exit 1)
+test:
+	${RUN_CMD} ${PYTHONHOME}/bin/coverage run --rcfile=${COVERAGE_RC} --source=${APP_DIR},${WORK4CORE_DIR} ${PROJECT_DIR}manage.py test --traceback --noinput django_app
+	${RUN_CMD} ${PYTHONHOME}/bin/coverage run --append --rcfile=${COVERAGE_RC} --source=${APP_DIR},${WORK4CORE_DIR} ${PROJECT_DIR}manage.py test --traceback --noinput ${APP_NAME}
+	@${PYTHONHOME}/bin/coverage report --rcfile=${COVERAGE_RC} --fail-under=100 || (printf "\033[31mTest coverage is less than 100%%!\033[0m\n" && exit 1)
 
 test_report:
-	${PYTHONHOME}bin/coverage html --rcfile=${COVERAGE_RC}
+	${PYTHONHOME}/bin/coverage html --rcfile=${COVERAGE_RC}
 	${WORK4CORE_BIN}/open ${TEMP_DIR}/coverage_html/index.html
 
+test_and_report:
+	(make test || make test_report) | grep -vE '100\%$$'
 
 ################################
 # Running the app and commands #
 ################################
 
 run:
-ifeq (${USE_FOREMAN},TRUE)
-	${RUNNER} start
-else
-	${PROJECT_DIR}manage.py runserver
+	${RUN_CMD} ${PROJECT_DIR}manage.py runserver
+
+ifeq (${USE_FOREMAN}, TRUE)
+start:
+	${START_CMD} $(PROC)
 endif
 
 shell:
 	${RUN_CMD} ${PROJECT_DIR}manage.py shell
+
+collectstatic:
+	${RUN_CMD} ${PROJECT_DIR}manage.py collectstatic --noinput
 
 
 ##########################

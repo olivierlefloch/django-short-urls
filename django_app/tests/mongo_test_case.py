@@ -8,7 +8,6 @@ from django_app import mongo_test_case
 
 
 class MongoTestCaseTestCase(mongo_test_case.MongoTestCase):
-    # pylint: disable=R0924
     class MongoDoc(Document):
         pass
 
