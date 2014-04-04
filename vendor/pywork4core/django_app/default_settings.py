@@ -70,7 +70,6 @@ def init_settings(APP_NAME, DEBUG):
     USE_I18N = False
     USE_L10N = False
 
-    TEMPLATE_LOADERS = ('django.template.loaders.filesystem.Loader',)
     TEMPLATE_DEBUG = DEBUG
     TEMPLATE_STRING_IF_INVALID = 'TEMPLATE: INVALID VAR'
 

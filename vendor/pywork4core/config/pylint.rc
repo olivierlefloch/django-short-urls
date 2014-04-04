@@ -32,7 +32,7 @@ comment=yes
 [MISCELLANEOUS]
 
 # List of note tags to take in consideration, separated by a comma.
-notes=FIXME,TODO
+notes=FIXNOW,WIP
 
 
 [SIMILARITIES]
@@ -40,7 +40,7 @@ notes=FIXME,TODO
 min-similarity-lines=4
 ignore-comments=yes
 ignore-docstrings=yes
-ignore-imports=no
+ignore-imports=yes
 
 
 [BASIC]
