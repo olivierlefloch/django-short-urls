@@ -18,7 +18,11 @@ framework.
 from __future__ import unicode_literals
 
 import os
+import sys
 
+
+ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
+sys.path.append(ROOT_DIR)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_short_urls.settings")
 
