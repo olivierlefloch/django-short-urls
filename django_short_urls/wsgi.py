@@ -18,7 +18,6 @@ framework.
 from __future__ import unicode_literals
 
 import os
-import site
 
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_short_urls.settings")
