@@ -7,7 +7,7 @@ from django_app.mongo_test_case import MongoTestCase
 
 from django_short_urls.views import new
 from django_short_urls.models import User
-from django_short_urls.w4l_http import HTTP_OK, HTTP_BAD_REQUEST, HTTP_UNAUTHORIZED, HTTP_FORBIDDEN, HTTP_CONFLICT
+from http.status import HTTP_OK, HTTP_BAD_REQUEST, HTTP_UNAUTHORIZED, HTTP_FORBIDDEN, HTTP_CONFLICT
 
 
 class ViewNewTestCase(MongoTestCase):

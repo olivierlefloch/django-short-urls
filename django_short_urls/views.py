@@ -16,12 +16,13 @@ from django.utils.log import getLogger
 from django.views.decorators.http import require_safe, require_POST
 from statsd import statsd
 
+from http.status import HTTP_UNAUTHORIZED, HTTP_BAD_REQUEST, HTTP_CONFLICT, HTTP_FORBIDDEN
+
 import django_short_urls.suffix_catchall as suffix_catchall
 from django_short_urls.models import Link, User
 from django_short_urls.exceptions import ForbiddenKeyword, ShortPathConflict
 from django_short_urls.w4l_http import (
-    validate_url, url_append_parameters, response, proxy, get_browser, get_client_ip,
-    HTTP_UNAUTHORIZED, HTTP_BAD_REQUEST, HTTP_CONFLICT, HTTP_FORBIDDEN
+    validate_url, url_append_parameters, response, proxy, get_browser, get_client_ip
 )
 
 
