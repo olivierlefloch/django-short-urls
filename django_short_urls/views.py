@@ -9,13 +9,13 @@ Views for Django Short Urls:
 
 from __future__ import unicode_literals
 
-from django.conf import settings
 from django.http import Http404
 from django.shortcuts import redirect
 from django.utils.log import getLogger
 from django.views.decorators.http import require_safe, require_POST
 from statsd import statsd
 
+from utils.mongo import mongoengine_is_primary
 from http.status import HTTP_UNAUTHORIZED, HTTP_BAD_REQUEST, HTTP_CONFLICT, HTTP_FORBIDDEN
 
 import django_short_urls.suffix_catchall as suffix_catchall
@@ -65,7 +65,7 @@ def main(request, path):
     # 404 if link not found or register a click if the DB is not in readonly mode
     if link is None:
         raise Http404
-    elif not settings.SITE_READ_ONLY:
+    elif mongoengine_is_primary():
         link.click()
 
     # Tweak the redirection link based on the query string, redirection suffix, etc.
