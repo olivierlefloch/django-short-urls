@@ -5,6 +5,7 @@
 from __future__ import unicode_literals
 
 import logging
+from pymongo.read_preferences import ReadPreference
 
 from django_app.default_settings import init_settings
 
@@ -45,7 +46,7 @@ import mongoengine
 
 try:
     # pylint: disable=W0142
-    mongoengine.connect(**MONGOENGINE)
+    mongoengine.connect(read_preference=ReadPreference.PRIMARY_PREFERRED, **MONGOENGINE)
 
     SERVICE_UNAVAILABLE = False
 except mongoengine.connection.ConnectionError, err:  # pragma: no cover

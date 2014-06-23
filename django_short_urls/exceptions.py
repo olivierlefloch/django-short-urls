@@ -5,14 +5,6 @@
 from __future__ import unicode_literals
 
 import re
-from django.db.utils import DatabaseError
-
-
-# pylint: disable=W0511
-# TODO: Move to a dedicated ServiceUnavailable app
-class DatabaseWriteDenied(DatabaseError):
-    """Exception raised when attempting to write to the database when in readonly mode"""
-    pass
 
 
 class ForbiddenKeyword(Exception):
