@@ -123,11 +123,6 @@ def new(request):
         if key in request.REQUEST:
             params[key] = request.REQUEST[key]
 
-            if '/' in params[key]:
-                return response(
-                    status=HTTP_BAD_REQUEST,
-                    message="%s may not contain a '/' character." % key)
-
     try:
         link = Link.shorten(**params)
 

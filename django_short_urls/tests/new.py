@@ -28,11 +28,6 @@ class ViewNewTestCase(MongoTestCase):
         # Test missing long_url
         self.assertEqual(new(self.factory.post('/new', self.data)).status_code, HTTP_BAD_REQUEST)
 
-        self.data['long_url'] = 'http://work4.com'
-        self.data['short_path'] = 'inva/lid'
-
-        self.assertEqual(new(self.factory.post('/new', self.data)).status_code, HTTP_BAD_REQUEST)
-
     def test_short_path_conflict(self):
         self.data['long_url'] = 'http://work4.com'
         self.data['short_path'] = 'conflict'
@@ -64,5 +59,9 @@ class ViewNewTestCase(MongoTestCase):
 
         self.data['short_path'] = 'bar'
         self.data['prefix'] = 'foo'
+
+        self.assertEqual(new(self.factory.post('/new', self.data)).status_code, HTTP_OK)
+
+        self.data['short_path'] = 'inva/lid'
 
         self.assertEqual(new(self.factory.post('/new', self.data)).status_code, HTTP_OK)
