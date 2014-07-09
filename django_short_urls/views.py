@@ -124,11 +124,10 @@ def new(request):
         if key in request.REQUEST:
             params[key] = request.REQUEST[key]
 
-            if '/' in params[key]:
-                if key != 'prefix' or not allow_slashes_in_prefix:
-                    return response(
-                        status=HTTP_BAD_REQUEST,
-                        message="%s may not contain a '/' character." % key)
+            if '/' in params[key] and (key != 'prefix' or not allow_slashes_in_prefix):
+                return response(
+                    status=HTTP_BAD_REQUEST,
+                    message="%s may not contain a '/' character." % key)
 
     try:
         link = Link.shorten(**params)
