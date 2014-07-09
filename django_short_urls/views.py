@@ -111,7 +111,6 @@ def new(request):
 
     if 'long_url' in request.REQUEST:
         params['long_url'] = request.REQUEST['long_url']
-
         (is_valid, error_message) = validate_url(params['long_url'])
     else:
         (is_valid, error_message) = (False, "Missing parameter: 'long_url'")
@@ -119,9 +118,17 @@ def new(request):
     if not is_valid:
         return response(status=HTTP_BAD_REQUEST, message=error_message)
 
+    allow_slashes_in_prefix = request.REQUEST.get('allow_slashes_in_prefix', False)
+
     for key in ['short_path', 'prefix']:
         if key in request.REQUEST:
             params[key] = request.REQUEST[key]
+
+            if '/' in params[key]:
+                if key != 'prefix' or not allow_slashes_in_prefix:
+                    return response(
+                        status=HTTP_BAD_REQUEST,
+                        message="%s may not contain a '/' character." % key)
 
     try:
         link = Link.shorten(**params)
