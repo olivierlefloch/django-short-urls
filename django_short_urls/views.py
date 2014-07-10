@@ -111,6 +111,7 @@ def new(request):
 
     if 'long_url' in request.REQUEST:
         params['long_url'] = request.REQUEST['long_url']
+
         (is_valid, error_message) = validate_url(params['long_url'])
     else:
         (is_valid, error_message) = (False, "Missing parameter: 'long_url'")
@@ -118,7 +119,7 @@ def new(request):
     if not is_valid:
         return response(status=HTTP_BAD_REQUEST, message=error_message)
 
-    allow_slashes_in_prefix = request.REQUEST.get('allow_slashes_in_prefix', False)
+    allow_slashes_in_prefix = 'allow_slashes_in_prefix' in request.REQUEST
 
     for key in ['short_path', 'prefix']:
         if key in request.REQUEST:

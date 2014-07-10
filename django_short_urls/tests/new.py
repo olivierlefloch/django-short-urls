@@ -37,6 +37,12 @@ class ViewNewTestCase(MongoTestCase):
 
         self.assertEqual(new(self.factory.post('/new', self.data)).status_code, HTTP_BAD_REQUEST)
 
+        self.data['short_path'] = 'valid'
+        self.data['prefix'] = 'inva/lid'
+        del self.data['allow_slashes_in_prefix']
+
+        self.assertEqual(new(self.factory.post('/new', self.data)).status_code, HTTP_BAD_REQUEST)
+
     def test_short_path_conflict(self):
         self.data['long_url'] = 'http://work4.com'
         self.data['short_path'] = 'conflict'
