@@ -119,11 +119,13 @@ def new(request):
     if not is_valid:
         return response(status=HTTP_BAD_REQUEST, message=error_message)
 
+    allow_slashes_in_prefix = 'allow_slashes_in_prefix' in request.REQUEST
+
     for key in ['short_path', 'prefix']:
         if key in request.REQUEST:
             params[key] = request.REQUEST[key]
 
-            if '/' in params[key]:
+            if '/' in params[key] and not (key == 'prefix' and allow_slashes_in_prefix):
                 return response(
                     status=HTTP_BAD_REQUEST,
                     message="%s may not contain a '/' character." % key)
