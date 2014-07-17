@@ -9,8 +9,7 @@ from pymongo.read_preferences import ReadPreference
 
 from django_app.default_settings import init_settings
 
-# pylint: disable=W0614, W0401
-from django_short_urls.local_settings import *
+from django_short_urls.local_settings import *  # pylint: disable=W0614, W0401
 
 
 APP_NAME = 'django_short_urls'
@@ -39,8 +38,16 @@ for (key, value) in init_settings(APP_NAME=APP_NAME, DEBUG=DEBUG):
     if key not in globals():
         globals()[key] = value
 
+#########################
+# Sentry error handling #
+#########################
 
-# Databases
+if SENTRY_DSN is not None:  # pragma: no cover
+    globals()['INSTALLED_APPS'] += ('raven.contrib.django.raven_compat',)
+
+#############
+# Databases #
+#############
 
 import mongoengine
 
