@@ -25,5 +25,7 @@ ALLOWED_HOSTS = ['.workfor.us']
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '6r__q4gindk5hzbb^)u!q%4-!d&amp;clxu#%0g3v4m@rg7!xf$#=@'
 
+SENTRY_DSN = None
+
 # Do *not* set to True if you're connecting to the production database!
 MONGO_AUTO_CREATE_INDEXES = True
