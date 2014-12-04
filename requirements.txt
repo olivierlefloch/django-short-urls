@@ -1,3 +1,4 @@
 -r ./vendor/pywork4core/requirements.txt
 
 dogstatsd-python
+raven>=3

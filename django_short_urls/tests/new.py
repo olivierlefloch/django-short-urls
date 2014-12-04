@@ -7,7 +7,7 @@ from django_app.mongo_test_case import MongoTestCase
 
 from django_short_urls.views import new
 from django_short_urls.models import User
-from django_short_urls.w4l_http import HTTP_OK, HTTP_BAD_REQUEST, HTTP_UNAUTHORIZED, HTTP_FORBIDDEN, HTTP_CONFLICT
+from http.status import HTTP_OK, HTTP_BAD_REQUEST, HTTP_UNAUTHORIZED, HTTP_FORBIDDEN, HTTP_CONFLICT
 
 
 class ViewNewTestCase(MongoTestCase):
@@ -30,6 +30,16 @@ class ViewNewTestCase(MongoTestCase):
 
         self.data['long_url'] = 'http://work4.com'
         self.data['short_path'] = 'inva/lid'
+
+        self.assertEqual(new(self.factory.post('/new', self.data)).status_code, HTTP_BAD_REQUEST)
+
+        self.data['allow_slashes_in_prefix'] = True
+
+        self.assertEqual(new(self.factory.post('/new', self.data)).status_code, HTTP_BAD_REQUEST)
+
+        self.data['short_path'] = 'valid'
+        self.data['prefix'] = 'inva/lid'
+        del self.data['allow_slashes_in_prefix']
 
         self.assertEqual(new(self.factory.post('/new', self.data)).status_code, HTTP_BAD_REQUEST)
 
@@ -64,5 +74,10 @@ class ViewNewTestCase(MongoTestCase):
 
         self.data['short_path'] = 'bar'
         self.data['prefix'] = 'foo'
+
+        self.assertEqual(new(self.factory.post('/new', self.data)).status_code, HTTP_OK)
+
+        self.data['prefix'] = 'inva/lid'
+        self.data['allow_slashes_in_prefix'] = True
 
         self.assertEqual(new(self.factory.post('/new', self.data)).status_code, HTTP_OK)

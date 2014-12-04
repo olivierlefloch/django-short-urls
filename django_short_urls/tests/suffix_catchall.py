@@ -13,10 +13,12 @@ class ValidRedirectPathTestCase(unittest.TestCase):
         self.assertEqual(get_hash_from('azerty/uiop'), ('azerty/uiop', None))
         self.assertEqual(get_hash_from('a/z/e/r/t/y/u/i/o/p'), ('a/z/e/r/t/y/u/i/o/p', None))
 
+        self.assertEqual(get_hash_from('some/hash/referrals'), ('some/hash', 'referrals'))
         self.assertEqual(get_hash_from('some/hash/recruiter'), ('some/hash', 'recruiter'))
         self.assertEqual(get_hash_from('some/hash/share'), ('some/hash', 'share'))
         self.assertEqual(get_hash_from('some/hash/search'), ('some/hash', 'search'))
 
+        self.assertEqual(get_hash_from('some/hashreferrals'), ('some/hashreferrals', None))
         self.assertEqual(get_hash_from('some/hashrecruiter'), ('some/hashrecruiter', None))
         self.assertEqual(get_hash_from('some/hashshare'), ('some/hashshare', None))
         self.assertEqual(get_hash_from('some/hashsearch'), ('some/hashsearch', None))

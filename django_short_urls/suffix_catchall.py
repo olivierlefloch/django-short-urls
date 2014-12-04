@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 import re
 
 
-VALID_REDIRECTIONS = ('recruiter', 'share', 'search')
+VALID_REDIRECTIONS = ('recruiter', 'share', 'search', 'referrals')
 
 
 def get_hash_from(path):

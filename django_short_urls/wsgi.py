@@ -18,14 +18,11 @@ framework.
 from __future__ import unicode_literals
 
 import os
-import site
+import sys
 
 
-# pylint: disable=W0511
-# FIXME: Use PyUnicorn+Foreman...
 ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
-site.addsitedir(os.path.join(ROOT_DIR, 'venv/lib/python2.7/site-packages'))
-site.addsitedir(ROOT_DIR)
+sys.path.append(ROOT_DIR)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_short_urls.settings")
 

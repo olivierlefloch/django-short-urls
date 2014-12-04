@@ -25,8 +25,7 @@ ALLOWED_HOSTS = ['.workfor.us']
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '<%= @creds["secret_key"] %>'
 
+SENTRY_DSN = '<%= @creds["sentry_dsn"] %>'
+
 # Do *not* set to True if you're connecting to the production database!
 MONGO_AUTO_CREATE_INDEXES = False
-
-# If true, then do not log clicks or allow creating new short links
-SITE_READ_ONLY = False

@@ -4,14 +4,12 @@
 
 from __future__ import unicode_literals
 
-# pylint: disable=W0511
-# TODO: Move to a dedicated ServiceUnavailable app
 from django.conf import settings
-
 from django.utils.log import getLogger
 import mongoengine
 
-from django_short_urls.exceptions import DatabaseWriteDenied
+from utils.mongo import mongoengine_is_primary
+
 from django_short_urls.w4l_http import response_service_unavailable
 
 
@@ -24,12 +22,12 @@ class ServiceUnavailableMiddleware(object):
     def process_request(self, request):
         """
         Called for every request. If the website is unavailable, or a request.method that would modify the database is
-        invoked, returns an HTTP Service Unavailable response.
+        invoked without a connection to a primary, returns an HTTP Service Unavailable response.
         """
 
         if (
             settings.SERVICE_UNAVAILABLE
-            or (settings.SITE_READ_ONLY and request.method not in ("GET", "HEAD"))
+            or (request.method not in ("GET", "HEAD") and not mongoengine_is_primary())
         ):
             # Can't use render because there is no context
             return response_service_unavailable()
@@ -40,9 +38,7 @@ class ServiceUnavailableMiddleware(object):
         """
         try:
             return view_func(request, *view_args, **view_kwargs)
-        except (mongoengine.connection.ConnectionError, DatabaseWriteDenied) as err:
-            # TODO: Raise a DatabaseWriteDenied exception when trying to write to the database when in readonly mode.
-            # Currently we rely on the developer checking settings.SITE_READ_ONLY in GET views.
+        except mongoengine.connection.ConnectionError as err:
             getLogger('app').error('Database access error: %s' % err)
 
             return response_service_unavailable()
