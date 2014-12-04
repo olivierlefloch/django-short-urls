@@ -38,12 +38,37 @@ for (key, value) in init_settings(APP_NAME=APP_NAME, DEBUG=DEBUG):
     if key not in globals():
         globals()[key] = value
 
-#########################
-# Sentry error handling #
-#########################
+######################
+# ERRORS AND LOGGING #
+######################
 
 if SENTRY_DSN is not None:  # pragma: no cover
     globals()['INSTALLED_APPS'] += ('raven.contrib.django.raven_compat',)
+
+if not DEBUG:  # pragma: no cover
+    LOGGING = {
+        'version': 1,
+        'formatters': {
+            'standard': {
+                'format': "%(levelname)s [%(module)s] %(message)s"
+            },
+        },
+        'handlers': {
+            'console': {
+                'level': 'WARNING',
+                'class': 'logging.StreamHandler',
+                'formatter': 'standard'
+            },
+            'sentry': {
+                'level': 'ERROR',
+                'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+            }
+        },
+        'root': {
+            'handlers': ['console', 'sentry'],
+            'level': 'WARNING'
+        }
+    }
 
 #############
 # Databases #
