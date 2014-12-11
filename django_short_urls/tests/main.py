@@ -40,3 +40,7 @@ class ViewMainTestCase(MongoTestCase):
 
         with self.assertRaises(Http404):
             main(self.factory.get('/%s/' % path404), path404 + '/')
+
+    def test_divide_by_zero(self):
+        with self.assertRaises(ZeroDivisionError):
+            self.client.get('/DivideByZeroPlease')  # pylint: disable=E1103
