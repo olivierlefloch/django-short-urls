@@ -20,10 +20,8 @@ class ViewMainTestCase(MongoTestCase):
 
     @patch('django_short_urls.views.statsd')
     def test_redirect(self, mock_statsd):
-        self.assertEqual(
-            main(self.factory.get('/%s' % self.path), self.path).status_code,
-            302
-        )
+        response = main(self.factory.get('/%s' % self.path), self.path)
+        self.assertEqual(response.status_code, 302)
         self.assertEqual(self.link.reload().clicks, 1)
         mock_statsd.increment.assert_called_once()
 
