@@ -33,7 +33,6 @@ class ViewMainTestCase(MongoTestCase):
         self.assertEqual(response_ampersand.status_code, 302)
         self.assertEqual(response_ampersand.serialize_headers(), response.serialize_headers())
 
-
     def test_redirect_suffix(self):
         response = main(self.factory.get('/%s/recruiter' % self.path), self.path + '/recruiter')
 
