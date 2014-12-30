@@ -43,6 +43,11 @@ def main(request, path):
         # Removing trailing slash so "/jobs/" and "/jobs" redirect identically
         path = path[:-1]
 
+    if '&' in path:
+        # If the link was badly HTML encoded initially, still serve the proper page, '&' is not a valid path character
+        # anyway
+        path, _ = path.split('&', 1)
+
     link = Link.find_by_hash(path)
 
     if link is None:
