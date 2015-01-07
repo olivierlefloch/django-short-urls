@@ -4,7 +4,7 @@
 
 from __future__ import unicode_literals
 
-ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyz"
+ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 
 def encode(decoded, alphabet=ALPHABET):
