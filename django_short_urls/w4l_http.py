@@ -10,7 +10,7 @@ from django.template import loader
 import json
 import re
 import requests
-from urllib import urlencode
+import urllib
 import urlparse
 
 from http.status import HTTP_OK, HTTP_SERVICE_UNAVAILABLE
@@ -75,7 +75,7 @@ def url_append_parameters(url, params_to_replace, defaults):
 
     return urlparse.urlunparse((
         scheme, netloc, path, params,
-        urlencode(link_query),
+        urllib.urlencode(link_query),
         fragment
     ))
 
