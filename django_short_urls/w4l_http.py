@@ -33,6 +33,8 @@ _BROWSERS = OrderedDict((
 ))
 _BROWSERS_REGEX = re.compile('|'.join(_BROWSERS.keys()))
 
+URL_SAFE_FOR_PATH = urllib.always_safe + '/'
+
 
 def validate_url(url):
     """Validates that a url has a valid structure"""
