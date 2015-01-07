@@ -66,7 +66,12 @@ endif
 
 .SILENT: deep_clean_ask confirm install install_pre install_do install_project install_post install_phantomjs
 
-all: clean install lint test
+all: clean_pyc clean install lint test_and_report
+
+# We can't use sub targets because we need to specify the cmd for manage and otherwise we get
+# "make: *** No rule to make target `cmd=createsuperuser', needed by `all_run'.  Stop."
+all_run:
+	make clean_pyc clean install lint test_and_report manage cmd=createsuperuser run
 
 #########
 # RULES #
@@ -108,10 +113,13 @@ clean:
 	(test -d ${TEMP_DIR} && rm -rf ${TEMP_DIR}* ) || true
 
 # The code below helps reset the repository completely to its pre-install state
-deep_clean: deep_clean_ask confirm deep_clean_do
+deep_clean: deep_clean_ask confirm deep_clean_project deep_clean_do
 
 deep_clean_ask:
 	echo "This will remove any unversioned files, except for the settings file"
+
+deep_clean_project::
+	# Override deep_clean_project to specify project specific deep clean commands
 
 deep_clean_do: clean_pyc
 	rm -rf ${TEMP_DIR} ${PYTHONHOME}
@@ -144,6 +152,9 @@ endif
 
 COVERAGE_RC = ${WORK4CORE_DIR}config/coverage.rc
 
+test_one:
+	${RUN_CMD} ${PYTHONHOME}/bin/coverage run --rcfile=${COVERAGE_RC} --source=${APP_DIR},${WORK4CORE_DIR} ${PROJECT_DIR}manage.py test --traceback --noinput ${APP_NAME}.${test}
+
 test:
 	${RUN_CMD} ${PYTHONHOME}/bin/coverage run --rcfile=${COVERAGE_RC} --source=${APP_DIR},${WORK4CORE_DIR} ${PROJECT_DIR}manage.py test --traceback --noinput django_app
 	${RUN_CMD} ${PYTHONHOME}/bin/coverage run --append --rcfile=${COVERAGE_RC} --source=${APP_DIR},${WORK4CORE_DIR} ${PROJECT_DIR}manage.py test --traceback --noinput ${APP_NAME}
@@ -160,8 +171,11 @@ test_and_report:
 # Running the app and commands #
 ################################
 
+manage:
+	${RUN_CMD} ${PROJECT_DIR}manage.py ${cmd}
+
 run:
-	${RUN_CMD} ${PROJECT_DIR}manage.py runserver
+	make manage cmd=runserver
 
 ifeq (${USE_FOREMAN}, TRUE)
 start:
@@ -169,7 +183,7 @@ start:
 endif
 
 shell:
-	${RUN_CMD} ${PROJECT_DIR}manage.py shell
+	make manage cmd=shell
 
 collectstatic:
 	${RUN_CMD} ${PROJECT_DIR}manage.py collectstatic --noinput

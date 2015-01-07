@@ -71,7 +71,7 @@ def init_settings(APP_NAME, DEBUG):
     USE_L10N = False
 
     TEMPLATE_DEBUG = DEBUG
-    TEMPLATE_STRING_IF_INVALID = 'TEMPLATE: INVALID VAR'
+    TEMPLATE_STRING_IF_INVALID = 'TEMPLATE: INVALID VAR - %s'
 
     # The only tangible logging performed by this configuration is to send an email to
     # the site admins on every HTTP 500 error when DEBUG=False.

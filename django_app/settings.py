@@ -30,7 +30,7 @@ import mongoengine
 
 try:
     # pylint: disable=W0142,E0602
-    mongoengine.connect(**MONGOENGINE)
+    mongoengine.connect(tz_aware=USE_TZ, **MONGOENGINE)
 except mongoengine.connection.ConnectionError, err:  # pragma: no cover
     logging.error('MongoEngine ConnectionError: %s', err)
 

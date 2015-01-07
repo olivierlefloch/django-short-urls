@@ -4,6 +4,7 @@
 
 from __future__ import unicode_literals
 
+from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, QueryDict
 import json
 import requests
@@ -59,6 +60,11 @@ def url_append_parameters(url, params_to_replace, defaults):
     ))
 
 
+def empty_response():
+    """Returns a totally empty, succesful response"""
+    return HttpResponse(status=HTTP_OK)
+
+
 def response(message=None, status=HTTP_OK, **kwargs):
     """Builds a json response with the kwargs object and some additional standardized fields"""
     kwargs.update({
@@ -67,7 +73,7 @@ def response(message=None, status=HTTP_OK, **kwargs):
         "message": message
     })
 
-    return HttpResponse(json.dumps(kwargs), status=status, mimetype="application/json")
+    return HttpResponse(json.dumps(kwargs, cls=DjangoJSONEncoder), status=status, mimetype="application/json")
 
 
 def proxy(url):
