@@ -12,7 +12,7 @@ import re
 from statsd import statsd
 
 import django_short_urls.int_to_alnum as int_to_alnum
-from django_short_urls.exceptions import ForbiddenKeyword, ShortPathConflict
+from django_short_urls.exceptions import PathIsNotUrlSafe, ForbiddenKeyword, ShortPathConflict
 
 
 # pylint: disable=R0904, E1101
@@ -66,11 +66,11 @@ class Link(Document):
     def shorten(cls, long_url, short_path=None, prefix=None):
         """Public API to create a short link"""
 
-        ForbiddenKeyword.raise_if_banned(short_path)
-        ForbiddenKeyword.raise_if_banned(prefix)
-
         if prefix is None:
             prefix = ''
+        else:
+            ForbiddenKeyword.raise_if_banned(prefix)
+            PathIsNotUrlSafe.raise_if_unsafe(prefix)
 
         if short_path is None or not len(short_path):
             link = cls.find_for_prefix_and_long_url(prefix, long_url).first()
@@ -78,6 +78,9 @@ class Link(Document):
             if link is None:
                 link = cls.create_with_random_short_path(long_url, prefix)
         else:
+            PathIsNotUrlSafe.raise_if_unsafe(short_path)
+            ForbiddenKeyword.raise_if_banned(short_path)
+
             link, created = cls.__get_or_create(prefix, short_path, long_url)
 
             if not created and link.long_url != long_url:
