@@ -80,7 +80,6 @@ def init_settings(APP_NAME, DEBUG):
     TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
     NOSE_ARGS = ['--logging-clear-handlers']  # Nose capturing logs is all we need during tests
 
-
     # The only tangible logging performed by this configuration is to send an email to
     # the site admins on every HTTP 500 error when DEBUG=False.
     # See http://docs.djangoproject.com/en/dev/topics/logging for
