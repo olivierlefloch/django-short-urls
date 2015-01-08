@@ -7,7 +7,7 @@ import os
 from mock import patch
 from unittest import TestCase
 
-from utils import gui, path, tmp
+from utils import gui, mongo, path, tmp
 
 
 class UtilsTest(TestCase):
@@ -44,3 +44,6 @@ class UtilsTest(TestCase):
         os.remove(temp_filename)
 
         self.assertEquals(len(os.listdir(self.temp_dir)), nb_temp_files_before)
+
+    def test_mongoengine_is_primary(self):
+        self.assertTrue(mongo.mongoengine_is_primary())

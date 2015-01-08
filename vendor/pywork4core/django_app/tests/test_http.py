@@ -7,7 +7,7 @@ from django.utils import unittest
 from mock import patch
 
 from http.utils import (
-    validate_url, url_append_parameters, proxy, response
+    empty_response, proxy, response, url_append_parameters, validate_url
 )
 from http.status import HTTP_CONFLICT, HTTP_OK
 import json
@@ -64,3 +64,9 @@ class W4lHttpTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, HTTP_OK)
         json_content = json.loads(res.content)
         self.assertFalse(json_content['error'])
+
+    def test__empty_reponse(self):
+        res = empty_response()
+
+        self.assertEqual(res.status_code, HTTP_OK)
+        self.assertEqual(res.content, '')

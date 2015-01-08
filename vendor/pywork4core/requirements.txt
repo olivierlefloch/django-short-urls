@@ -1,5 +1,6 @@
 -r ./virtualenv/requirements.txt
-Django==1.5
+Django==1.6
+django-nose==1.2
 PyYAML==3.11
 argparse==1.2.1
 astroid==1.0.1

@@ -8,7 +8,7 @@ endif
 PYTHONHOME ?= ${PROJECT_DIR}venv/
 VENV_WRAPPER_DIR = $(abspath ${PYTHONHOME})/.virtualenvs/
 
-PIP_VERSION = 1.4.1
+PIP_VERSION = 6.0.6
 PYTHON_VERSION = python2.7
 
 ACTIVATE_VENV = . ${PYTHONHOME}/bin/activate

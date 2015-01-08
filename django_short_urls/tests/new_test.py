@@ -28,6 +28,7 @@ class ViewNewTestCase(MongoTestCase):
         # Test missing long_url
         self.assertEqual(new(self.factory.post('/new', self.data)).status_code, HTTP_BAD_REQUEST)
 
+        # Test for slashes in the hash
         self.data['long_url'] = 'http://work4.com'
         self.data['short_path'] = 'inva/lid'
 
@@ -40,6 +41,12 @@ class ViewNewTestCase(MongoTestCase):
         self.data['short_path'] = 'valid'
         self.data['prefix'] = 'inva/lid'
         del self.data['allow_slashes_in_prefix']
+
+        self.assertEqual(new(self.factory.post('/new', self.data)).status_code, HTTP_BAD_REQUEST)
+
+        # Test for other invalid chars in the url ('%', '?', etc.)
+        self.data['short_path'] = 'inva&lid'
+        del self.data['prefix']
 
         self.assertEqual(new(self.factory.post('/new', self.data)).status_code, HTTP_BAD_REQUEST)
 

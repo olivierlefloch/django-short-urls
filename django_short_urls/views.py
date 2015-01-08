@@ -13,6 +13,7 @@ from django.http import Http404
 from django.shortcuts import redirect
 from django.utils.log import getLogger
 from django.views.decorators.http import require_safe, require_POST
+import re
 from statsd import statsd
 
 from utils.mongo import mongoengine_is_primary
@@ -20,16 +21,30 @@ from http.status import HTTP_UNAUTHORIZED, HTTP_BAD_REQUEST, HTTP_CONFLICT, HTTP
 
 import django_short_urls.suffix_catchall as suffix_catchall
 from django_short_urls.models import Link, User
-from django_short_urls.exceptions import ForbiddenKeyword, ShortPathConflict
+from django_short_urls.exceptions import InvalidHashException, ForbiddenKeyword, ShortPathConflict
 from django_short_urls.w4l_http import (
-    validate_url, url_append_parameters, response, proxy, get_browser, get_client_ip
+    get_browser, get_client_ip, proxy, response, url_append_parameters, URL_SAFE_FOR_PATH, validate_url
 )
-
 
 REF_PARAM_NAME = 'ref'
 REF_PARAM_DEFAULT_VALUE = 'shortener'
 
 REDIRECT_PARAM_NAME = 'redirect_suffix'
+
+# This regex extracts the longest valid path in the url
+_EXTRACT_VALID_PATH_RE = re.compile(r'^[%s]*' % URL_SAFE_FOR_PATH)
+
+
+def _extract_valid_path(path):
+    """Remove anything after the first non-URL_SAFE_FOR_PATH char as well as the last potential trailing '/',"""
+
+    path = _EXTRACT_VALID_PATH_RE.match(path).group(0)
+
+    if path[-1:] == '/':
+        # This can't be done directly in the regex because of greediness issues (URL_SAFE_FOR_PATH includes '/')
+        return path[:-1]
+
+    return path
 
 
 # pylint: disable=E1101, W0511
@@ -39,14 +54,8 @@ def main(request, path):
     Search for a long link matching the `path` and redirect
     '''
 
-    if len(path) and path[-1] == '/':
-        # Removing trailing slash so "/jobs/" and "/jobs" redirect identically
-        path = path[:-1]
-
-    if '&' in path:
-        # If the link was badly HTML encoded initially, still serve the proper page, '&' is not a valid path character
-        # anyway
-        path, _ = path.split('&', 1)
+    #
+    path = _extract_valid_path(path)
 
     link = Link.find_by_hash(path)
 
@@ -145,13 +154,15 @@ def new(request):
         if 'prefix' in params:
             del params['prefix']
 
-        params['hash'] = err.link.hash
+        params['hash'] = err.hash
 
         return response(status=HTTP_CONFLICT, message=str(err), **params)
-    except ForbiddenKeyword, err:
-        getLogger('app').warning('Attempt to use forbidden keyword "%s" in a short url.' % err.keyword)
+    except InvalidHashException, err:
+        getLogger('app').warning(str(err))
 
-        return response(status=HTTP_FORBIDDEN, message=str(err), **params)
+        return response(
+            status=HTTP_FORBIDDEN if isinstance(err, ForbiddenKeyword) else HTTP_BAD_REQUEST,
+            message=str(err), **params)
 
     params['short_path'] = link.hash.split('/')[-1]
 

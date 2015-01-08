@@ -25,7 +25,7 @@ class MongoTestCase(TestCase):
         disconnect()
 
         db_name = 'test_%s' % settings.MONGOENGINE['db']
-        self.database = connect(db_name)[db_name]
+        self.database = connect(db_name, tz_aware=settings.USE_TZ)[db_name]
 
         super(MongoTestCase, self).__init__(method_name)
 
