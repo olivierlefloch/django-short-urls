@@ -12,6 +12,8 @@ from .w4l_http import URL_SAFE_FOR_PATH
 class InvalidHashException(Exception):
     """An exception that can store the invalid hash"""
 
+    MESSAGE_TEMPLATE = '"%s" is an invalid hash.'
+
     def __init__(self, hash_):
         super(InvalidHashException, self).__init__()
 
