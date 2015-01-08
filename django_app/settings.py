@@ -13,6 +13,14 @@ APP_NAME = 'django_app'
 
 DEBUG = True
 
+MONGOENGINE = {
+    'db': 'pywork4core',
+    'host': 'localhost',
+    'port': 27017,
+    'username': '',
+    'password': ''
+}
+
 SECRET_KEY = 'Foobar'
 
 #########################

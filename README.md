@@ -34,9 +34,10 @@ Typical usage
 Install PhantomJS dependency
 ============================
 
-Just write the following line in your project's Makefile:
+To install `PhantomJS` in your `venv`, override the `install_project` rule in your projects `Makefile` and have it
+invoke the `install_phantomjs` rule:
 
-    USE_PHANTOMJS = TRUE
+    install_project:: install_phantomjs
 
-Then, the phantomjs binary would be installed at pywork4core/bin/phantomjs. You can also specify the
-the version you want installed using PHANTOM_VERSION variable.
+The `phantomjs` binary will then be installed at `pywork4core/bin/phantomjs`. You can also specify the
+the version you want installed with the `PHANTOM_VERSION` variable.

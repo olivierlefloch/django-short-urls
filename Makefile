@@ -24,7 +24,6 @@ TEMP_DIR = ${PROJECT_DIR}temp/
 PYTHONHOME ?= ${PROJECT_DIR}venv
 VENV_WRAPPER_DIR = $(abspath ${PYTHONHOME})/.virtualenvs/
 
-USE_PHANTOMJS = FALSE
 PHANTOM_VERSION = 1.9.0
 
 ifeq (${WORK4CORE_DIR}, ${PROJECT_DIR})
@@ -64,7 +63,7 @@ endif
 # CONFIG #
 ##########
 
-.SILENT: deep_clean_ask confirm install install_pre install_do install_project install_post install_phantomjs
+.SILENT: deep_clean_ask confirm install install_pre install_do install_project install_post
 
 all: clean_pyc clean install lint test_and_report
 
@@ -88,15 +87,10 @@ install_pre:
 install_do: venv
 	mkdir -p ${TEMP_DIR}
 
-install_project:: install_phantomjs
+install_project::
 
-# only install PhantomJS if needed
 install_phantomjs:
-ifeq (${USE_PHANTOMJS}, TRUE)
 	./bin/install_phantomjs ${PHANTOM_VERSION}
-else
-	echo "No need to install PhantomJS"
-endif
 
 install_post:
 	echo "Copying settings..."

@@ -15,5 +15,3 @@ class MongoTestCaseTestCase(mongo_test_case.MongoTestCase):
         self.database.test_collection.insert({'foo': 'bar'})
 
         self.MongoDoc().save()
-
-        self.assertEqual(1, 1)
