@@ -29,7 +29,7 @@ def init_settings(APP_NAME, DEBUG):
     globals()['APP_NAME'] = APP_NAME
     globals()['DEBUG'] = DEBUG
 
-    INSTALLED_APPS = ('django_app', APP_NAME)
+    INSTALLED_APPS = ('django_app', 'django_nose', APP_NAME)
 
     # Directories
 
@@ -72,6 +72,14 @@ def init_settings(APP_NAME, DEBUG):
 
     TEMPLATE_DEBUG = DEBUG
     TEMPLATE_STRING_IF_INVALID = 'TEMPLATE: INVALID VAR - %s'
+
+    ###########
+    # TESTING #
+    ###########
+
+    TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+    NOSE_ARGS = ['--logging-clear-handlers']  # Nose capturing logs is all we need during tests
+
 
     # The only tangible logging performed by this configuration is to send an email to
     # the site admins on every HTTP 500 error when DEBUG=False.
