@@ -128,7 +128,7 @@ clean_pyc:
 ###################
 
 PYLINT_RC = ${WORK4CORE_DIR}config/pylint.rc
-EXTRA_ARGS_FOR_TESTS = --method-rgx='([a-z_][a-z0-9_]{2,30}|(setUp|tearDown)(Class)?)$$' --disable=C0111,R0904,C0321,W0212
+EXTRA_ARGS_FOR_TESTS = --method-rgx='([a-z_][a-z0-9_]{2,50}|(setUp|tearDown)(Class)?)$$' --disable=C0111,R0904,C0321,W0212
 lint:
 	${PYTHONHOME}/bin/pep8 --config=${WORK4CORE_DIR}config/pep8.cfg ${PROJECT_DIR}
 	${PYTHONHOME}/bin/pylint --rcfile=${PYLINT_RC} ${WORK4CORE_DIR}

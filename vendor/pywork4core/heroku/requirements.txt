@@ -1,6 +1,6 @@
-celery
-dj-database-url
-django-celery
-gunicorn
-newrelic
-redis
+celery==3.1.16
+dj-database-url==0.3.0
+django-celery==3.1.16
+gunicorn==19.1.1
+newrelic>=2.36
+redis==2.10.3
