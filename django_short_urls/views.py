@@ -158,7 +158,7 @@ def new(request):
 
         return response(status=HTTP_CONFLICT, message=str(err), **params)
     except InvalidHashException, err:
-        getLogger('app').warning(str(err))
+        getLogger('app').error(str(err))
 
         return response(
             status=HTTP_FORBIDDEN if isinstance(err, ForbiddenKeyword) else HTTP_BAD_REQUEST,
