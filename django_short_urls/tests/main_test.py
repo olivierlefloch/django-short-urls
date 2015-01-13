@@ -43,6 +43,15 @@ class ViewMainTestCase(MongoTestCase):
         expect_same_with_suffix('/%5C')
         expect_same_with_suffix('%C2%A0%E2%80%A6')
 
+    @patch('django_short_urls.views.proxy')
+    @patch('django_short_urls.views.statsd')
+    def test_act_as_proxy(self, mock_statsd, mock_proxy):  # pylint: disable=W0613
+        self.link.act_as_proxy = True
+        self.link.save()
+
+        main(self.factory.get('/%s' % self.path), self.path)
+        self.assertEqual(mock_proxy.call_count, 1)
+
     def test_redirect_suffix(self):
         response = main(self.factory.get('/%s/recruiter' % self.path), self.path + '/recruiter')
 
