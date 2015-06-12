@@ -77,7 +77,7 @@ def url_append_parameters(url, params_to_replace, defaults):
 
     return urlparse.urlunparse((
         scheme, netloc, path, params,
-        urllib.urlencode(link_query),
+        link_query.urlencode(),
         fragment
     ))
 

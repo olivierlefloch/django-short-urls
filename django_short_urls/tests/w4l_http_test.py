@@ -36,8 +36,8 @@ class W4lHttpTestCase(unittest.TestCase):
             'http://www.theuselessweb.com/?foo=search'
         )
         self.assertEqual(
-            url_append_parameters('http://www.theuselessweb.com?a=1&b=2&z=5', {'foo': 'search'}, {'b': '3'}),
-            'http://www.theuselessweb.com?a=1&b=2&z=5&foo=search'
+            url_append_parameters('http://www.theuselessweb.com?a=1&b=2&z=5', {'foo': 'séarch'}, {'b': '3'}),
+            'http://www.theuselessweb.com?a=1&b=2&z=5&foo=s%C3%A9arch'
         )
         self.assertEqual(
             url_append_parameters('http://www.theuselessweb.com?foo=4', {'foo': 'search'}, {'c': '42'}),
