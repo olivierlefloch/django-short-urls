@@ -12,7 +12,7 @@ Use as such (compatible with other TestCase classes):
 from __future__ import division, unicode_literals
 
 from django.test import TestCase
-from PIL import Image, ImageChops, ImageStat
+from PIL import Image, ImageChops
 
 
 class ImageTestCase(TestCase):
