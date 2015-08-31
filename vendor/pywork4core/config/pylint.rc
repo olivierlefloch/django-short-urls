@@ -3,6 +3,7 @@
 profile=no
 ignore=local_settings.py,tests
 persistent=yes
+jobs=0
 
 
 [MESSAGES CONTROL]
@@ -13,9 +14,7 @@ disable=I0011
 [REPORTS]
 
 output-format=colorized
-include-ids=yes
 msg-template={path}:{line}: [{msg_id}({symbol}), {obj}] {msg}
-symbols=no
 
 # Put messages in a separate file for each module / package specified on the
 # command line instead of printing them on stdout. Reports (if any) will be

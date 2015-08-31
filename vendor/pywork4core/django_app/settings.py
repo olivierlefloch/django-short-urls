@@ -6,8 +6,10 @@ from __future__ import unicode_literals
 
 import logging
 
+import mongoengine
 
 from django_app.default_settings import init_settings
+
 
 APP_NAME = 'django_app'
 
@@ -34,10 +36,8 @@ for (key, value) in init_settings(APP_NAME=APP_NAME, DEBUG=DEBUG):
 
 # Databases
 
-import mongoengine
-
 try:
-    # pylint: disable=W0142,E0602
+    # pylint: disable=E0602
     mongoengine.connect(tz_aware=USE_TZ, **MONGOENGINE)
 except mongoengine.connection.ConnectionError, err:  # pragma: no cover
     logging.error('MongoEngine ConnectionError: %s', err)

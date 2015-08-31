@@ -2,6 +2,8 @@ machine:
   environment:
     ADMINS: Olivier Le Floch <olefloch@work4labs.com>
     SECRET_KEY: CgKyhUT9eiTqwrfjPzTKCgKyhUT9eiTqwrfjPzTK
+  python:
+    version: 2.7.9
 
 dependencies:
   override:

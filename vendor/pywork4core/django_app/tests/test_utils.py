@@ -5,12 +5,12 @@ from __future__ import unicode_literals
 import os
 
 from mock import patch
-from unittest import TestCase
 
-from utils import gui, mongo, path, tmp
+from django_app.test import PyW4CTestCase
+from utils import gui, mongo, path, tmp, patterns
 
 
-class UtilsTest(TestCase):
+class UtilsTest(PyW4CTestCase):
     temp_dir = 'temp'
 
     @staticmethod
@@ -47,3 +47,31 @@ class UtilsTest(TestCase):
 
     def test_mongoengine_is_primary(self):
         self.assertTrue(mongo.mongoengine_is_primary())
+
+    def test_patterns_singleton(self):
+        val = 42
+
+        class _TestSingleton(object):
+            __metaclass__ = patterns.Singleton
+
+            var = val
+
+            def get_val(self):
+                return self.var
+
+            def set_var(self, new_val):
+                self.var = new_val
+
+        self.assertTrue(_TestSingleton() is _TestSingleton())
+        self.assertEqual(id(_TestSingleton()), id(_TestSingleton()))
+
+        self.assertEqual(_TestSingleton().get_val(), val)
+        self.assertEqual(_TestSingleton().var, val)
+
+        new_val = 21
+        _TestSingleton().var = new_val
+
+        self.assertEqual(_TestSingleton().var, new_val)
+
+        _TestSingleton().set_var(val)
+        self.assertEqual(_TestSingleton().get_val(), val)

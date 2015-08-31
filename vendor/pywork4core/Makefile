@@ -44,15 +44,15 @@ include ${WORK4CORE_DIR}/virtualenv/Makefile
 RUNNER = ${ACTIVATE_VENV} &&
 
 ifeq ($(wildcard $(PROJECT_DIR).env),)
-	USE_FOREMAN = FALSE
+	USE_HONCHO = FALSE
 	RUN_CMD = ${RUNNER}
 
 	SETTINGS_TPL_FILE = ${APP_DIR}local_settings.tpl.py
 	SETTINGS_FILE = ${APP_DIR}local_settings.py
 else
-	USE_FOREMAN = TRUE
-	RUN_CMD = ${RUNNER} foreman run
-	START_CMD = ${RUNNER} foreman start
+	USE_HONCHO = TRUE
+	RUN_CMD = ${RUNNER} honcho run
+	START_CMD = ${RUNNER} honcho start
 
 	SETTINGS_TPL_FILE = ${PROJECT_DIR}env.tpl
 	SETTINGS_FILE = ${PROJECT_DIR}.env
@@ -90,7 +90,7 @@ install_do: venv
 install_project::
 
 install_phantomjs:
-	./bin/install_phantomjs ${PHANTOM_VERSION}
+	${WORK4CORE_DIR}/bin/install_phantomjs ${PROJECT_DIR} ${PHANTOM_VERSION}
 
 install_post:
 	echo "Copying settings..."
@@ -128,7 +128,7 @@ clean_pyc:
 ###################
 
 PYLINT_RC = ${WORK4CORE_DIR}config/pylint.rc
-EXTRA_ARGS_FOR_TESTS = --method-rgx='([a-z_][a-z0-9_]{2,50}|(setUp|tearDown)(Class)?)$$' --disable=C0111,R0904,C0321,W0212
+EXTRA_ARGS_FOR_TESTS = --method-rgx='([a-z_][a-z0-9_]{2,50}|(setUp|tearDown)(Class)?)$$' --disable=C0111,R0904,C0321,W0212,too-many-ancestors
 lint:
 	${PYTHONHOME}/bin/pep8 --config=${WORK4CORE_DIR}config/pep8.cfg ${PROJECT_DIR}
 	${PYTHONHOME}/bin/pylint --rcfile=${PYLINT_RC} ${WORK4CORE_DIR}
@@ -147,11 +147,11 @@ endif
 COVERAGE_RC = ${WORK4CORE_DIR}config/coverage.rc
 
 test_one:
-	${RUN_CMD} ${PYTHONHOME}/bin/coverage run --rcfile=${COVERAGE_RC} --source=${APP_DIR},${WORK4CORE_DIR} ${PROJECT_DIR}manage.py test --traceback --noinput ${APP_NAME}.${test}
+	${RUN_CMD} ${PYTHONHOME}/bin/coverage run --rcfile=${COVERAGE_RC} --source=${APP_DIR},${WORK4CORE_DIR} ${PROJECT_DIR}manage.py test --noinput ${APP_NAME}.${test}
 
 test:
-	${RUN_CMD} ${PYTHONHOME}/bin/coverage run --rcfile=${COVERAGE_RC} --source=${APP_DIR},${WORK4CORE_DIR} ${PROJECT_DIR}manage.py test --traceback --noinput django_app
-	${RUN_CMD} ${PYTHONHOME}/bin/coverage run --append --rcfile=${COVERAGE_RC} --source=${APP_DIR},${WORK4CORE_DIR} ${PROJECT_DIR}manage.py test --traceback --noinput ${APP_NAME}
+	${RUN_CMD} ${PYTHONHOME}/bin/coverage run --rcfile=${COVERAGE_RC} --source=${APP_DIR},${WORK4CORE_DIR} ${PROJECT_DIR}manage.py test --noinput django_app
+	${RUN_CMD} ${PYTHONHOME}/bin/coverage run --append --rcfile=${COVERAGE_RC} --source=${APP_DIR},${WORK4CORE_DIR} ${PROJECT_DIR}manage.py test --noinput ${APP_NAME}
 	@${PYTHONHOME}/bin/coverage report --rcfile=${COVERAGE_RC} --fail-under=100 || (printf "\033[31mTest coverage is less than 100%%!\033[0m\n" && exit 1)
 
 test_report:
@@ -171,7 +171,7 @@ manage:
 run:
 	make manage cmd=runserver
 
-ifeq (${USE_FOREMAN}, TRUE)
+ifeq (${USE_HONCHO}, TRUE)
 start:
 	${START_CMD} $(PROC)
 endif
