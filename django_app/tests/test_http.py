@@ -3,9 +3,9 @@
 from __future__ import unicode_literals
 
 from django.http import HttpResponse
-from django.utils import unittest
 from mock import patch
 
+from django_app.test import PyW4CTestCase
 from http.utils import (
     empty_response, proxy, response, url_append_parameters, validate_url
 )
@@ -13,7 +13,7 @@ from http.status import HTTP_CONFLICT, HTTP_OK
 import json
 
 
-class W4lHttpTestCase(unittest.TestCase):
+class W4lHttpTestCase(PyW4CTestCase):
     def test(self):
         self.assertEqual(validate_url('http://workfor.us'), (True, None))
         self.assertEqual(validate_url('http://app.work4labs.com/jobs?job_id=42'), (True, None))
@@ -65,7 +65,7 @@ class W4lHttpTestCase(unittest.TestCase):
         json_content = json.loads(res.content)
         self.assertFalse(json_content['error'])
 
-    def test__empty_reponse(self):
+    def test_empty_response(self):
         res = empty_response()
 
         self.assertEqual(res.status_code, HTTP_OK)

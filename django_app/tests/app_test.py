@@ -2,12 +2,11 @@
 
 from __future__ import unicode_literals
 
-from unittest import TestCase
-
 from django_app import default_settings, models
+from django_app.test import PyW4CTestCase
 
 
-class DjangoAppTest(TestCase):
+class DjangoAppTest(PyW4CTestCase):
     def test_default_settings(self):
         # pylint: disable=C0103
         APP_NAME = 'django_app'

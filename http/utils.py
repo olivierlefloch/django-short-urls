@@ -61,7 +61,7 @@ def url_append_parameters(url, params_to_replace, defaults):
 
 
 def empty_response():
-    """Returns a totally empty, succesful response"""
+    """Returns a totally empty, successful response"""
     return HttpResponse(status=HTTP_OK)
 
 
@@ -73,7 +73,7 @@ def response(message=None, status=HTTP_OK, **kwargs):
         "message": message
     })
 
-    return HttpResponse(json.dumps(kwargs, cls=DjangoJSONEncoder), status=status, mimetype="application/json")
+    return HttpResponse(json.dumps(kwargs, cls=DjangoJSONEncoder), status=status, content_type="application/json")
 
 
 def proxy(url):
@@ -83,4 +83,4 @@ def proxy(url):
     return HttpResponse(
         resp.content,
         status=resp.status_code,
-        mimetype=resp.headers['Content-Type'])
+        content_type=resp.headers['Content-Type'])

@@ -4,12 +4,12 @@ from __future__ import unicode_literals
 
 import requests
 from requests.exceptions import HTTPError
-from unittest import TestCase
 
+from django_app.test import PyW4CTestCase
 from utils.mock_requests import patch_requests, patch_requests_decorator
 
 
-class UtilsMockRequestsTest(TestCase):
+class UtilsMockRequestsTest(PyW4CTestCase):
     requests_mock_dec_test_url = "http://testing.work4labs.com"
 
     def test_base_case(self):

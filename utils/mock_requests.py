@@ -58,7 +58,7 @@ def patch_requests(mapping):
         'delete': MagicMock(side_effect=_other_response_from_query),
     }
 
-    with patch.multiple('requests', **methods_map):  # pylint: disable=W0142
+    with patch.multiple('requests', **methods_map):
         yield {k: getattr(requests, k) for k in methods_map}
 
 

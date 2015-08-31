@@ -4,11 +4,11 @@ from __future__ import unicode_literals
 
 import sys
 
-from unittest import TestCase
+from django_app.test import PyW4CTestCase
 
 
-class PythonVersionTest(TestCase):
+class PythonVersionTest(PyW4CTestCase):
     def test(self):
-        # PyWork4Core only works with Python [2.7, 3[
+        # PyWork4Core only works with Python [2.7.9, 3[
         self.assertTrue(sys.version_info < (3,))
-        self.assertTrue(sys.version_info >= (2, 7))
+        self.assertTrue(sys.version_info >= (2, 7, 9))

@@ -33,9 +33,10 @@ def init_settings(APP_NAME, DEBUG):
 
     # Directories
 
-    PROJECT_ROOT_DIR = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))),
-    )
+    # Determine project's root directory based on the path to the module
+    # referenced by APP_NAME, in order to handle both standalone and subtree
+    # scenarios for pywork4core
+    PROJECT_ROOT_DIR = os.path.dirname(__import__(APP_NAME).__path__[0])
 
     APP_ROOT_DIR = os.path.join(PROJECT_ROOT_DIR, APP_NAME)
 
@@ -71,7 +72,6 @@ def init_settings(APP_NAME, DEBUG):
     USE_L10N = False
 
     TEMPLATE_DEBUG = DEBUG
-    TEMPLATE_STRING_IF_INVALID = 'TEMPLATE: INVALID VAR - %s'
 
     ###########
     # TESTING #
