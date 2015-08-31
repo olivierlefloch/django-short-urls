@@ -5,12 +5,12 @@ from __future__ import unicode_literals
 import io
 
 from django.core import management
-from django.test import TestCase
+from django_app.test import PyW4CTestCase
 
 from django_short_urls.models import Link
 
 
-class UrlStatsTestCase(TestCase):
+class UrlStatsTestCase(PyW4CTestCase):
     def test_generate_args_output(self):
         prefix = 'work4'
 

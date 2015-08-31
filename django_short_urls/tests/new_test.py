@@ -3,14 +3,14 @@
 from __future__ import unicode_literals
 
 from django.test.client import RequestFactory
-from django_app.mongo_test_case import MongoTestCase
+from django_app.test import PyW4CTestCase
 
 from django_short_urls.views import new
 from django_short_urls.models import User
 from http.status import HTTP_OK, HTTP_BAD_REQUEST, HTTP_UNAUTHORIZED, HTTP_FORBIDDEN, HTTP_CONFLICT
 
 
-class ViewNewTestCase(MongoTestCase):
+class ViewNewTestCase(PyW4CTestCase):
     def setUp(self):
         self.factory = RequestFactory()
 

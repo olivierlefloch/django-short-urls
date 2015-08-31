@@ -3,8 +3,9 @@
 from __future__ import unicode_literals
 
 from django.http import HttpResponse
-from django.utils import unittest
 from mock import Mock, patch
+
+from django_app.test import PyW4CTestCase
 
 from django_short_urls.w4l_http import (
     validate_url, url_append_parameters, proxy, response_service_unavailable, get_browser, get_client_ip,
@@ -12,7 +13,7 @@ from django_short_urls.w4l_http import (
 )
 
 
-class W4lHttpTestCase(unittest.TestCase):
+class W4lHttpTestCase(PyW4CTestCase):
     def test(self):
         self.assertEqual(validate_url('http://workfor.us'), (True, None))
         self.assertEqual(validate_url('http://app.work4labs.com/jobs?job_id=42'), (True, None))

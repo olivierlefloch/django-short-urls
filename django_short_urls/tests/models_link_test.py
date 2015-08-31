@@ -2,14 +2,14 @@
 
 from __future__ import unicode_literals
 
-from django_app.mongo_test_case import MongoTestCase
+from django_app.test import PyW4CTestCase
 from freezegun import freeze_time
 from mock import patch
 
 from django_short_urls.models import Link
 
 
-class LinkTestCase(MongoTestCase):
+class LinkTestCase(PyW4CTestCase):
     URL = "http://www.work4labs.com/"
 
     def test_valid_short_path(self):

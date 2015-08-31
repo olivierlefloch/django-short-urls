@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 from django.test.client import RequestFactory
-from django_app.mongo_test_case import MongoTestCase
+from django_app.test import PyW4CTestCase
 from mock import patch
 import mongoengine
 
@@ -14,7 +14,7 @@ from django_short_urls.w4l_http import HTTP_SERVICE_UNAVAILABLE
 
 
 # pylint: disable=W0613,E1101
-class ReadOnlyTestCase(MongoTestCase):
+class ReadOnlyTestCase(PyW4CTestCase):
     def setUp(self):
         self.factory = RequestFactory()
 

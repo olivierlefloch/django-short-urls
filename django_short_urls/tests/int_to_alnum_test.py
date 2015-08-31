@@ -2,7 +2,7 @@
 
 from __future__ import unicode_literals
 
-from django.test import TestCase
+from django_app.test import PyW4CTestCase
 
 from django_short_urls.int_to_alnum import ALPHABET, encode, decode
 

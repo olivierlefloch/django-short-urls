@@ -4,14 +4,14 @@ from __future__ import unicode_literals
 
 from django.http import Http404
 from django.test.client import RequestFactory
-from django_app.mongo_test_case import MongoTestCase
+from django_app.test import PyW4CTestCase
 from mock import patch
 
 from django_short_urls.views import _extract_valid_path, main
 from django_short_urls.models import Link
 
 
-class ViewMainTestCase(MongoTestCase):
+class ViewMainTestCase(PyW4CTestCase):
     def setUp(self):
         self.factory = RequestFactory()
 
