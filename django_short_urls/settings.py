@@ -5,6 +5,8 @@
 from __future__ import unicode_literals
 
 import logging
+
+import mongoengine
 from pymongo.read_preferences import ReadPreference
 
 from django_app.default_settings import init_settings
@@ -77,8 +79,6 @@ if not DEBUG:  # pragma: no cover
 #############
 # Databases #
 #############
-
-import mongoengine
 
 try:
     # pylint: disable=W0142

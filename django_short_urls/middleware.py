@@ -25,10 +25,7 @@ class ServiceUnavailableMiddleware(object):
         invoked without a connection to a primary, returns an HTTP Service Unavailable response.
         """
 
-        if (
-            settings.SERVICE_UNAVAILABLE
-            or (request.method not in ("GET", "HEAD") and not mongoengine_is_primary())
-        ):
+        if (settings.SERVICE_UNAVAILABLE or (request.method not in ("GET", "HEAD") and not mongoengine_is_primary())):
             # Can't use render because there is no context
             return response_service_unavailable()
 
