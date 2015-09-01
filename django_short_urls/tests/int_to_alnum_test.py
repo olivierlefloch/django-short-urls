@@ -8,7 +8,7 @@ from django_short_urls.int_to_alnum import ALPHABET, encode, decode
 
 
 # pylint: disable=E1101
-class IntToAlnumTestCase(TestCase):
+class IntToAlnumTestCase(PyW4CTestCase):
     def test_alphabet(self):
         self.assertEquals(len(ALPHABET), 10 + 2 * 26)
 

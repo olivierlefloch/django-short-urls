@@ -109,7 +109,6 @@ def main(request, path):
     return (proxy if link.act_as_proxy else redirect)(target_url)
 
 
-# pylint: disable=W0142
 @require_POST
 def new(request):
     '''

@@ -81,7 +81,6 @@ if not DEBUG:  # pragma: no cover
 #############
 
 try:
-    # pylint: disable=W0142
     mongoengine.connect(read_preference=ReadPreference.PRIMARY_PREFERRED, **MONGOENGINE)
 
     SERVICE_UNAVAILABLE = False
