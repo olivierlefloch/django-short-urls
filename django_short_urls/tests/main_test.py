@@ -28,7 +28,7 @@ class ViewMainTestCase(PyW4CTestCase):
         response = main(self.factory.get('/%s' % self.path), self.path)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(self.link.reload().clicks, 1)
-        mock_statsd.increment.assert_called_once()
+        self.assertEqual(mock_statsd.increment.call_count, 1)
 
         def expect_same_with_suffix(suffix):
             """Check that appending a certain suffix leaves the response unchanged"""

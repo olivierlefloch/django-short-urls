@@ -49,9 +49,9 @@ class LinkTestCase(PyW4CTestCase):
         # statsd.histogram should only be created at creation
         with patch('django_short_urls.models.statsd') as mock_statsd:
             link1 = Link.shorten(**kwargs)
-            mock_statsd.histogram.assert_called_once()
+            self.assertEqual(mock_statsd.histogram.call_count, 1)
             link2 = Link.shorten(**kwargs)
-            mock_statsd.histogram.assert_called_once()
+            self.assertEqual(mock_statsd.histogram.call_count, 1)
 
         self.assertEqual(link1.hash, link2.hash)
 
