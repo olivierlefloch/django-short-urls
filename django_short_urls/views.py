@@ -19,12 +19,13 @@ from statsd import statsd
 
 from utils.mongo import mongoengine_is_primary
 from http.status import HTTP_UNAUTHORIZED, HTTP_BAD_REQUEST, HTTP_CONFLICT, HTTP_FORBIDDEN
+from http.utils import proxy, response, url_append_parameters, validate_url
 
 import django_short_urls.suffix_catchall as suffix_catchall
 from django_short_urls.models import Link, User
 from django_short_urls.exceptions import InvalidHashException, ForbiddenKeyword, ShortPathConflict
 from django_short_urls.w4l_http import (
-    get_browser, get_client_ip, proxy, response, url_append_parameters, URL_SAFE_FOR_PATH, validate_url
+    get_browser, get_client_ip, URL_SAFE_FOR_PATH
 )
 
 REF_PARAM_NAME = 'ref'
