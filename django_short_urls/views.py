@@ -115,14 +115,13 @@ def new(request):
     '''
     Create a new short url based on the POST parameters
     '''
+    user = None
+    if 'HTTP_AUTHORIZATION' in request.META:
+        method, auth = request.META['HTTP_AUTHORIZATION'].split(' ', 1)
+        if method.lower() == 'basic':
+            login, api_key = auth.strip().decode('base64').split(':', 1)
 
-    if 'login' in request.GET and 'api_key' in request.POST:
-        login = request.GET['login']
-        api_key = request.POST['api_key']
-
-        user = User.objects(login=login, api_key=api_key).first()
-    else:
-        user = None
+            user = User.objects(login=login, api_key=api_key).first()
 
     if user is None:
         return response(status=HTTP_UNAUTHORIZED, message="Invalid credentials.")
