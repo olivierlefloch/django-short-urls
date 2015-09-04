@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 from django.test.client import RequestFactory
 from django_app.test import PyW4CTestCase
+from mock import patch
 
 from django_short_urls.views import new
 from django_short_urls.models import User
@@ -74,7 +75,8 @@ class ViewNewTestCase(PyW4CTestCase):
 
         self.assertEqual(new(self.factory.post('/new', self.data)).status_code, HTTP_FORBIDDEN)
 
-    def test_new(self):
+    @patch('django_short_urls.models.statsd')
+    def test_new(self, mock_statsd):  # pylint: disable=unused-argument
         self.data['long_url'] = 'http://www.work4labs.com/'
 
         self.assertEqual(new(self.factory.post('/new', self.data)).status_code, HTTP_OK)

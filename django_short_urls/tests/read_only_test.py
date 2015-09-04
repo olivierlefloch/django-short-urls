@@ -21,8 +21,9 @@ class ReadOnlyTestCase(PyW4CTestCase):
         self.path = 'test42'
         self.link = Link.shorten('http://www.work4.com/jobs', short_path=self.path)
 
+    @patch('django_short_urls.views.statsd')
     @patch('django_short_urls.views.mongoengine_is_primary', return_value=False)
-    def test_views(self, mock_mongoengine_is_primary):
+    def test_views(self, mock_mongoengine_is_primary, mock_statsd):
         response = main(self.factory.get('/%s' % self.path), self.path)
 
         # Make sure we're still redirecting
