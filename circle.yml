@@ -1,10 +1,9 @@
-# TODO: Switch to environment based configuration
-# machine:
-#   environment:
-#     ADMINS: Olivier Le Floch <olefloch@work4labs.com>
-#     API_KEY: q1ZEbakAqBlGTC08QoTm
-#     CIRCLECI_API_KEY: azeazeaze
-#     SECRET_KEY: EamJrjviiW13ue8PEamJrjviiW13ue8P
+machine:
+  environment:
+    ADMINS: Olivier Le Floch <olefloch@work4labs.com>
+    SECRET_KEY: EamJrjviiW13ue8PEamJrjviiW13ue8P
+  python:
+    version: 2.7.9
 
 dependencies:
   override:
