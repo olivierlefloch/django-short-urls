@@ -116,9 +116,9 @@ def new(request):
     Create a new short url based on the POST parameters
     '''
 
-    if 'login' in request.REQUEST and 'api_key' in request.REQUEST:
-        login = request.REQUEST['login']
-        api_key = request.REQUEST['api_key']
+    if 'login' in request.GET and 'api_key' in request.POST:
+        login = request.GET['login']
+        api_key = request.POST['api_key']
 
         user = User.objects(login=login, api_key=api_key).first()
     else:
@@ -129,21 +129,21 @@ def new(request):
 
     params = {}
 
-    if 'long_url' in request.REQUEST:
-        params['long_url'] = request.REQUEST['long_url']
+    if 'long_url' in request.GET:
+        params['long_url'] = request.GET['long_url']
 
         (is_valid, error_message) = validate_url(params['long_url'])
     else:
-        (is_valid, error_message) = (False, "Missing parameter: 'long_url'")
+        (is_valid, error_message) = (False, "Missing GET parameter: 'long_url'")
 
     if not is_valid:
         return response(status=HTTP_BAD_REQUEST, message=error_message)
 
-    allow_slashes_in_prefix = 'allow_slashes_in_prefix' in request.REQUEST
+    allow_slashes_in_prefix = 'allow_slashes_in_prefix' in request.GET
 
     for key in ['short_path', 'prefix']:
-        if key in request.REQUEST:
-            params[key] = request.REQUEST[key]
+        if key in request.GET:
+            params[key] = request.GET[key]
 
             if '/' in params[key] and not (key == 'prefix' and allow_slashes_in_prefix):
                 return response(
