@@ -109,7 +109,7 @@ class LinkTestCase(PyW4CTestCase):
             # Mongo 2.x
             explanation_item = explanation['cursor']
             match = u'BtreeCursor long_url_hashed'
-        else:
+        else:  # pragma: no cover
             explanation_item = explanation['queryPlanner']['winningPlan']['inputStage']['inputStage']['keyPattern']
             match = {'long_url': 'hashed'}
 
