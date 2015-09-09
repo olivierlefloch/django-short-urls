@@ -126,12 +126,15 @@ def new(request):  # pylint: disable=too-many-branches
 
             user = User.objects(login=login, api_key=api_key).first()
     else:
+        # Temporary – OPS-4755, allow specifying authentication parameters via request.REQUEST
         try:
-            # Temporary – OPS-4755, allow specifying authentication parameters via request.REQUEST
-            login, api_key = request.REQUEST['login'], request.REQUEST['api_key']
-            user = User.objects(login=login, api_key=api_key).first()
-        except Exception:  # pylint: disable=broad-except
-            getLogger('app').warning('/new called with invalid credentials')
+            login, api_key = request.GET['login'], request.GET['api_key']
+        except KeyError:
+            getLogger('app').warning('/new called without credentials')
+            login, api_key = '', ''
+
+        statsd.increment('workforus.legacy_auth', tags=['user:' + login])
+        user = User.objects(login=login, api_key=api_key).first()
 
     if user is None:
         return response(status=HTTP_UNAUTHORIZED, message="Invalid credentials.")

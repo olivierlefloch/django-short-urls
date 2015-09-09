@@ -34,15 +34,18 @@ class ViewNewTestCase(PyW4CTestCase):
         return self._factory.post(url, data, **extra)
 
     def test_temp_ops4755(self):
-        self.assertEqual(
-            new(self._post('/new', with_auth=False, data={'login': 'foo', 'api_key': 'bar'})).status_code,
-            HTTP_UNAUTHORIZED)
+        with patch('django_short_urls.views.statsd') as mock_statsd:
+            self.assertEqual(
+                new(self._post('/new', with_auth=False, data={'login': 'foo', 'api_key': 'bar'})).status_code,
+                HTTP_UNAUTHORIZED)
 
-        self.assertEqual(
-            new(self._post(
-                '/new', with_auth=False, data={'login': self.user.login, 'api_key': self.user.api_key}
-            )).status_code,
-            HTTP_BAD_REQUEST)
+            self.assertEqual(
+                new(self._post(
+                    '/new', with_auth=False, data={'login': self.user.login, 'api_key': self.user.api_key}
+                )).status_code,
+                HTTP_BAD_REQUEST)
+
+        self.assertEqual(mock_statsd.increment.call_count, 2)
 
     def test_unauthorized(self):
         # No auth sent
