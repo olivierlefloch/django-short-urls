@@ -33,6 +33,17 @@ class ViewNewTestCase(PyW4CTestCase):
 
         return self._factory.post(url, data, **extra)
 
+    def test_temp_ops4755(self):
+        self.assertEqual(
+            new(self._post('/new', with_auth=False, data={'login': 'foo', 'api_key': 'bar'})).status_code,
+            HTTP_UNAUTHORIZED)
+
+        self.assertEqual(
+            new(self._post(
+                '/new', with_auth=False, data={'login': self.user.login, 'api_key': self.user.api_key}
+            )).status_code,
+            HTTP_BAD_REQUEST)
+
     def test_unauthorized(self):
         # No auth sent
         self.assertEqual(new(self._post('/new', with_auth=False)).status_code, HTTP_UNAUTHORIZED)
@@ -87,7 +98,7 @@ class ViewNewTestCase(PyW4CTestCase):
 
         # Now check the same thing with urls that include a prefix - first create
         data['prefix'] = 'foobar'
-        new(self._post('/new', data))
+        self.assertEqual(new(self._post('/new', data)).status_code, HTTP_OK)
 
         # Now trigger the conflict
         data['long_url'] = 'http://yet.aga.in/something/else'
