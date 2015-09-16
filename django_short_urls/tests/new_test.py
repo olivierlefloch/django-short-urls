@@ -3,10 +3,10 @@
 from __future__ import unicode_literals
 
 from django.test.client import RequestFactory
+from django.utils.http import urlencode
 from django_app.test import PyW4CTestCase
 from mock import patch
 from requests.auth import _basic_auth_str
-from requests.models import RequestEncodingMixin
 
 from django_short_urls.views import new
 from django_short_urls.models import User
@@ -21,17 +21,16 @@ class ViewNewTestCase(PyW4CTestCase):
 
         self.long_url = 'http://work4.com'
 
-    def _post(self, url, data=None, with_auth=True, extra=None):
-        if extra is None:
-            extra = {}
+    def _post(self, url, data=None, with_auth=True, **extra):
+        post_extra = {
+            'QUERY_STRING': urlencode(data, doseq=True) if data else ''
+        }
+        post_extra.update(extra)
 
         if with_auth:
-            extra['HTTP_AUTHORIZATION'] = _basic_auth_str(self.user.login, self.user.api_key)
+            post_extra['HTTP_AUTHORIZATION'] = _basic_auth_str(self.user.login, self.user.api_key)
 
-        if data is not None:
-            url += '?' + RequestEncodingMixin._encode_params(data)
-
-        return self._factory.post(url, data, **extra)
+        return self._factory.post(url, **post_extra)
 
     def test_temp_ops4755(self):
         with patch('django_short_urls.views.statsd') as mock_statsd:
@@ -54,7 +53,7 @@ class ViewNewTestCase(PyW4CTestCase):
         # Digest auth
         request = self._post(
             '/new', with_auth=False,
-            extra={'HTTP_AUTHORIZATION': 'Digest username="Mufasa", ...invalid'}
+            HTTP_AUTHORIZATION='Digest username="Mufasa", ...invalid'
         )
         self.assertEqual(new(request).status_code, HTTP_UNAUTHORIZED)
 
