@@ -126,7 +126,7 @@ def new(request):  # pylint: disable=too-many-branches
 
             user = User.objects(login=login, api_key=api_key).first()
     else:
-        # Temporary – OPS-4755, allow specifying authentication parameters via request.REQUEST
+        # Temporary - OPS-4755, allow specifying authentication parameters via request.REQUEST
         try:
             login, api_key = request.GET['login'], request.GET['api_key']
         except KeyError:
@@ -142,10 +142,6 @@ def new(request):  # pylint: disable=too-many-branches
     long_url = request.GET.get('long_url')
 
     if long_url is None:
-        # Temporary – OPS-4755, allow specifying request parameters via request.POST
-        long_url = request.POST.get('long_url')
-
-    if long_url is None:
         is_valid, error_message = False, "Missing GET parameter: 'long_url'"
     else:
         is_valid, error_message = validate_url(long_url)
@@ -157,10 +153,6 @@ def new(request):  # pylint: disable=too-many-branches
 
     for key in ['short_path', 'prefix']:
         params[key] = request.GET.get(key)
-
-        if params[key] is None:
-            # Temporary – OPS-4755, allow specifying request parameters via request.POST
-            params[key] = request.POST.get(key)
 
         if key == 'prefix' and 'allow_slashes_in_prefix' in request.GET:
             continue
