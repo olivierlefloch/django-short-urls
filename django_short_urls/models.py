@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 from datetime import datetime
 from django.conf import settings
 from hashlib import sha1
-from mongoengine import Document, StringField, IntField, BooleanField
+from mongoengine import Document, StringField, IntField, BooleanField, DynamicField
 import re
 from statsd import statsd
 
@@ -44,6 +44,7 @@ class Link(Document):
     long_url = StringField(required=True)
     act_as_proxy = BooleanField()
     clicks = IntField(default=0)
+    _types = DynamicField()
 
     @classmethod
     def find_for_prefix(cls, prefix):
