@@ -6,12 +6,14 @@ import io
 
 from django.core import management
 from django_app.test import PyW4CTestCase
+from mock import patch
 
 from django_short_urls.models import Link
 
 
 class UrlStatsTestCase(PyW4CTestCase):
-    def test_generate_args_output(self):
+    @patch('django_short_urls.models.statsd')
+    def test_generate_args_output(self, mock_statsd):  # pylint: disable=unused-argument
         prefix = 'work4'
 
         # Generate a link that won't appear in the results (wrong prefix)

@@ -28,7 +28,7 @@ class ViewMainTestCase(PyW4CTestCase):
         response = main(self.factory.get('/%s' % self.path), self.path)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(self.link.reload().clicks, 1)
-        mock_statsd.increment.assert_called_once()
+        self.assertEqual(mock_statsd.increment.call_count, 1)
 
         def expect_same_with_suffix(suffix):
             """Check that appending a certain suffix leaves the response unchanged"""
@@ -52,12 +52,14 @@ class ViewMainTestCase(PyW4CTestCase):
         main(self.factory.get('/%s' % self.path), self.path)
         self.assertEqual(mock_proxy.call_count, 1)
 
-    def test_redirect_suffix(self):
+    @patch('django_short_urls.views.statsd')
+    def test_redirect_suffix(self, mock_statsd):  # pylint: disable=unused-argument
         response = main(self.factory.get('/%s/recruiter' % self.path), self.path + '/recruiter')
 
         self.assertEqual(response.status_code, 302)
 
-    def test_404(self):
+    @patch('django_short_urls.views.statsd')
+    def test_404(self, mock_statsd):  # pylint: disable=unused-argument
         path404 = self.path + 'foobar'
 
         with self.assertRaises(Http404):

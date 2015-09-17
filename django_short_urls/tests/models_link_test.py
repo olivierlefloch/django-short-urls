@@ -9,6 +9,11 @@ from mock import patch
 from django_short_urls.models import Link
 
 
+def _shorten(*args, **kwargs):
+    with patch('django_short_urls.models.statsd') as mock_statsd:
+        return Link.shorten(*args, **kwargs), mock_statsd
+
+
 class LinkTestCase(PyW4CTestCase):
     URL = "http://www.work4labs.com/"
 
@@ -25,7 +30,7 @@ class LinkTestCase(PyW4CTestCase):
         self.assertEqual(Link.is_valid_random_short_path("abe4abe"), False)
 
     def test_shorten(self):
-        link = Link.shorten("http://www.work4labs.com/")
+        link, _ = _shorten("http://www.work4labs.com/")
 
         self.assertIn('work4labs', str(link))
 
@@ -33,47 +38,49 @@ class LinkTestCase(PyW4CTestCase):
 
     def test_shorten_multiple(self):
         # Generate a couple of links that we should *not* fall on
-        Link.shorten("http://www.work4labs.com/", prefix='foobarblah')
-        Link.shorten("http://www.work4labs.com/", prefix='fooba')
+        _shorten("http://www.work4labs.com/", prefix='foobarblah')
+        _shorten("http://www.work4labs.com/", prefix='fooba')
 
-        link1 = Link.shorten("http://www.work4labs.com/", prefix='foobar')
+        link1, _ = _shorten("http://www.work4labs.com/", prefix='foobar')
         self.assertIn('foobar/', link1.hash)
 
     def test_shorten_with_short_path(self):
-        link = Link.shorten("http://www.work4labs.com/", short_path='FooBar')
+        link, _ = _shorten("http://www.work4labs.com/", short_path='FooBar')
         self.assertEqual(link.hash, 'foobar')
 
-    def shorten_twice(self, **kwargs):
+    def _shorten_twice(self, expected_statsd_call_count=1, **kwargs):
         kwargs['long_url'] = "http://www.work4labs.com/"
 
-        # statsd.histogram should only be created at creation
-        with patch('django_short_urls.models.statsd') as mock_statsd:
-            link1 = Link.shorten(**kwargs)
-            mock_statsd.histogram.assert_called_once()
-            link2 = Link.shorten(**kwargs)
-            mock_statsd.histogram.assert_called_once()
+        link1, mock_statsd = _shorten(**kwargs)
+        self.assertEqual(len(mock_statsd.mock_calls), expected_statsd_call_count)
+
+        link2, mock_statsd = _shorten(**kwargs)
+        # statsd.histogram should only be called once, at creation
+        self.assertEqual(len(mock_statsd.mock_calls), 0)
 
         self.assertEqual(link1.hash, link2.hash)
 
     def test_shorten_twice_no_prefix(self):
-        self.shorten_twice()
+        self._shorten_twice()
 
     def test_shorten_twice_with_prefix(self):
-        self.shorten_twice(prefix="olefloch")
-        self.shorten_twice(prefix="FooBar")
+        self._shorten_twice(prefix="olefloch")
+        self._shorten_twice(prefix="FooBar")
 
     def test_shorten2_with_short_path(self):
-        self.shorten_twice(short_path="youpitralala")
+        # We expect statsd.histogram to not be called since we don't need to
+        # generate a random short path
+        self._shorten_twice(short_path="youpitralala", expected_statsd_call_count=0)
 
     def find_for_prefix(self, prefix):
         # First check that there are no links for this prefix
         self.assertEqual(len(Link.find_for_prefix(prefix)), 0)
 
         # Create a link with this prefix and another with another prefix
-        true_link = Link.shorten("http://www.work4labs.com/", prefix=prefix)
+        true_link, _ = _shorten("http://www.work4labs.com/", prefix=prefix)
 
         # other link
-        Link.shorten("http://www.work4labs.com/", prefix='other_%s' % prefix)
+        _shorten("http://www.work4labs.com/", prefix='other_%s' % prefix)
 
         # We should only find the true link
         links = Link.find_for_prefix(prefix)
@@ -94,16 +101,24 @@ class LinkTestCase(PyW4CTestCase):
         prefix = 'ole'
         long_url = "http://www.work4labs.com/"
 
-        Link.shorten(long_url, prefix=prefix)
+        _shorten(long_url, prefix=prefix)
 
-        self.assertEqual(
-            Link.find_for_prefix_and_long_url(prefix, long_url).explain()['cursor'],
-            u'BtreeCursor long_url_hashed'
-        )
+        explanation = Link.find_for_prefix_and_long_url(prefix, long_url).explain(False)
+
+        if 'cursor' in explanation:  # pragma: no cover
+            # Mongo 2.x
+            explanation_item = explanation['cursor']
+            match = u'BtreeCursor long_url_hashed'
+        else:  # pragma: no cover
+            explanation_item = explanation['queryPlanner']['winningPlan']['inputStage']['inputStage']['keyPattern']
+            match = {'long_url': 'hashed'}
+
+        self.assertEqual(explanation_item, match)
 
     # Freeze time to make this test deterministic
     @freeze_time('2013-05-29')
-    def test_create_random(self):
+    @patch('django_short_urls.models.statsd')
+    def test_create_random(self, mock_statsd):  # pylint: disable=unused-argument
         link1 = Link.create_with_random_short_path(self.URL, 'foo')
 
         self.assertEqual(link1.long_url, self.URL)
@@ -114,7 +129,9 @@ class LinkTestCase(PyW4CTestCase):
             Link.create_with_random_short_path(self.URL, 'foo')
 
     def test_prefix(self):
-        self.assertEqual(Link.shorten(self.URL).prefix, '')
+        link, _ = _shorten(self.URL)
+        self.assertEqual(link.prefix, '')
 
         prefix = 'foo'
-        self.assertEqual(Link.shorten(self.URL, prefix=prefix).prefix, prefix)
+        link, _ = _shorten(self.URL, prefix=prefix)
+        self.assertEqual(link.prefix, prefix)

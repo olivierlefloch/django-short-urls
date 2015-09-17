@@ -13,5 +13,5 @@ dependencies:
 
 test:
   override:
-    - make lint test
+    - make lint test || (make test_generate_report; exit 1)
 

@@ -154,12 +154,14 @@ test:
 	${RUN_CMD} ${PYTHONHOME}/bin/coverage run --append --rcfile=${COVERAGE_RC} --source=${APP_DIR},${WORK4CORE_DIR} ${PROJECT_DIR}manage.py test --noinput ${APP_NAME}
 	@${PYTHONHOME}/bin/coverage report --rcfile=${COVERAGE_RC} --fail-under=100 || (printf "\033[31mTest coverage is less than 100%%!\033[0m\n" && exit 1)
 
-test_report:
+test_generate_report:
 	${PYTHONHOME}/bin/coverage html --rcfile=${COVERAGE_RC}
+
+test_open_report:
 	${WORK4CORE_BIN}/open ${TEMP_DIR}/coverage_html/index.html
 
 test_and_report:
-	(make test || make test_report) | grep -vE '100\%$$'
+	(make test || make test_generate_report test_open_report) | grep -vE '100\%$$'
 
 ################################
 # Running the app and commands #
