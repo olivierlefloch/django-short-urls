@@ -1,7 +1,11 @@
 /* TEAM */
 
-Guillaume Leseur, Software Architect @Work4, Paris
-Jean Rougé, Software Engineer @Work4, San Francisco
-Ouadia Lasfar, Team Lead @Work4, Paris
-Olivier Le Floch <@olivierlefloch>, CTO @Work4, San Francisco
-Vivien Meyet, Software Engineer @Work4, Paris
+Adrien Siebert, Work4, San Francisco
+Ouadia Lasfar, Work4, Paris
+Olivier Le Floch <@olivierlefloch>, Work4, San Francisco
+
+/* Previously */
+
+Guillaume Leseur, Work4, Paris
+Jean Rougé, Work4, San Francisco
+Vivien Meyet, Work4, Paris

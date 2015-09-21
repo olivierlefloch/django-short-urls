@@ -17,7 +17,7 @@ from django.views.generic.base import TemplateView
 urlpatterns = patterns(
     '',
     (r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
-    (r'^humans\.txt$', TemplateView.as_view(template_name='humans.txt', content_type='text/plain')),
+    (r'^humans\.txt$', TemplateView.as_view(template_name='humans.txt', content_type='text/plain; charset=utf-8')),
 
     # A view that can be used to test exception handling
     (r'^DivideByZeroPlease$', lambda request: 0 / 0),
