@@ -48,7 +48,6 @@ if SENTRY_DSN is not None:  # pragma: no cover
     globals()['INSTALLED_APPS'] += ('raven.contrib.django.raven_compat',)
     MIDDLEWARE_CLASSES = (
         'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
-        'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware',
     ) + MIDDLEWARE_CLASSES
 
 if not DEBUG:  # pragma: no cover
