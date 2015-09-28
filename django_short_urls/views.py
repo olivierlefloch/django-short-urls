@@ -162,7 +162,9 @@ def new(request):  # pylint: disable=too-many-branches
                 status=HTTP_BAD_REQUEST,
                 message="%s may not contain a '/' character." % key)
 
-    statsd.increment('workforus.new', tags=['prefix:' + unicode(prefix), 'is_secure:' + request.is_secure()])
+    statsd.increment(
+        'workforus.new',
+        tags=['prefix:' + unicode(params['prefix']), 'is_secure:' + unicode(request.is_secure())])
 
     try:
         link = Link.shorten(long_url, **params)
