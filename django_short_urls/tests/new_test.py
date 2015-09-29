@@ -46,7 +46,8 @@ class ViewNewTestCase(PyW4CTestCase):
 
         self.assertEqual(mock_statsd.increment.call_count, 2)
 
-    def test_unauthorized(self):
+    @patch('django_short_urls.views.statsd')
+    def test_unauthorized(self, mock_statsd):
         # No auth sent
         self.assertEqual(new(self._post('/new', with_auth=False)).status_code, HTTP_UNAUTHORIZED)
 
@@ -56,6 +57,7 @@ class ViewNewTestCase(PyW4CTestCase):
             HTTP_AUTHORIZATION='Digest username="Mufasa", ...invalid'
         )
         self.assertEqual(new(request).status_code, HTTP_UNAUTHORIZED)
+        self.assertEqual(mock_statsd.increment.call_count, 1)
 
     def test_bad_requests(self):
         # Test missing long_url
@@ -86,7 +88,8 @@ class ViewNewTestCase(PyW4CTestCase):
         }
         self.assertEqual(new(self._post('/new', data)).status_code, HTTP_BAD_REQUEST)
 
-    def test_short_path_conflict(self):
+    @patch('django_short_urls.views.statsd')
+    def test_short_path_conflict(self, mock_statsd):
         # Create the base conflicting link
         data = {
             'long_url': self.long_url,
@@ -106,15 +109,20 @@ class ViewNewTestCase(PyW4CTestCase):
         data['long_url'] = 'http://yet.aga.in/something/else'
         self.assertEqual(new(self._post('/new', data)).status_code, HTTP_CONFLICT)
 
-    def test_forbidden_keyword(self):
+        self.assertEqual(mock_statsd.increment.call_count, 4)
+
+    @patch('django_short_urls.views.statsd')
+    def test_forbidden_keyword(self, mock_statsd):
         data = {
             'long_url': self.long_url,
             'short_path': 'jobs'
         }
         self.assertEqual(new(self._post('/new', data)).status_code, HTTP_FORBIDDEN)
+        self.assertEqual(mock_statsd.increment.call_count, 1)
 
     @patch('django_short_urls.models.statsd')
-    def test_new(self, mock_statsd):  # pylint: disable=unused-argument
+    @patch('django_short_urls.views.statsd')
+    def test_new(self, mock_views_statsd, mock_models_statsd):  # pylint: disable=unused-argument
         data = {
             'long_url': self.long_url
         }
@@ -127,3 +135,5 @@ class ViewNewTestCase(PyW4CTestCase):
         data['prefix'] = 'inva/lid'
         data['allow_slashes_in_prefix'] = True
         self.assertEqual(new(self._post('/new', data)).status_code, HTTP_OK)
+
+        self.assertEqual(mock_views_statsd.increment.call_count, 3)

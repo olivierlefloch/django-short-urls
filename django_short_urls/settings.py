@@ -32,6 +32,8 @@ AUTHENTICATION_BACKENDS = (
     'mongoengine.django.auth.MongoEngineBackend',
 )
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https, https')
+
 #########################
 # Default configuration #
 #########################
