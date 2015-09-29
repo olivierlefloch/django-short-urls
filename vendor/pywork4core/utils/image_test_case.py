@@ -21,7 +21,7 @@ class ImageTestCase(TestCase):
     compare image files for similarity.
     """
 
-    def assertImageAlmostEqual(self, img_path1, img_path2, threshold=1, outfile=None):  # pylint: disable=invalid-name
+    def assertImageAlmostEqual(self, img_path1, img_path2, threshold=1, diff_file=None):  # pylint: disable=invalid-name
         """
         Threshold is the percentage of pixels that may differ between the two images.
         Tweak it for your test based on how different the rendered images end up
@@ -29,24 +29,23 @@ class ImageTestCase(TestCase):
         """
         diff = ImageChops.difference(Image.open(img_path1), Image.open(img_path2))
 
-        if outfile is not None:
-            diff.save(outfile)
-
-        for count, color in diff.getcolors():
-            # getcolors() returns [(nbpixels, (r, g, b)), ...]
-            # http://pillow.readthedocs.org/en/latest/reference/Image.html?#PIL.Image.Image.getcolors
-            if color == (0, 0, 0):
-                count_black = count
-                break
+        if diff_file is not None:
+            diff.save(diff_file)
+            saved_to_text = "\nDiff saved to: %s" % diff_file
         else:
-            count_black = 0
+            saved_to_text = ''
 
-        # Compare some highlevel stats on the diff to the arbitrary delta threshold
-        percentage_difference = (1 - count_black / (diff.width * diff.height)) * 100
-        print ""
-        print count_black, diff.width, diff.height
-        print (percentage_difference, img_path1, img_path2, outfile)
+        nb_bands = len(diff.getbands())
+
+        histogram = diff.histogram()
+
+        nb_colors = int(len(histogram) / nb_bands)
+
+        average_zeroes = sum([histogram[pos * nb_colors] for pos in xrange(nb_bands)]) / nb_bands
+
+        percentage_difference = (1 - average_zeroes / (diff.height * diff.width)) * 100
+
         return self.assertLess(
             percentage_difference, threshold,
-            msg='Image "%s" is not almost equal to "%s" (%d%% of pixels differ, >%d%%)' % (
-                img_path1, img_path2, percentage_difference, threshold))
+            msg='Image "%s" is not almost equal to "%s" (%d%% of pixels differ, >%d%%)%s' % (
+                img_path1, img_path2, percentage_difference, threshold, saved_to_text))
