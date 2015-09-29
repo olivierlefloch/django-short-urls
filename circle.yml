@@ -1,3 +1,7 @@
+general:
+  artifacts:
+    - "temp"
+
 machine:
   environment:
     ADMINS: Olivier Le Floch <olefloch@work4labs.com>

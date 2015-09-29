@@ -20,7 +20,7 @@ class ImageTestCaseTestCase(ImageTestCase):
         _compare('white.png', 'white.png')
         _compare('red.jpg', 'red.jpg')
         # Compare close images
-        _compare('gradient.png', 'gradient-broken.png', threshold=7, outfile=tmp.get_temp_filename('.png'))
+        _compare('gradient.png', 'gradient-broken.png', threshold=7, diff_file=tmp.get_temp_filename('.png'))
 
         with self.assertRaises(AssertionError):
             _compare('red.jpg', 'white.png')
