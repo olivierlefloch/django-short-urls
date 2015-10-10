@@ -8,7 +8,7 @@ from decorator import decorator
 
 from django_short_urls.models import User
 from http.status import HTTP_UNAUTHORIZED
-from http.utils import response
+from django.http import HttpResponse
 
 
 @decorator
@@ -29,7 +29,11 @@ def login_with_basic_auth_required(view, request, *args, **kwargs):
             user = User.objects(login=login, api_key=api_key).first()  # pylint: disable=no-member
 
     if user is None:
-        return response(status=HTTP_UNAUTHORIZED, message="Invalid credentials.")
+        response = HttpResponse("Authorization Required", status=HTTP_UNAUTHORIZED, content_type="text/plain")
+
+        response['WWW-Authenticate'] = "Basic realm=API"
+        
+        return response
 
     request.user = user
 

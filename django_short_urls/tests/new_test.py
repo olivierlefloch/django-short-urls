@@ -35,7 +35,9 @@ class ViewNewTestCase(PyW4CTestCase):
     @patch('django_short_urls.views.statsd')
     def test_unauthorized(self, mock_statsd):
         # No auth sent
-        self.assertEqual(new(self._post('/new', with_auth=False)).status_code, HTTP_UNAUTHORIZED)
+        response = new(self._post('/new', with_auth=False))
+        self.assertEqual(response.status_code, HTTP_UNAUTHORIZED)
+        self.assertTrue(response.has_header('WWW-Authenticate'))
 
         # Digest auth
         request = self._post(
