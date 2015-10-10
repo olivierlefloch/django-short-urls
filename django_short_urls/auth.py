@@ -32,7 +32,7 @@ def login_with_basic_auth_required(view, request, *args, **kwargs):
         response = HttpResponse("Authorization Required", status=HTTP_UNAUTHORIZED, content_type="text/plain")
 
         response['WWW-Authenticate'] = "Basic realm=API"
-        
+
         return response
 
     request.user = user
