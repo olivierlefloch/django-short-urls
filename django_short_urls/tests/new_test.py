@@ -32,24 +32,12 @@ class ViewNewTestCase(PyW4CTestCase):
 
         return self._factory.post(url, **post_extra)
 
-    def test_temp_ops4755(self):
-        with patch('django_short_urls.views.statsd') as mock_statsd:
-            self.assertEqual(
-                new(self._post('/new', with_auth=False, data={'login': 'foo', 'api_key': 'bar'})).status_code,
-                HTTP_UNAUTHORIZED)
-
-            self.assertEqual(
-                new(self._post(
-                    '/new', with_auth=False, data={'login': self.user.login, 'api_key': self.user.api_key}
-                )).status_code,
-                HTTP_BAD_REQUEST)
-
-        self.assertEqual(mock_statsd.increment.call_count, 2)
-
     @patch('django_short_urls.views.statsd')
     def test_unauthorized(self, mock_statsd):
         # No auth sent
-        self.assertEqual(new(self._post('/new', with_auth=False)).status_code, HTTP_UNAUTHORIZED)
+        response = new(self._post('/new', with_auth=False))
+        self.assertEqual(response.status_code, HTTP_UNAUTHORIZED)
+        self.assertTrue(response.has_header('WWW-Authenticate'))
 
         # Digest auth
         request = self._post(
@@ -57,7 +45,7 @@ class ViewNewTestCase(PyW4CTestCase):
             HTTP_AUTHORIZATION='Digest username="Mufasa", ...invalid'
         )
         self.assertEqual(new(request).status_code, HTTP_UNAUTHORIZED)
-        self.assertEqual(mock_statsd.increment.call_count, 1)
+        self.assertEqual(mock_statsd.increment.call_count, 0)
 
     def test_bad_requests(self):
         # Test missing long_url

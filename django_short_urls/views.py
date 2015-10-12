@@ -18,15 +18,15 @@ import re
 from statsd import statsd
 
 from utils.mongo import mongoengine_is_primary
-from http.status import HTTP_UNAUTHORIZED, HTTP_BAD_REQUEST, HTTP_CONFLICT, HTTP_FORBIDDEN
+from http.status import HTTP_BAD_REQUEST, HTTP_CONFLICT, HTTP_FORBIDDEN
 from http.utils import proxy, response, url_append_parameters, validate_url
 
 import django_short_urls.suffix_catchall as suffix_catchall
-from django_short_urls.models import Link, User
+from django_short_urls.models import Link
 from django_short_urls.exceptions import InvalidHashException, ForbiddenKeyword, ShortPathConflict
-from django_short_urls.w4l_http import (
-    get_browser, get_client_ip, URL_SAFE_FOR_PATH
-)
+from django_short_urls.auth import login_with_basic_auth_required
+from django_short_urls.w4l_http import get_browser, get_client_ip, URL_SAFE_FOR_PATH
+
 
 REF_PARAM_NAME = 'ref'
 REF_PARAM_DEFAULT_VALUE = 'shortener'
@@ -111,34 +111,11 @@ def main(request, path):
 
 
 @require_POST
-def new(request):  # pylint: disable=too-many-branches
+@login_with_basic_auth_required
+def new(request):
     '''
     Create a new short url based on the POST parameters
-
-    Temporary pylint disable: OPS-4755 - once the temporary switches below have been removed,
-    remove the pylint disable above.
     '''
-    user = None
-    if 'HTTP_AUTHORIZATION' in request.META:
-        method, auth = request.META['HTTP_AUTHORIZATION'].split(' ', 1)
-        if method.lower() == 'basic':
-            login, api_key = auth.strip().decode('base64').split(':', 1)
-
-            user = User.objects(login=login, api_key=api_key).first()
-    else:
-        # Temporary - OPS-4755, allow specifying authentication parameters via request.REQUEST
-        try:
-            login, api_key = request.GET['login'], request.GET['api_key']
-        except KeyError:
-            getLogger('app').warning('/new called without credentials')
-            login, api_key = '', ''
-
-        statsd.increment('workforus.legacy_auth', tags=['user:' + login])
-        user = User.objects(login=login, api_key=api_key).first()
-
-    if user is None:
-        return response(status=HTTP_UNAUTHORIZED, message="Invalid credentials.")
-
     long_url = request.GET.get('long_url')
 
     if long_url is None:
@@ -169,7 +146,9 @@ def new(request):  # pylint: disable=too-many-branches
     try:
         link = Link.shorten(long_url, **params)
 
-        getLogger('app').info('Successfully shortened %s into %s for user %s', link.long_url, link.hash, login)
+        getLogger('app').info(
+            'Successfully shortened %s into %s for user %s',
+            link.long_url, link.hash, request.user.login)
     except ShortPathConflict, err:
         del params['short_path'], long_url
         del params['prefix']
