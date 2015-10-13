@@ -124,7 +124,7 @@ class LinkTestCase(PyW4CTestCase):
         self.assertEqual(link1.long_url, self.URL)
 
         # pylint: disable=W0612
-        for iteration in xrange(1, 10):
+        for _ in xrange(1, 10):
             # We loop 10 times in hopes of encountering an invalid short path
             Link.create_with_random_short_path(self.URL, 'foo')
 
