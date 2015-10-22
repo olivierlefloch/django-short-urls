@@ -161,8 +161,10 @@ class Link(Document):
         return '/%s' % self.hash
 
     def build_absolute_uri(self, request):
-        """Builds the absolute url for the target link (including full server url)"""
-        return request.build_absolute_uri(self.build_relative_path())
+        """Builds the absolute url HTTPs for the target link (including full server url)"""
+        url = request.build_absolute_uri(self.build_relative_path())
+        _, url = url.split('://')  # Strip protocol
+        return "https://" + url
 
     def __str__(self):
         return "%s -> %s\n" % (self.hash, self.long_url)
