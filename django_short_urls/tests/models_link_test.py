@@ -2,6 +2,7 @@
 
 from __future__ import unicode_literals
 
+from django.test import RequestFactory
 from django_app.test import PyW4CTestCase
 from freezegun import freeze_time
 from mock import patch
@@ -135,3 +136,11 @@ class LinkTestCase(PyW4CTestCase):
         prefix = 'foo'
         link, _ = _shorten(self.URL, prefix=prefix)
         self.assertEqual(link.prefix, prefix)
+
+    def test_build_absolute_uri(self):
+        link, _ = _shorten("http://www.work4labs.com/", short_path='foo')
+
+        self.assertEqual(
+            link.build_absolute_uri(RequestFactory().get('/test')),
+            "https://testserver/foo"
+        )
