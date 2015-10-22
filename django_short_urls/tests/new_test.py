@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 from django.test.client import RequestFactory
 from django.utils.http import urlencode
 from django_app.test import PyW4CTestCase
+import json
 from mock import patch
 from requests.auth import _basic_auth_str
 
@@ -117,11 +118,18 @@ class ViewNewTestCase(PyW4CTestCase):
         self.assertEqual(new(self._post('/new', data)).status_code, HTTP_OK)
 
         data['short_path'] = 'bar'
+        response = new(self._post('/new', data, secure=True))
+        self.assertEqual(response.status_code, HTTP_OK)
+        self.assertEqual(json.loads(response.content)['short_url'], "https://testserver/bar")
+
+        data['short_path'] = 'bar'
         data['prefix'] = 'foo'
-        self.assertEqual(new(self._post('/new', data)).status_code, HTTP_OK)
+        response = new(self._post('/new', data))
+        self.assertEqual(response.status_code, HTTP_OK)
+        self.assertEqual(json.loads(response.content)['short_url'], "https://testserver/foo/bar")
 
         data['prefix'] = 'inva/lid'
         data['allow_slashes_in_prefix'] = True
         self.assertEqual(new(self._post('/new', data)).status_code, HTTP_OK)
 
-        self.assertEqual(mock_views_statsd.increment.call_count, 3)
+        self.assertEqual(mock_views_statsd.increment.call_count, 4)
