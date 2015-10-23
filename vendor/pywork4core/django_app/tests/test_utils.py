@@ -24,9 +24,8 @@ class UtilsTest(PyW4CTestCase):
             os.path.join(path.get_bin_dir(), 'open'), filename
         ])
 
-    # pylint: disable=W0613
     @patch('utils.tmp.settings', TEMP_DIR=temp_dir)
-    def test_get_temp_filename(self, settings):
+    def test_get_temp_filename(self, settings):  # pylint: disable=W0613
         nb_temp_files_before = len(os.listdir(self.temp_dir))
 
         temp_filename = tmp.get_temp_filename()
