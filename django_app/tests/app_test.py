@@ -8,7 +8,7 @@ from django_app.test import PyW4CTestCase
 
 class DjangoAppTest(PyW4CTestCase):
     def test_default_settings(self):
-        # pylint: disable=C0103
+        # pylint: disable=invalid-name
         APP_NAME = 'django_app'
         DEBUG = True
 

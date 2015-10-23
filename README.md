@@ -29,7 +29,7 @@ Typical usage
 
   - Lint and tests
 
-        make lint_and_test_report
+        make lint test_and_report
 
 Install PhantomJS dependency
 ============================
