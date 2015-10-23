@@ -15,8 +15,7 @@ from mongoengine.connection import connect, disconnect
 from mongoengine import Document
 
 
-# pylint: disable=R0904
-class MongoTestCase(TestCase):
+class MongoTestCase(TestCase):  # pylint: disable=R0904
     """
     TestCase class that clears the collection between the tests.
 

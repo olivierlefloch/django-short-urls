@@ -11,8 +11,7 @@ from __future__ import unicode_literals
 import os
 
 
-# pylint: disable=C0103,E0602,W0612
-def env_to_bool(val):
+def env_to_bool(val):  # pylint: disable=E0602
     """Use this when parsing environment variables for booleans as it will properly consider 'FALSE' to be False."""
     if isinstance(val, basestring):
         return val.lower() in ("true", "yes", "1")
@@ -20,6 +19,7 @@ def env_to_bool(val):
         return bool(val)
 
 
+# pylint: disable=invalid-name, unused-variable
 def init_settings(APP_NAME, DEBUG):
     """
     Initializes default settings. Should be called in the projects settings.py, passing any custom parameters that

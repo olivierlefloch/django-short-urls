@@ -41,8 +41,7 @@ def url_append_parameters(url, params_to_replace, defaults):
     if not params_to_replace and not defaults:
         return url
 
-    # pylint: disable=W0633
-    (scheme, netloc, path, params, link_query, fragment) = urlparse.urlparse(url)
+    (scheme, netloc, path, params, link_query, fragment) = urlparse.urlparse(url)  # pylint: disable=W0633
 
     link_query = QueryDict(link_query).copy()
 

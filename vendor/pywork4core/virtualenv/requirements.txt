@@ -1,1 +1,1 @@
-virtualenvwrapper==4.5.1
+virtualenvwrapper==4.7.1
