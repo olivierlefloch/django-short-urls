@@ -102,7 +102,7 @@ def init_settings(APP_NAME, DEBUG):
         },
         'handlers': {
             'mail_admins': {
-                'level': 'ERROR',
+                'level': 'CRITICAL',
                 'filters': ['require_debug_false'],
                 'class': 'django.utils.log.AdminEmailHandler'
             },
