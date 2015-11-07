@@ -58,6 +58,15 @@ class ViewMainTestCase(PyW4CTestCase):
 
         self.assertEqual(response.status_code, 302)
 
+    def test_redirect_with_utf8_query_param(self):
+        with patch('django_short_urls.views.statsd'):
+            response = main(self.factory.get('/' + self.path + '?bla=éàû'), self.path)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response._headers['location'][1],
+            'http://www.work4.com/jobs?bla=%C3%A9%C3%A0%C3%BB&ref=shortener')
+
     @patch('django_short_urls.views.statsd')
     def test_404(self, mock_statsd):  # pylint: disable=unused-argument
         path404 = self.path + 'foobar'

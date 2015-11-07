@@ -8,7 +8,6 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, QueryDict
 import json
 import requests
-from urllib import urlencode
 import urlparse
 
 from http.status import HTTP_OK
@@ -54,7 +53,7 @@ def url_append_parameters(url, params_to_replace, defaults):
 
     return urlparse.urlunparse((
         scheme, netloc, path, params,
-        urlencode(link_query),
+        link_query.urlencode(),
         fragment
     ))
 
