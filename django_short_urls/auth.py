@@ -16,6 +16,7 @@ def _safe_base64_decode(encoded):
     Returns unicode, assuming utf-8 charset"""
     try:
         # Add extra padding just in case, because python is very strict and it can't hurt
+        # http://stackoverflow.com/a/9807138
         return (encoded + "===").decode('base_64').decode('utf8')
     except Exception as err:  # pylint: disable=broad-except
         if err.message == 'Incorrect padding':
