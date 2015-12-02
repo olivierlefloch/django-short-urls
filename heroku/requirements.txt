@@ -2,5 +2,4 @@ celery==3.1.18
 dj-database-url==0.3.0
 django-celery==3.1.17
 gunicorn==19.3.0
-newrelic>=2.56
 redis==2.10.3

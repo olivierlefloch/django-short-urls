@@ -15,7 +15,7 @@ from mongoengine.connection import connect, disconnect
 from mongoengine import Document
 
 
-class MongoTestCase(TestCase):  # pylint: disable=R0904
+class MongoTestCase(TestCase):  # pylint: disable=too-many-public-methods
     """
     TestCase class that clears the collection between the tests.
 
