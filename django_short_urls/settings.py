@@ -46,7 +46,14 @@ for (key, value) in init_settings(APP_NAME=APP_NAME, DEBUG=DEBUG):
 # ERRORS AND LOGGING #
 ######################
 
-if SENTRY_DSN is not None:  # pragma: no cover
+if SENTRY_DSN:  # pragma: no cover
+    import raven
+
+    RAVEN_CONFIG = {
+        'dsn': SENTRY_DSN,
+        'release': raven.fetch_git_sha(PROJECT_ROOT_DIR),
+    }
+
     globals()['INSTALLED_APPS'] += ('raven.contrib.django.raven_compat',)
     MIDDLEWARE_CLASSES = (
         'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
