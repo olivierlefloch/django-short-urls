@@ -82,7 +82,7 @@ if not DEBUG:  # pragma: no cover
 #############
 
 try:
-    mongoengine.connect(read_preference=ReadPreference.PRIMARY_PREFERRED, **MONGOENGINE)
+    mongoengine.connect(host=MONGO_URI, read_preference=ReadPreference.PRIMARY_PREFERRED)
 
     SERVICE_UNAVAILABLE = False
 except mongoengine.connection.ConnectionError, err:  # pragma: no cover
