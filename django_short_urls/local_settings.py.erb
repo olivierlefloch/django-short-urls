@@ -12,13 +12,7 @@ ADMINS = (
 
 SERVER_EMAIL = "root@work4labs.com"
 
-MONGOENGINE = {
-    'db': '<%= @creds["db"]["name"] %>',
-    'host': '<%= @creds["db"]["host"] %>',
-    'port': <%= @creds["db"]["port"] %>,
-    'username': '<%= @creds["db"]["username"] %>',
-    'password': '<%= @creds["db"]["password"] %>'
-}
+MONGO_URI = '<%= @creds["mongo_uri"] %>'
 
 ALLOWED_HOSTS = ['.workfor.us']
 
