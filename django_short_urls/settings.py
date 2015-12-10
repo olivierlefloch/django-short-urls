@@ -51,7 +51,7 @@ if SENTRY_DSN:  # pragma: no cover
 
     RAVEN_CONFIG = {
         'dsn': SENTRY_DSN,
-        'release': raven.fetch_git_sha(PROJECT_ROOT_DIR),
+        'release': raven.fetch_git_sha(PROJECT_ROOT_DIR),  # pylint: disable=undefined-variable
     }
 
     globals()['INSTALLED_APPS'] += ('raven.contrib.django.raven_compat',)
