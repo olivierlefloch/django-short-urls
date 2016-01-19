@@ -1,5 +1,8 @@
 # django-short-urls
 
+[![Circle CI](https://circleci.com/gh/Work4Labs/django-short-urls/tree/master.png?style=shield&circle-token=5d7460a8d2e37a2a2a7d410470d12109cccd93d3)](https://circleci.com/gh/Work4Labs/django-short-urls/tree/master)
+[![Dependency Status](https://www.versioneye.com/user/projects/569e703b2025a6003a00034c/badge.svg)](https://www.versioneye.com/user/projects/569e703b2025a6003a00034c)
+
 For dependencies see `requirements.txt`.
 
 ## Installation
