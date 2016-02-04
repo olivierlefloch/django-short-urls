@@ -43,7 +43,7 @@ include ${WORK4CORE_DIR}/virtualenv/Makefile
 
 RUNNER = ${ACTIVATE_VENV} &&
 
-ifeq ($(wildcard $(PROJECT_DIR).env),)
+ifeq ($(wildcard $(PROJECT_DIR)env.tpl),)
 	USE_HONCHO = FALSE
 	RUN_CMD = ${RUNNER}
 
@@ -80,7 +80,7 @@ all_run:
 # Installation #
 ################
 
-install: install_pre install_do install_project install_post
+install: install_pre install_do install_settings install_project
 
 install_pre:
 
@@ -92,7 +92,7 @@ install_project::
 install_phantomjs:
 	${WORK4CORE_DIR}/bin/install_phantomjs ${PROJECT_DIR} ${PHANTOM_VERSION}
 
-install_post:
+install_settings:
 	echo "Copying settings..."
 	([ ! -f ${SETTINGS_TPL_FILE} ] && echo "Project does not have a settings file.") || \
 		([ -f ${SETTINGS_FILE} ] && echo "Settings file already exists.") || \
