@@ -28,10 +28,6 @@ ROOT_URLCONF = 'django_short_urls.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'django_short_urls.wsgi.application'
 
-AUTHENTICATION_BACKENDS = (
-    'mongoengine.django.auth.MongoEngineBackend',
-)
-
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https, https')
 
 #########################
