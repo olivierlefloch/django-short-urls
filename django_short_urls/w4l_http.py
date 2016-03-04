@@ -5,10 +5,11 @@
 from __future__ import unicode_literals
 
 from collections import OrderedDict
-from django.http import HttpResponse
-from django.template import loader
 import re
 import urllib
+
+from django.http import HttpResponse
+from django.template import loader
 
 from http.status import HTTP_SERVICE_UNAVAILABLE
 

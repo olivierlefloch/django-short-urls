@@ -9,12 +9,12 @@ Views for Django Short Urls:
 
 from __future__ import unicode_literals
 
+from logging import getLogger
+import re
+
 from django.http import Http404
 from django.shortcuts import redirect
-from django.utils.log import getLogger
 from django.views.decorators.http import require_safe, require_POST
-import logging
-import re
 from statsd import statsd
 
 from utils.mongo import mongoengine_is_primary
