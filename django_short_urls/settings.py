@@ -47,7 +47,7 @@ for (key, value) in init_settings(APP_NAME=APP_NAME, DEBUG=DEBUG):
 ######################
 
 if SENTRY_DSN:  # pragma: no cover
-    import raven
+    import raven  # pylint: disable=wrong-import-position, wrong-import-order
 
     RAVEN_CONFIG = {
         'dsn': SENTRY_DSN,

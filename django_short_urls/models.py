@@ -148,7 +148,7 @@ class Link(Document):
     @property
     def prefix(self):
         """If present, return the prefix"""
-        if '/' not in self.hash:
+        if '/' not in self.hash:  # pylint: disable=unsupported-membership-test
             return ''
 
         return self.hash.split('/')[0]
