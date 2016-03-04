@@ -98,11 +98,6 @@ def main(request, path):
         defaults={REF_PARAM_NAME: REF_PARAM_DEFAULT_VALUE}
     )
 
-    # FIXME: OPS-3885 - we're logging agressively to Sentry here because we don't understand some weird 404 errors on
-    # FIXME: workfor.us. We suspect they are being triggered by some pages being served directly as a proxy, perhaps.
-    if link.act_as_proxy:
-        logging.error('Page served through proxy: %s', str(link))
-
     # Either redirect the user, or load the target page and display it directly
     return (proxy if link.act_as_proxy else redirect)(target_url)
 
