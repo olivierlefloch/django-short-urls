@@ -5,10 +5,11 @@
 from __future__ import unicode_literals
 
 from datetime import datetime
-from django.conf import settings
 from hashlib import sha1
-from mongoengine import Document, StringField, IntField, BooleanField
 import re
+
+from django.conf import settings
+from mongoengine import Document, StringField, IntField, BooleanField
 from statsd import statsd
 
 import django_short_urls.int_to_alnum as int_to_alnum
@@ -147,7 +148,7 @@ class Link(Document):
     @property
     def prefix(self):
         """If present, return the prefix"""
-        if '/' not in self.hash:
+        if '/' not in self.hash:  # pylint: disable=unsupported-membership-test
             return ''
 
         return self.hash.split('/')[0]

@@ -4,8 +4,9 @@
 
 from __future__ import unicode_literals
 
+from logging import getLogger
+
 from django.conf import settings
-from django.utils.log import getLogger
 import mongoengine
 
 from utils.mongo import mongoengine_is_primary

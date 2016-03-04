@@ -26,6 +26,8 @@ sys.path.append(ROOT_DIR)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_short_urls.settings")
 
+# The following imports cannot be placed at the top of the file since they Django to be initialized properly
+# pylint: disable=wrong-import-position
 from raven.contrib.django.raven_compat.middleware.wsgi import Sentry  # noqa
 from django.core.wsgi import get_wsgi_application  # noqa
 

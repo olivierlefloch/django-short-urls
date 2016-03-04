@@ -3,9 +3,10 @@
 from __future__ import unicode_literals
 
 from django.test import RequestFactory
-from django_app.test import PyW4CTestCase
 from freezegun import freeze_time
 from mock import patch
+
+from django_app.test import PyW4CTestCase
 
 from django_short_urls.models import Link
 
@@ -108,13 +109,13 @@ class LinkTestCase(PyW4CTestCase):
 
         if 'cursor' in explanation:  # pragma: no cover
             # Mongo 2.x
-            explanation_item = explanation['cursor']
-            match = u'BtreeCursor long_url_hashed'
+            self.assertEqual(
+                explanation['cursor'],
+                u'BtreeCursor long_url_hashed')
         else:  # pragma: no cover
-            explanation_item = explanation['queryPlanner']['winningPlan']['inputStage']['inputStage']['keyPattern']
-            match = {'long_url': 'hashed'}
-
-        self.assertEqual(explanation_item, match)
+            self.assertEqual(
+                explanation['queryPlanner']['winningPlan']['inputStage']['inputStage']['keyPattern'],
+                {'long_url': 'hashed'})
 
     # Freeze time to make this test deterministic
     @freeze_time('2013-05-29')

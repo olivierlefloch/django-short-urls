@@ -9,12 +9,12 @@ Views for Django Short Urls:
 
 from __future__ import unicode_literals
 
+from logging import getLogger
+import re
+
 from django.http import Http404
 from django.shortcuts import redirect
-from django.utils.log import getLogger
 from django.views.decorators.http import require_safe, require_POST
-import logging
-import re
 from statsd import statsd
 
 from utils.mongo import mongoengine_is_primary
@@ -52,11 +52,8 @@ def _extract_valid_path(path):
 # pylint: disable=E1101, W0511
 @require_safe
 def main(request, path):
-    '''
-    Search for a long link matching the `path` and redirect
-    '''
+    '''Search for a long link matching the `path` and redirect'''
 
-    #
     path = _extract_valid_path(path)
 
     link = Link.find_by_hash(path)
@@ -101,21 +98,17 @@ def main(request, path):
         defaults={REF_PARAM_NAME: REF_PARAM_DEFAULT_VALUE}
     )
 
-    # FIXME: OPS-3885 - we're logging agressively to Sentry here because we don't understand some weird 404 errors on
-    # FIXME: workfor.us. We suspect they are being triggered by some pages being served directly as a proxy, perhaps.
-    if link.act_as_proxy:
-        logging.error('Page served through proxy: %s', str(link))
-
     # Either redirect the user, or load the target page and display it directly
-    return (proxy if link.act_as_proxy else redirect)(target_url)
+    if link.act_as_proxy:
+        return proxy(target_url)
+    else:
+        return redirect(target_url, permanent=True)
 
 
 @require_POST
 @login_with_basic_auth_required
 def new(request):
-    '''
-    Create a new short url based on the POST parameters
-    '''
+    '''Create a new short url based on the POST parameters'''
     long_url = request.GET.get('long_url')
 
     if long_url is None:

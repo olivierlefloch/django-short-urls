@@ -4,8 +4,10 @@ from __future__ import unicode_literals
 
 from django.http import Http404
 from django.test.client import RequestFactory
-from django_app.test import PyW4CTestCase
 from mock import patch
+
+from django_app.test import PyW4CTestCase
+from http.status import HTTP_REDIRECT_PERMANENTLY
 
 from django_short_urls.views import _extract_valid_path, main
 from django_short_urls.models import Link
@@ -26,7 +28,7 @@ class ViewMainTestCase(PyW4CTestCase):
     @patch('django_short_urls.views.statsd')
     def test_redirect(self, mock_statsd):
         response = main(self.factory.get('/%s' % self.path), self.path)
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, HTTP_REDIRECT_PERMANENTLY)
         self.assertEqual(self.link.reload().clicks, 1)
         self.assertEqual(mock_statsd.increment.call_count, 1)
 
@@ -56,13 +58,13 @@ class ViewMainTestCase(PyW4CTestCase):
     def test_redirect_suffix(self, mock_statsd):  # pylint: disable=unused-argument
         response = main(self.factory.get('/%s/recruiter' % self.path), self.path + '/recruiter')
 
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, HTTP_REDIRECT_PERMANENTLY)
 
     def test_redirect_with_utf8_query_param(self):
         with patch('django_short_urls.views.statsd'):
             response = main(self.factory.get('/' + self.path + '?bla=éàû'), self.path)
 
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, HTTP_REDIRECT_PERMANENTLY)
         self.assertEqual(
             response._headers['location'][1],
             'http://www.work4.com/jobs?bla=%C3%A9%C3%A0%C3%BB&ref=shortener')

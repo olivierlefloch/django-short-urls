@@ -6,9 +6,10 @@ from __future__ import unicode_literals
 
 from decorator import decorator
 
+from django.http import HttpResponse
+
 from django_short_urls.models import User
 from http.status import HTTP_UNAUTHORIZED
-from django.http import HttpResponse
 
 
 def _safe_base64_decode(encoded):

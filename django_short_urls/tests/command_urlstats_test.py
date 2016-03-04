@@ -5,8 +5,9 @@ from __future__ import unicode_literals
 import io
 
 from django.core import management
-from django_app.test import PyW4CTestCase
 from mock import patch
+
+from django_app.test import PyW4CTestCase
 
 from django_short_urls.models import Link
 
