@@ -109,13 +109,13 @@ class LinkTestCase(PyW4CTestCase):
 
         if 'cursor' in explanation:  # pragma: no cover
             # Mongo 2.x
-            explanation_item = explanation['cursor']
-            match = u'BtreeCursor long_url_hashed'
+            self.assertEqual(
+                explanation['cursor'],
+                u'BtreeCursor long_url_hashed')
         else:  # pragma: no cover
-            explanation_item = explanation['queryPlanner']['winningPlan']['inputStage']['inputStage']['keyPattern']
-            match = {'long_url': 'hashed'}
-
-        self.assertEqual(explanation_item, match)
+            self.assertEqual(
+                explanation['queryPlanner']['winningPlan']['inputStage']['inputStage']['keyPattern'],
+                {'long_url': 'hashed'})
 
     # Freeze time to make this test deterministic
     @freeze_time('2013-05-29')
