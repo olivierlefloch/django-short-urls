@@ -2,6 +2,8 @@
 
 from __future__ import unicode_literals
 
+import json
+
 from django.http import HttpResponse
 from mock import patch
 
@@ -10,7 +12,6 @@ from http.utils import (
     empty_response, proxy, response, url_append_parameters, validate_url
 )
 from http.status import HTTP_CONFLICT, HTTP_OK
-import json
 
 
 class W4lHttpTestCase(PyW4CTestCase):

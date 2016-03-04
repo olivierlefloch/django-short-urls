@@ -22,6 +22,6 @@ if __name__ == "__main__":  # pragma: no cover
     # we can not use setdefault since it will not work when calling from another python script
     os.environ['DJANGO_SETTINGS_MODULE'] = "django_app.settings"
 
-    from django.core.management import execute_from_command_line
+    from django.core.management import execute_from_command_line  # pylint: disable=wrong-import-position
 
     execute_from_command_line(sys.argv)
