@@ -4,11 +4,12 @@
 
 from __future__ import unicode_literals
 
+import json
+import urlparse
+
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, QueryDict
-import json
 import requests
-import urlparse
 
 from http.status import HTTP_OK
 

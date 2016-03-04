@@ -8,7 +8,7 @@ endif
 PYTHONHOME ?= ${PROJECT_DIR}venv/
 VENV_WRAPPER_DIR = $(abspath ${PYTHONHOME})/.virtualenvs/
 
-PIP_VERSION = 8.0.2
+PIP_VERSION = 8.0.3
 PYTHON_VERSION = python2.7
 
 ACTIVATE_VENV = . ${PYTHONHOME}/bin/activate
@@ -40,3 +40,6 @@ ifdef PW4C_DIR
 	# virtualenvwrapper needs to be sourced for add2virtualenv
 	bash -c "${ACTIVATE_VENV} && WORKON_HOME='${VENV_WRAPPER_DIR}' source ${PYTHONHOME}/bin/virtualenvwrapper.sh && add2virtualenv ${PW4C_DIR}"
 endif
+
+venv_check_versions:
+	${ACTIVATE_VENV} && pip list --outdated

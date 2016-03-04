@@ -5,8 +5,9 @@ from __future__ import unicode_literals
 import socket
 import subprocess
 
-from django_app.no_network_test_case import NoNetworkTestCase, NetworkError
 import requests
+
+from django_app.no_network_test_case import NoNetworkTestCase, NetworkError
 
 
 class NoNetworkTestCaseTestCase(NoNetworkTestCase):
