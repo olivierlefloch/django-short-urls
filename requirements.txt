@@ -2,4 +2,4 @@
 
 decorator==4.0.4
 dogstatsd-python
-raven==5.8.1
+raven==5.11.0
