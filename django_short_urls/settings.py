@@ -46,19 +46,6 @@ for (key, value) in init_settings(APP_NAME=APP_NAME, DEBUG=DEBUG):
 # ERRORS AND LOGGING #
 ######################
 
-if SENTRY_DSN:  # pragma: no cover
-    import raven  # pylint: disable=wrong-import-position, wrong-import-order
-
-    RAVEN_CONFIG = {
-        'dsn': SENTRY_DSN,
-        'release': raven.fetch_git_sha(PROJECT_ROOT_DIR),  # pylint: disable=undefined-variable
-    }
-
-    globals()['INSTALLED_APPS'] += ('raven.contrib.django.raven_compat',)
-    MIDDLEWARE_CLASSES = (
-        'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
-    ) + MIDDLEWARE_CLASSES
-
 if not DEBUG:  # pragma: no cover
     LOGGING = {
         'version': 1,
@@ -73,15 +60,28 @@ if not DEBUG:  # pragma: no cover
                 'class': 'logging.StreamHandler',
                 'formatter': 'standard'
             },
-            'sentry': {
-                'level': 'ERROR',
-                'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
-            }
         },
         'root': {
-            'handlers': ['console', 'sentry'],
+            'handlers': ['console'],
             'level': 'WARNING'
         }
+    }
+
+if SENTRY_DSN:  # pragma: no cover
+    globals()['INSTALLED_APPS'] = ('raven.contrib.django.raven_compat',) + globals()['INSTALLED_APPS']
+    MIDDLEWARE_CLASSES = (
+        'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
+    ) + MIDDLEWARE_CLASSES
+
+    LOGGING['handlers']['sentry'] = {
+        'level': 'ERROR',
+        'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+    }
+    LOGGING['root']['handlers'].append('sentry')
+
+    RAVEN_CONFIG = {
+        'dsn': SENTRY_DSN,
+        'release': raven.fetch_git_sha(PROJECT_ROOT_DIR),  # pylint: disable=undefined-variable
     }
 
 #############
