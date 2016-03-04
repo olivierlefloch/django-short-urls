@@ -4,8 +4,9 @@ from __future__ import unicode_literals
 
 from django.http import Http404
 from django.test.client import RequestFactory
-from django_app.test import PyW4CTestCase
 from mock import patch
+
+from django_app.test import PyW4CTestCase
 
 from django_short_urls.views import _extract_valid_path, main
 from django_short_urls.models import Link

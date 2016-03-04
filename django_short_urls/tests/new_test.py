@@ -2,16 +2,18 @@
 
 from __future__ import unicode_literals
 
+import json
+
 from django.test.client import RequestFactory
 from django.utils.http import urlencode
-from django_app.test import PyW4CTestCase
-import json
 from mock import patch
 from requests.auth import _basic_auth_str
 
+from django_app.test import PyW4CTestCase
+from http.status import HTTP_OK, HTTP_BAD_REQUEST, HTTP_UNAUTHORIZED, HTTP_FORBIDDEN, HTTP_CONFLICT
+
 from django_short_urls.views import new
 from django_short_urls.models import User
-from http.status import HTTP_OK, HTTP_BAD_REQUEST, HTTP_UNAUTHORIZED, HTTP_FORBIDDEN, HTTP_CONFLICT
 
 
 class ViewNewTestCase(PyW4CTestCase):

@@ -3,9 +3,10 @@
 from __future__ import unicode_literals
 
 from django.test.client import RequestFactory
-from django_app.test import PyW4CTestCase
 from mock import patch
 import mongoengine
+
+from django_app.test import PyW4CTestCase
 
 from django_short_urls.middleware import ServiceUnavailableMiddleware
 from django_short_urls.models import Link

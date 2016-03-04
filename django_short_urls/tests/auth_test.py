@@ -2,12 +2,13 @@
 
 from __future__ import unicode_literals
 
-from django_app.test import PyW4CTestCase
 from mock import Mock
+
+from django_app.test import PyW4CTestCase
+from http.status import HTTP_UNAUTHORIZED
 
 from django_short_urls.auth import _safe_base64_decode, login_with_basic_auth_required
 from django_short_urls.models import User
-from http.status import HTTP_UNAUTHORIZED
 
 
 @login_with_basic_auth_required

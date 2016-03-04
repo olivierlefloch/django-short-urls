@@ -3,9 +3,10 @@
 from __future__ import unicode_literals
 
 from django.test import RequestFactory
-from django_app.test import PyW4CTestCase
 from freezegun import freeze_time
 from mock import patch
+
+from django_app.test import PyW4CTestCase
 
 from django_short_urls.models import Link
 
