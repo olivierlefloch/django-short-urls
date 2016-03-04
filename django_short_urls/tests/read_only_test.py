@@ -7,6 +7,7 @@ from mock import patch
 import mongoengine
 
 from django_app.test import PyW4CTestCase
+from http.status import HTTP_REDIRECT_PERMANENTLY
 
 from django_short_urls.middleware import ServiceUnavailableMiddleware
 from django_short_urls.models import Link
@@ -28,7 +29,7 @@ class ReadOnlyTestCase(PyW4CTestCase):
         response = main(self.factory.get('/%s' % self.path), self.path)
 
         # Make sure we're still redirecting
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, HTTP_REDIRECT_PERMANENTLY)
         # But not logging clicks
         self.assertEqual(self.link.clicks, 0)
 
