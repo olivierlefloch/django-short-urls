@@ -64,6 +64,8 @@ if not DEBUG:  # pragma: no cover
     }
 
 if SENTRY_DSN:  # pragma: no cover
+    import raven  # pylint: disable=wrong-import-position, wrong-import-order
+
     globals()['INSTALLED_APPS'] = ('raven.contrib.django.raven_compat',) + globals()['INSTALLED_APPS']
     MIDDLEWARE_CLASSES = (
         'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
