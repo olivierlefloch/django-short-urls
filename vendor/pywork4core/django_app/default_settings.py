@@ -49,7 +49,7 @@ def init_settings(APP_NAME, DEBUG):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': TEMP_DIR + 'db.sqlite'
+            'NAME': TEMP_DIR + '/db.sqlite'
         }
     }
 
