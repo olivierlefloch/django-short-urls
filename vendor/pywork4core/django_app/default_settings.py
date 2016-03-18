@@ -29,7 +29,7 @@ def init_settings(APP_NAME, DEBUG):
     globals()['APP_NAME'] = APP_NAME
     globals()['DEBUG'] = DEBUG
 
-    INSTALLED_APPS = ('django_app', 'django_nose', APP_NAME)
+    INSTALLED_APPS = ('django_app', 'django_nose', 'django_extensions', APP_NAME)
 
     # Directories
 
