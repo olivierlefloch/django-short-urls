@@ -66,7 +66,7 @@ class ViewMainTestCase(PyW4CTestCase):
 
         self.assertEqual(response.status_code, HTTP_REDIRECT_PERMANENTLY)
         self.assertEqual(
-            response._headers['location'][1],
+            response['location'],
             'http://www.work4.com/jobs?bla=%C3%A9%C3%A0%C3%BB&ref=shortener')
 
     @patch('django_short_urls.views.statsd')
