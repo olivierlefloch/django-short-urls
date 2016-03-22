@@ -1,14 +1,15 @@
 -r ./virtualenv/requirements.txt
 astroid==1.4.4
 coverage==4.0.3
+django-extensions==1.6.1
 django-nose==1.4.3
-Django==1.9.3
+Django==1.9.4
 freezegun==0.3.6
 honcho==0.6.6
 ipython==4.1.2
 logilab-common==1.1.0
 mock==1.3.0
-mongoengine==0.9.0  # FIXME: Outdated – BAT-4917
+mongoengine==0.9.0  # FIXME: Outdated - BAT-4917
 nose==1.3.7
 pep8==1.7.0
 Pillow==3.1.1
@@ -22,5 +23,6 @@ requests==2.9.1
 six==1.10.0
 stevedore==1.12.0
 virtualenv-clone==0.2.6
-virtualenv==14.0.6
+virtualenv==15.0.0
+werkzeug==0.11.3
 wsgiref==0.1.2

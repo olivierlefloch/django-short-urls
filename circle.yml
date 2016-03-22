@@ -7,7 +7,7 @@ machine:
     ADMINS: Olivier Le Floch <olefloch@work4labs.com>
     SECRET_KEY: EamJrjviiW13ue8PEamJrjviiW13ue8P
   python:
-    version: 2.7.9
+    version: 2.7.11
 
 dependencies:
   override:
