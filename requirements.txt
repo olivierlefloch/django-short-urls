@@ -1,5 +1,4 @@
 -r ./vendor/pywork4core/requirements.txt
+-r ./vendor/pywork4core/web/requirements.txt
 
-decorator==4.0.9
 dogstatsd-python
-raven==5.11.1
