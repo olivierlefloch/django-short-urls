@@ -21,6 +21,7 @@ WORK4CORE_BIN = ${WORK4CORE_DIR}bin/
 WORK4CORE_TESTS_DIR = ${WORK4CORE_DIR}django_app/tests/
 
 TEMP_DIR = ${PROJECT_DIR}temp/
+STATIC_DIR = ${PROJECT_DIR}staticfiles/
 PYTHONHOME ?= ${PROJECT_DIR}venv
 VENV_WRAPPER_DIR = $(abspath ${PYTHONHOME})/.virtualenvs/
 
@@ -116,7 +117,7 @@ deep_clean_project::
 	# Override deep_clean_project to specify project specific deep clean commands
 
 deep_clean_do: clean_pyc
-	rm -rf ${TEMP_DIR} ${PYTHONHOME}
+	rm -rf ${TEMP_DIR} ${PYTHONHOME} ${STATIC_DIR}
 
 clean_pyc:
 	# -print0 doesn't seem to work
@@ -171,7 +172,7 @@ manage:
 	${RUN_CMD} ${PROJECT_DIR}manage.py ${cmd}
 
 run:
-	make manage cmd=runserver
+	make manage cmd="runserver"
 
 ifeq (${USE_HONCHO}, TRUE)
 start:

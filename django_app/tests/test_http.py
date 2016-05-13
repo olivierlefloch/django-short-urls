@@ -9,7 +9,7 @@ from mock import patch
 
 from django_app.test import PyW4CTestCase
 from http.utils import (
-    empty_response, proxy, response, url_append_parameters, validate_url
+    empty_response, proxy, pyw4c_response, url_append_parameters, validate_url
 )
 from http.status import HTTP_CONFLICT, HTTP_OK
 
@@ -55,13 +55,13 @@ class W4lHttpTestCase(PyW4CTestCase):
         requests_get.assert_called_once_with(url)
 
     def test_response(self):
-        res = response(message="test", status=HTTP_CONFLICT)
+        res = pyw4c_response(message="test", status=HTTP_CONFLICT)
         self.assertEqual(res.status_code, HTTP_CONFLICT)
         json_content = json.loads(res.content)
         self.assertTrue(json_content['error'])
         self.assertIn("test", json_content['message'])
 
-        res = response(status=HTTP_OK)
+        res = pyw4c_response(status=HTTP_OK)
         self.assertEqual(res.status_code, HTTP_OK)
         json_content = json.loads(res.content)
         self.assertFalse(json_content['error'])
