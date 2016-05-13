@@ -16,7 +16,7 @@ from mock import patch, MagicMock
 def patch_requests(mapping):
     """
         mapping is a dict of str => data
-        so that "toto" => {"response" =>{"success" : 1}, "json" => True/False} means that
+        so that "toto" => {"response" => {"success" : 1}, "json" => True/False} means that
         any url called with *toto* will return {"success" : 1}
         json part is optional
     """
