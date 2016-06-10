@@ -135,8 +135,8 @@ class Link(Document):
             defaults={'long_url': long_url}
         )
 
-    @classmethod
-    def hash_for_prefix_and_short_path(cls, prefix, short_path):
+    @staticmethod
+    def hash_for_prefix_and_short_path(prefix, short_path):
         """Returns the hash for a combination of prefix and short_path"""
         return ('%s%s' % ('%s/' % prefix if prefix != '' else '', short_path)).lower()
 
