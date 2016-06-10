@@ -40,7 +40,7 @@ def init_settings(app_name, debug):
         'APP_NAME': app_name,
         'DEBUG': debug,
 
-        'INSTALLED_APPS': ('django_app', 'django_nose', 'django_extensions', app_name),
+        'INSTALLED_APPS': ('django.contrib.contenttypes', 'django_app', 'django_nose', 'django_extensions', app_name),
 
         # Directories
 
