@@ -1,5 +1,5 @@
-celery==3.1.22
-dj-database-url==0.4.0
+celery==3.1.23
+dj-database-url==0.4.1
 django-celery==3.1.17
-gunicorn==19.4.5
+gunicorn==19.6.0
 redis==2.10.5

@@ -1,28 +1,30 @@
 -r ./virtualenv/requirements.txt
-astroid==1.4.4
-coverage==4.0.3
+astroid==1.4.5
+coverage==4.1
+decorator==4.0.9
 django-extensions==1.6.1
 django-nose==1.4.3
-Django==1.9.4
-freezegun==0.3.6
-honcho==0.6.6
-ipython==4.1.2
-logilab-common==1.1.0
-mock==1.3.0
+Django==1.9.6
+freezegun==0.3.7
+honcho==0.7.1
+ipython==4.2.0
+logilab-common==1.2.1
+mock==2.0.0
 mongoengine==0.9.0  # FIXME: Outdated - BAT-4917
 nose==1.3.7
 pep8==1.7.0
-Pillow==3.1.1
-pylint==1.5.4
+Pillow==3.2.0
+pylint==1.5.5
 pylint-django==0.7.1
-pymongo==2.8.1  # FIXME: Outdated – BAT-4917
-python-dateutil==2.5.0
-pytz==2015.7
+pymongo==2.8.1  # FIXME: Outdated - BAT-4917
+python-dateutil==2.5.3
+pytz==2016.4
 pyyaml==3.11
-requests==2.9.1
+requests==2.10.0
+setuptools==22.0.0
 six==1.10.0
-stevedore==1.12.0
+stevedore==1.14.0
 virtualenv-clone==0.2.6
-virtualenv==15.0.0
+virtualenv==15.0.2
 werkzeug==0.11.3
 wsgiref==0.1.2

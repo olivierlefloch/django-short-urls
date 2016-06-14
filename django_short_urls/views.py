@@ -19,7 +19,7 @@ from statsd import statsd
 
 from utils.mongo import mongoengine_is_primary
 from http.status import HTTP_BAD_REQUEST, HTTP_CONFLICT, HTTP_FORBIDDEN
-from http.utils import proxy, response, url_append_parameters, validate_url
+from http.utils import proxy, pyw4c_response, url_append_parameters, validate_url
 
 import django_short_urls.suffix_catchall as suffix_catchall
 from django_short_urls.models import Link
@@ -117,7 +117,7 @@ def new(request):
         is_valid, error_message = validate_url(long_url)
 
     if not is_valid:
-        return response(status=HTTP_BAD_REQUEST, message=error_message)
+        return pyw4c_response(status=HTTP_BAD_REQUEST, message=error_message)
 
     params = {}
 
@@ -128,7 +128,7 @@ def new(request):
             continue
 
         if params[key] is not None and '/' in params[key]:
-            return response(
+            return pyw4c_response(
                 status=HTTP_BAD_REQUEST,
                 message="%s may not contain a '/' character." % key)
 
@@ -148,11 +148,11 @@ def new(request):
 
         params['hash'] = err.hash
 
-        return response(status=HTTP_CONFLICT, message=str(err), **params)
+        return pyw4c_response(status=HTTP_CONFLICT, message=str(err), **params)
     except InvalidHashException, err:
         getLogger('app').error(str(err))
 
-        return response(
+        return pyw4c_response(
             status=HTTP_FORBIDDEN if isinstance(err, ForbiddenKeyword) else HTTP_BAD_REQUEST,
             message=str(err), **params)
 
@@ -160,4 +160,4 @@ def new(request):
 
     params['short_url'] = link.build_absolute_uri(request)
 
-    return response(**params)
+    return pyw4c_response(**params)

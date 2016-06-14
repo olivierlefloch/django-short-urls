@@ -4,11 +4,9 @@
 
 from __future__ import unicode_literals
 
-import json
 import urlparse
 
-from django.core.serializers.json import DjangoJSONEncoder
-from django.http import HttpResponse, QueryDict
+from django.http import HttpResponse, JsonResponse, QueryDict
 import requests
 
 from http.status import HTTP_OK
@@ -64,7 +62,7 @@ def empty_response():
     return HttpResponse(status=HTTP_OK)
 
 
-def response(message=None, status=HTTP_OK, **kwargs):
+def pyw4c_response(message=None, status=HTTP_OK, **kwargs):
     """Builds a json response with the kwargs object and some additional standardized fields"""
     kwargs.update({
         "status_code": status,
@@ -72,7 +70,7 @@ def response(message=None, status=HTTP_OK, **kwargs):
         "message": message
     })
 
-    return HttpResponse(json.dumps(kwargs, cls=DjangoJSONEncoder), status=status, content_type="application/json")
+    return JsonResponse(kwargs, safe=False, status=status)
 
 
 def proxy(url):

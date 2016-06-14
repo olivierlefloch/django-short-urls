@@ -41,7 +41,7 @@ class MongoTestCase(TestCase):  # pylint: disable=too-many-public-methods
 
         # Mongoengine models need to forget about their collection (to recreate indexes). Hackish, I know.
         # FIXME: __subclasses__ may only take direct descendants into account!
-        for model in Document.__subclasses__():  # pylint: disable=E1101
+        for model in Document.__subclasses__():  # pylint: disable=no-member
             if hasattr(model, '_collection'):
                 del model._collection
 
