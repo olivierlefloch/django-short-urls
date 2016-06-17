@@ -12,7 +12,7 @@ from django.conf import settings
 from mongoengine import Document, StringField, IntField, BooleanField
 from statsd import statsd
 
-import django_short_urls.int_to_alnum as int_to_alnum
+from utils.int_to_alnum import encode as int_to_alnum_encode
 from django_short_urls.exceptions import PathIsNotUrlSafe, ForbiddenKeyword, ShortPathConflict
 
 
@@ -105,7 +105,7 @@ class Link(Document):
             while hashed > mod:
                 mod *= 10
                 nb_tries += 1
-                short_path = int_to_alnum.encode(hashed % mod)
+                short_path = int_to_alnum_encode(hashed % mod)
 
                 if not cls.is_valid_random_short_path(short_path):
                     continue
