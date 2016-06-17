@@ -23,13 +23,13 @@ venv: venv_init venv_prereqs venv_deps venv_wrapper
 
 venv_init:
 	(test -d ${PYTHONHOME} || virtualenv --python=${PYTHON_VERSION} --no-site-packages ${PYTHONHOME})
-	${CFLAGS} ${PYTHONHOME}/bin/pip install --upgrade pip==${PIP_VERSION}
+	${CFLAGS} ${PYTHONHOME}/bin/pip install pip==${PIP_VERSION}
 
 venv_prereqs:
-	(test -f $(PROJECT_DIR)pre_requirements.txt && ${PYTHONHOME}/bin/pip install --upgrade -r $(PROJECT_DIR)pre_requirements.txt) || ! test -f $(PROJECT_DIR)pre_requirements.txt
+	(test -f $(PROJECT_DIR)pre_requirements.txt && ${PYTHONHOME}/bin/pip install -r $(PROJECT_DIR)pre_requirements.txt) || ! test -f $(PROJECT_DIR)pre_requirements.txt
 
 venv_deps:
-	${CFLAGS} ${PYTHONHOME}/bin/pip install --upgrade -r $(PROJECT_DIR)requirements.txt
+	${CFLAGS} ${PYTHONHOME}/bin/pip install -r $(PROJECT_DIR)requirements.txt
 
 venv_wrapper:
 	(test -d ${VENV_WRAPPER_DIR} || mkdir -p ${VENV_WRAPPER_DIR})
