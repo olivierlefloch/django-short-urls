@@ -4,10 +4,11 @@
 
 from __future__ import unicode_literals
 
-ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+ALPHABET = "abcdefghijklmnopqrstuvwxyz"
+ALPHANUM = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 
-def encode(decoded, alphabet=ALPHABET):
+def encode(decoded, alphabet=ALPHANUM):
     """Converts an int to an alphanumerical string"""
 
     if decoded == 0:
@@ -24,7 +25,7 @@ def encode(decoded, alphabet=ALPHABET):
     return ''.join(encoded)
 
 
-def decode(encoded, alphabet=ALPHABET):
+def decode(encoded, alphabet=ALPHANUM):
     """Converts an alphanumerical string to an int"""
 
     base = len(alphabet)
