@@ -40,7 +40,7 @@ def init_settings(app_name, debug):
         'APP_NAME': app_name,
         'DEBUG': debug,
 
-        'INSTALLED_APPS': ('django_app', 'django_nose', app_name),
+        'INSTALLED_APPS': ('django.contrib.contenttypes', 'django_app', 'django_nose', 'django_extensions', app_name),
 
         # Directories
 
@@ -66,7 +66,7 @@ def init_settings(app_name, debug):
         'DATABASES': {
             'default': {
                 'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': temp_dir + 'db.sqlite'
+                'NAME': temp_dir + '/db.sqlite'
             }
         },
         'MONGOENGINE': os.environ.get('MONGOENGINE', {

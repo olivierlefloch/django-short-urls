@@ -4,10 +4,9 @@
 
 from __future__ import unicode_literals
 
-from string import ascii_lowercase
-
-ALPHABET = ascii_lowercase
+ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 ALPHANUM = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
 
 def encode(decoded, alphabet=ALPHANUM):
     """Converts an int to an alphanumerical string"""

@@ -172,7 +172,7 @@ manage:
 	${RUN_CMD} ${PROJECT_DIR}manage.py ${cmd}
 
 run:
-	make manage cmd="runserver"
+	make manage cmd=runserver_plus
 
 ifeq (${USE_HONCHO}, TRUE)
 start:
