@@ -8,7 +8,7 @@ import logging
 
 import mongoengine
 
-from django_app.default_settings import init_web_settings
+from django_app.default_settings import init_settings
 
 
 APP_NAME = 'django_app'
@@ -21,7 +21,7 @@ SECRET_KEY = 'Foobar'
 # Default configuration #
 #########################
 
-globals().update(init_web_settings(app_name=APP_NAME, debug=DEBUG, sentry_dsn=None))
+globals().update(init_settings(app_name=APP_NAME, debug=DEBUG))
 
 
 # Databases

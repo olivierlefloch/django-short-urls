@@ -51,6 +51,12 @@ class DjangoAppTest(PyW4CTestCase):
             )
         )
 
+    def test_init_web_settings(self):
+        app_name = 'django_app'
+        web_settings = default_settings.init_web_settings(app_name, False, None)
+        self.assertEqual(web_settings['APP_NAME'], app_name)
+        self.assertEqual(web_settings['ROOT_URLCONF'], app_name + '.urls')
+
     def test_models(self):
         # Check that we can import the models file
         self.assertIn('Work4', models.__doc__)

@@ -124,6 +124,9 @@ def init_web_settings(app_name, debug, sentry_dsn, early_middleware=(), late_mid
     """
     Appends extra Django settings useful specifically for web apps, such as static files handling, etc.
 
+    :param sentry_dsn: a string containing the DSN to configure the raven client. Projects defining
+                       this parameter MUST add `raven` to their pip requirements.
+
     settings: dict
     return: dict
     """
@@ -176,7 +179,8 @@ def init_web_settings(app_name, debug, sentry_dsn, early_middleware=(), late_mid
         }
         settings['LOGGING']['root']['handlers'].append('sentry')
 
-        import raven  # pylint: disable=wrong-import-position, wrong-import-order
+        # import-error disabled: Raven shall only be a dependency of projects that define sentry_dsn
+        import raven  # pylint: disable=wrong-import-position, wrong-import-order, import-error
 
         settings['RAVEN_CONFIG'] = {'dsn': sentry_dsn}
 
