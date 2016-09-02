@@ -113,9 +113,7 @@ class LinkTestCase(PyW4CTestCase):
                 explanation['cursor'],
                 u'BtreeCursor long_url_hashed')
         else:  # pragma: no cover
-            self.assertEqual(
-                explanation['queryPlanner']['winningPlan']['inputStage']['inputStage']['keyPattern'],
-                {'long_url': 'hashed'})
+            self.assertEqual(explanation['queryPlanner']['winningPlan']['inputStage']['indexName'], 'long_url_hashed')
 
     # Freeze time to make this test deterministic
     @freeze_time('2013-05-29')

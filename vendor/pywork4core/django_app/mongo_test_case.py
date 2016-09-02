@@ -34,7 +34,7 @@ class MongoTestCase(TestCase):  # pylint: disable=too-many-public-methods
 
     def _post_teardown(self):
         for collection in self._database.collection_names():
-            if collection == 'system.indexes':
+            if collection == 'system.indexes':  # pragma: no cover
                 continue
 
             self._database.drop_collection(collection)
