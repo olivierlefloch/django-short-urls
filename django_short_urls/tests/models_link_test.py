@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from django.test import RequestFactory
 from freezegun import freeze_time
-from mock import patch
+from mock import call, Mock, patch
 
 from django_app.test import PyW4CTestCase
 
@@ -20,16 +20,19 @@ class LinkTestCase(PyW4CTestCase):
     URL = "http://www.work4labs.com/"
 
     def test_valid_short_path(self):
-        self.assertEqual(Link.is_valid_random_short_path("ab2cd"), True)
-        self.assertEqual(Link.is_valid_random_short_path("ab2"), True)
-        self.assertEqual(Link.is_valid_random_short_path("a234r434g43gb32r"), True)
-        self.assertEqual(Link.is_valid_random_short_path("4a"), True)
+        self.assertTrue(Link._is_valid_random_short_path("ab2cd"))
+        self.assertTrue(Link._is_valid_random_short_path("ab2"))
+        self.assertTrue(Link._is_valid_random_short_path("a234r434g43gb32r"))
+        self.assertTrue(Link._is_valid_random_short_path("4a"))
+        self.assertTrue(Link._is_valid_random_short_path("ge"))
+        self.assertTrue(Link._is_valid_random_short_path("42"))
+        self.assertTrue(Link._is_valid_random_short_path("j"))
 
-        self.assertEqual(Link.is_valid_random_short_path("abcd"), False)
-        self.assertEqual(Link.is_valid_random_short_path("ge"), False)
-        self.assertEqual(Link.is_valid_random_short_path("crap"), False)
-        self.assertEqual(Link.is_valid_random_short_path("crap42"), False)
-        self.assertEqual(Link.is_valid_random_short_path("abe4abe"), False)
+        self.assertFalse(Link._is_valid_random_short_path("42abcd"), 'More than 2 consecutive letters')
+        self.assertFalse(Link._is_valid_random_short_path("crap"), 'More than 2 consecutive letters')
+        self.assertFalse(Link._is_valid_random_short_path("crap42"), 'More than 2 consecutive letters')
+        self.assertFalse(Link._is_valid_random_short_path("abe4abe"), 'More than 2 consecutive letters')
+        self.assertFalse(Link._is_valid_random_short_path("Jo42"), 'Uppercase used')
 
     def test_shorten(self):
         link, _ = _shorten("http://www.work4labs.com/")
@@ -117,16 +120,53 @@ class LinkTestCase(PyW4CTestCase):
 
     # Freeze time to make this test deterministic
     @freeze_time('2013-05-29')
-    @patch('django_short_urls.models.statsd')
-    def test_create_random(self, mock_statsd):  # pylint: disable=unused-argument
+    @patch('django_short_urls.models.statsd.histogram')
+    def test_create_random(self, mock_histogram):
+        self.assertEqual(
+            Link.create_with_random_short_path(self.URL, 'foo').long_url,
+            self.URL)
+        mock_histogram.assert_called_once_with('workforus.nb_tries_to_generate', 1, tags=['prefix:foo'])
+
+    @freeze_time('2013-05-07')
+    @patch('django_short_urls.models.statsd.histogram')
+    @patch('django_short_urls.models.Link._is_valid_random_short_path', side_effect=[False, True])
+    def test_create_random_is_invalid(self, mock_is_valid, mock_histogram):
+        """Check that we try a second time if we randomly generate an invalid hash, and that we count tries properly"""
+        self.assertEqual(Link.create_with_random_short_path(self.URL, 'foo').long_url, self.URL)
+        self.assertEqual(mock_is_valid.call_count, 2)
+        mock_histogram.assert_called_once_with('workforus.nb_tries_to_generate', 2, tags=['prefix:foo'])
+
+    @freeze_time('2013-05-07')
+    @patch('django_short_urls.models.statsd.histogram')
+    @patch('django_short_urls.models.sha1', return_value=Mock(hexdigest=Mock(side_effect=['0', '123245'])))
+    def test_create_random_hash_overflow(self, mock_sha1, mock_histogram):
+        """Check that we generate a new hash if we exceed the length of the current hash"""
+        self.assertEqual(Link.create_with_random_short_path(self.URL, 'foo').long_url, self.URL)
+
+        self.assertEqual(mock_sha1.call_count, 2)
+        mock_histogram.assert_has_calls([call('workforus.nb_tries_to_generate', 1, tags=['prefix:foo'])])
+
+    @freeze_time('2013-05-07')
+    @patch('django_short_urls.models.statsd.histogram')
+    @patch('django_short_urls.models.sha1', return_value=Mock(hexdigest=Mock(return_value='123456789')))
+    def test_create_random_hash_conflict(self, mock_sha1, mock_histogram):
+        """Check that we try again if we encounter hash conflicts"""
         link1 = Link.create_with_random_short_path(self.URL, 'foo')
+        url2 = self.URL + '?foo'
+        link2 = Link.create_with_random_short_path(url2, 'foo')
 
         self.assertEqual(link1.long_url, self.URL)
+        self.assertEqual(link1.hash, 'foo/5')
+        self.assertEqual(link2.long_url, url2)
+        self.assertEqual(link2.hash, 'foo/19')
 
-        # pylint: disable=W0612
-        for _ in xrange(1, 10):
-            # We loop 10 times in hopes of encountering an invalid short path
-            Link.create_with_random_short_path(self.URL, 'foo')
+        self.assertEqual(mock_sha1.call_count, 2)
+        mock_histogram.assert_has_calls([
+            # First link gets generated in 1 try
+            call('workforus.nb_tries_to_generate', 1, tags=['prefix:foo']),
+            # Second one needs 2 tries
+            call('workforus.nb_tries_to_generate', 2, tags=['prefix:foo'])
+        ])
 
     def test_prefix(self):
         link, _ = _shorten(self.URL)
