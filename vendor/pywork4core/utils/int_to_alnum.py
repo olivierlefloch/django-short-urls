@@ -4,8 +4,10 @@
 
 from __future__ import unicode_literals
 
+DIGITS = "0123456789"
 ALPHABET = "abcdefghijklmnopqrstuvwxyz"
-ALPHANUM = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+LOWERALPHANUM = DIGITS + ALPHABET
+ALPHANUM = LOWERALPHANUM + ALPHABET.upper()
 
 
 def encode(decoded, alphabet=ALPHANUM):
