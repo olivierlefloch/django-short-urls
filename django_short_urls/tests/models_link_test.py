@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from django.test import RequestFactory
 from freezegun import freeze_time
-from mock import patch
+from mock import call, Mock, patch
 
 from django_app.test import PyW4CTestCase
 
@@ -20,16 +20,19 @@ class LinkTestCase(PyW4CTestCase):
     URL = "http://www.work4labs.com/"
 
     def test_valid_short_path(self):
-        self.assertEqual(Link.is_valid_random_short_path("ab2cd"), True)
-        self.assertEqual(Link.is_valid_random_short_path("ab2"), True)
-        self.assertEqual(Link.is_valid_random_short_path("a234r434g43gb32r"), True)
-        self.assertEqual(Link.is_valid_random_short_path("4a"), True)
+        self.assertTrue(Link._is_valid_random_short_path("ab2cd"))
+        self.assertTrue(Link._is_valid_random_short_path("ab2"))
+        self.assertTrue(Link._is_valid_random_short_path("a234r434g43gb32r"))
+        self.assertTrue(Link._is_valid_random_short_path("4a"))
+        self.assertTrue(Link._is_valid_random_short_path("ge"))
+        self.assertTrue(Link._is_valid_random_short_path("42"))
+        self.assertTrue(Link._is_valid_random_short_path("j"))
 
-        self.assertEqual(Link.is_valid_random_short_path("abcd"), False)
-        self.assertEqual(Link.is_valid_random_short_path("ge"), False)
-        self.assertEqual(Link.is_valid_random_short_path("crap"), False)
-        self.assertEqual(Link.is_valid_random_short_path("crap42"), False)
-        self.assertEqual(Link.is_valid_random_short_path("abe4abe"), False)
+        self.assertFalse(Link._is_valid_random_short_path("42abcd"), 'More than 2 consecutive letters')
+        self.assertFalse(Link._is_valid_random_short_path("crap"), 'More than 2 consecutive letters')
+        self.assertFalse(Link._is_valid_random_short_path("crap42"), 'More than 2 consecutive letters')
+        self.assertFalse(Link._is_valid_random_short_path("abe4abe"), 'More than 2 consecutive letters')
+        self.assertFalse(Link._is_valid_random_short_path("Jo42"), 'Uppercase used')
 
     def test_shorten(self):
         link, _ = _shorten("http://www.work4labs.com/")

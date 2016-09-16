@@ -12,7 +12,7 @@ from django.conf import settings
 from mongoengine import Document, StringField, IntField, BooleanField
 from statsd import statsd
 
-from utils.int_to_alnum import encode as int_to_alnum_encode
+from utils.int_to_alnum import encode as int_to_alnum_encode, LOWERALPHANUM
 from django_short_urls.exceptions import PathIsNotUrlSafe, ForbiddenKeyword, ShortPathConflict
 
 
@@ -105,9 +105,9 @@ class Link(Document):
             while hashed > mod:
                 mod *= 10
                 nb_tries += 1
-                short_path = int_to_alnum_encode(hashed % mod)
+                short_path = int_to_alnum_encode(hashed % mod, LOWERALPHANUM)
 
-                if not cls.is_valid_random_short_path(short_path):
+                if not cls._is_valid_random_short_path(short_path):
                     continue
 
                 link, created = cls.__get_or_create(prefix, short_path, long_url)
@@ -117,13 +117,13 @@ class Link(Document):
                     statsd.histogram('workforus.nb_tries_to_generate', nb_tries, tags=['prefix:' + prefix])
                     return link
 
-    RE_VALID_RANDOM_SHORT_PATHS = re.compile(r'^([a-z]{0,2}\d)+[a-z]{0,2}$')
+    VALID_RANDOM_PATH_RE = re.compile(r'^([a-z]{0,2}\d)*[a-z]{0,2}?$')
 
     @classmethod
-    def is_valid_random_short_path(cls, short_path):
+    def _is_valid_random_short_path(cls, short_path):
         """Checks if the random short path is valid (does not contain words)"""
         # We don't check for ForbiddenKeywords because the constraints make that redundant
-        return cls.RE_VALID_RANDOM_SHORT_PATHS.match(short_path) is not None
+        return cls.VALID_RANDOM_PATH_RE.match(short_path) is not None
 
     @classmethod
     def __get_or_create(cls, prefix, short_path, long_url):
