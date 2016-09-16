@@ -82,9 +82,10 @@ class Link(Document):
             PathIsNotUrlSafe.raise_if_unsafe(short_path)
             ForbiddenKeyword.raise_if_banned(short_path)
 
-            link, created = cls.__get_or_create(prefix, short_path, long_url)
+            link = cls.__get_or_create(prefix, short_path, long_url)
 
-            if not created and link.long_url != long_url:
+            if link.long_url != long_url:
+                # We retrieved an existing link that uses a different url
                 raise ShortPathConflict(link)
 
         link.save()
@@ -110,10 +111,12 @@ class Link(Document):
                 if not cls._is_valid_random_short_path(short_path):
                     continue
 
-                link, created = cls.__get_or_create(prefix, short_path, long_url)
+                link = cls.__get_or_create(prefix, short_path, long_url)
 
-                if created:
+                if link.long_url == long_url:
                     # Short path didn't exist, store number of tries and we're done
+                    # (it's also possible that we got lucky and guessed a short_url that matched our long_url. Could
+                    # happen.)
                     statsd.histogram('workforus.nb_tries_to_generate', nb_tries, tags=['prefix:' + prefix])
                     return link
 
@@ -127,12 +130,11 @@ class Link(Document):
 
     @classmethod
     def __get_or_create(cls, prefix, short_path, long_url):
-        """Retrieves or Creates a Link object by (prefix, short_path)"""
-        # pylint: disable=W0511
-        # FIXME: Deprecated in MongoEngine 0.8 - https://work4labs.atlassian.net/browse/OPS-1529
-        return cls.objects.get_or_create(
-            hash=Link.hash_for_prefix_and_short_path(prefix, short_path),
-            defaults={'long_url': long_url}
+        """Retrieves (and creates if necessary) a Link object by (prefix, short_path)"""
+        _hash = Link.hash_for_prefix_and_short_path(prefix, short_path)
+        return cls.objects(hash=_hash).modify(
+            set_on_insert__hash=_hash, set_on_insert__long_url=long_url,
+            upsert=True, new=True
         )
 
     @staticmethod
