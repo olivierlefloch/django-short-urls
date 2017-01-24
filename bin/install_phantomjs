@@ -36,9 +36,11 @@ fi
 
 FILENAME="phantomjs-$VERSION-${PLATFORM}${EXTENSION}"
 
-DOWNLOAD_URL="https://phantomjs.googlecode.com/files/$FILENAME"
+DOWNLOAD_URL="https://cdn.workfor.us/libs/phantomjs/$FILENAME"
 
-curl -so "$FILENAME" "$DOWNLOAD_URL"
+echo "Downloading from $DOWNLOAD_URL"
+
+curl -Lso "$FILENAME" "$DOWNLOAD_URL"
 
 if [[ "$EXTENSION" == ".tar.bz2" ]]; then
     tar -jxf "$FILENAME"

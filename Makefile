@@ -25,7 +25,7 @@ STATIC_DIR = ${PROJECT_DIR}staticfiles/
 PYTHONHOME ?= ${PROJECT_DIR}venv
 VENV_WRAPPER_DIR = $(abspath ${PYTHONHOME})/.virtualenvs/
 
-PHANTOM_VERSION = 1.9.0
+PHANTOM_VERSION = 1.9.8
 
 ifeq (${WORK4CORE_DIR}, ${PROJECT_DIR})
 	IN_WORK4CORE_PROJECT = TRUE
@@ -153,16 +153,16 @@ test_one:
 test:
 	${RUN_CMD} ${PYTHONHOME}/bin/coverage run --rcfile=${COVERAGE_RC} --source=${APP_DIR},${WORK4CORE_DIR} ${PROJECT_DIR}manage.py test --noinput django_app
 	${RUN_CMD} ${PYTHONHOME}/bin/coverage run --append --rcfile=${COVERAGE_RC} --source=${APP_DIR},${WORK4CORE_DIR} ${PROJECT_DIR}manage.py test --noinput ${APP_NAME}
-	@${PYTHONHOME}/bin/coverage report --rcfile=${COVERAGE_RC} --fail-under=100 || (printf "\033[31mTest coverage is less than 100%%!\033[0m\n" && exit 1)
+	@${PYTHONHOME}/bin/coverage report --rcfile=${COVERAGE_RC} --skip-covered --fail-under=100 || (printf "\033[31mTest coverage is less than 100%%!\033[0m\n" && exit 1)
 
 test_generate_report:
-	${PYTHONHOME}/bin/coverage html --rcfile=${COVERAGE_RC}
+	${PYTHONHOME}/bin/coverage html --rcfile=${COVERAGE_RC} --skip-covered
 
 test_open_report:
 	${WORK4CORE_BIN}/open ${TEMP_DIR}/coverage_html/index.html
 
 test_and_report:
-	(make test || make test_generate_report test_open_report) | grep -vE '100\%$$'
+	make test || make test_generate_report test_open_report
 
 ################################
 # Running the app and commands #
@@ -171,13 +171,26 @@ test_and_report:
 manage:
 	${RUN_CMD} ${PROJECT_DIR}manage.py ${cmd}
 
-run:
+# Debug with Werkzeug, not to use in normal circumstances
+_run_debug:
 	make manage cmd=runserver_plus
 
+#---- Use Honcho if available
 ifeq (${USE_HONCHO}, TRUE)
+
+run:
+	${START_CMD} web
+
 start:
 	${START_CMD} $(PROC)
+
+#---- If not, just classic Django
+else
+
+run: _run_debug
+
 endif
+#----
 
 shell:
 	make manage cmd=shell
