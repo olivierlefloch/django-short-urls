@@ -46,7 +46,6 @@ def init_settings(app_name, debug):
 
         'PROJECT_ROOT_DIR': project_root_dir,
         'APP_ROOT_DIR': app_root_dir,
-        'TEMPLATE_DIRS': (os.path.join(app_root_dir, 'templates'),),
         'TEMP_DIR': temp_dir,
         'VENV_DIR': os.path.join(project_root_dir, 'venv'),
 
@@ -60,7 +59,14 @@ def init_settings(app_name, debug):
         'USE_L10N': False,
 
         # Templating
-        'TEMPLATE_DEBUG': debug,
+        'TEMPLATES': [{
+            'BACKEND': 'django.template.backends.django.DjangoTemplates',
+            'APP_DIRS': True,
+            'OPTIONS': {
+                'debug': debug,
+                'context_processors': []
+            }
+        }],
 
         # Databases
         'DATABASES': {
@@ -120,7 +126,8 @@ def init_settings(app_name, debug):
 
 
 # pylint: disable=used-before-assignment
-def init_web_settings(app_name, debug, sentry_dsn, early_middleware=(), late_middleware=()):
+def init_web_settings(  # pylint: disable=too-many-arguments
+        app_name, debug, sentry_dsn, early_middleware=(), late_middleware=(), use_ddtrace=False):
     """
     Appends extra Django settings useful specifically for web apps, such as static files handling, etc.
 
@@ -142,8 +149,16 @@ def init_web_settings(app_name, debug, sentry_dsn, early_middleware=(), late_mid
         if not settings['TESTING'] \
         else 'django.contrib.staticfiles.storage.StaticFilesStorage'  # pragma: no cover
 
-    template_context_processors = (settings.get('TEMPLATE_CONTEXT_PROCESSORS', ()) + (
-        ("django.core.context_processors.debug",) if debug else ()))  # pragma: no cover
+    if debug:  # pragma: no cover
+        settings['TEMPLATES'][0]['OPTIONS']['context_processors'].insert(0, "django.template.context_processors.debug")
+
+    settings['TEMPLATES'][0]['OPTIONS']['context_processors'].extend([
+        "django.template.context_processors.i18n",
+        "django.template.context_processors.media",
+        "django.template.context_processors.static",
+        "django.template.context_processors.tz",
+        "django.contrib.messages.context_processors.messages",
+        "django.template.context_processors.request"])
 
     settings.update({
         # Installed apps
@@ -152,7 +167,7 @@ def init_web_settings(app_name, debug, sentry_dsn, early_middleware=(), late_mid
         # Routing
         'ROOT_URLCONF': app_name + '.urls',
 
-        # Static files, templates
+        # Static files
         'STATIC_ROOT': 'staticfiles',
         'STATIC_URL': '/static/',
         'STATICFILES_DIRS': staticfiles_dirs,
@@ -161,14 +176,14 @@ def init_web_settings(app_name, debug, sentry_dsn, early_middleware=(), late_mid
         'STATICFILES_STORAGE': staticfiles_storage,
 
         'WHITENOISE_ROOT': staticfiles_dirs[0] + '/files',
-        'WHITENOISE_ALLOW_ALL_ORIGINS': False,
-
-        'TEMPLATE_CONTEXT_PROCESSORS': template_context_processors
+        'WHITENOISE_ALLOW_ALL_ORIGINS': False
     })
 
     ##########
     # SENTRY #
     ##########
+
+    settings['RAVEN_CONFIG'] = {}  # To be extended by the parent project (May remain empty if Sentry is not enabled)
 
     if sentry_dsn:  # pragma: no cover
         settings['INSTALLED_APPS'] = ('raven.contrib.django.raven_compat',) + settings['INSTALLED_APPS']
@@ -182,7 +197,7 @@ def init_web_settings(app_name, debug, sentry_dsn, early_middleware=(), late_mid
         # import-error disabled: Raven shall only be a dependency of projects that define sentry_dsn
         import raven  # pylint: disable=wrong-import-position, wrong-import-order, import-error
 
-        settings['RAVEN_CONFIG'] = {'dsn': sentry_dsn}
+        settings['RAVEN_CONFIG']['dsn'] = sentry_dsn
 
         try:
             settings['RAVEN_CONFIG']['release'] = raven.fetch_git_sha(settings['PROJECT_ROOT_DIR'])
@@ -191,14 +206,14 @@ def init_web_settings(app_name, debug, sentry_dsn, early_middleware=(), late_mid
             pass
 
     settings['MIDDLEWARE_CLASSES'] = _compute_middleware_settings(
-        early_middleware, late_middleware, use_sentry=bool(sentry_dsn))
+        early_middleware, late_middleware, use_sentry=bool(sentry_dsn), use_ddtrace=use_ddtrace)
 
     return settings
 
 
-def _compute_middleware_settings(early=(), late=(), use_sentry=False):
+def _compute_middleware_settings(early=(), late=(), use_sentry=False, use_ddtrace=False):
     """This method takes care of inserting the app's middlewares without conflicting with Sentry's positioning"""
-    return ((
-        'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
-        'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware') if use_sentry else ()) \
+    return (('ddtrace.contrib.django.TraceMiddleware',) if use_ddtrace else ()) \
+        + (('raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
+            'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware') if use_sentry else ()) \
         + early + ('django.middleware.common.CommonMiddleware',) + late

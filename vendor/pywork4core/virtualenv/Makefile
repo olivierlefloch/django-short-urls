@@ -8,7 +8,7 @@ endif
 PYTHONHOME ?= ${PROJECT_DIR}venv/
 VENV_WRAPPER_DIR = $(abspath ${PYTHONHOME})/.virtualenvs/
 
-PIP_VERSION = 8.1.2
+PIP_VERSION = 9.0.1
 PYTHON_VERSION = python2.7
 
 ACTIVATE_VENV = . ${PYTHONHOME}/bin/activate
@@ -42,4 +42,4 @@ ifdef PW4C_DIR
 endif
 
 venv_check_versions:
-	${ACTIVATE_VENV} && pip list --outdated
+	${ACTIVATE_VENV} && pip list --outdated --format=columns
