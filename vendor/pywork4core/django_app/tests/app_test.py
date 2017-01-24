@@ -14,7 +14,7 @@ class DjangoAppTest(PyW4CTestCase):
 
         settings_dict = dict(default_settings.init_settings(app_name=APP_NAME, debug=DEBUG))
 
-        self.assertEqual(settings_dict['TEMPLATE_DEBUG'], DEBUG)
+        self.assertEqual(settings_dict['TEMPLATES'][0]['OPTIONS']['debug'], DEBUG)
         self.assertEqual(settings_dict['TIME_ZONE'], None)
         self.assertIn(APP_NAME, settings_dict['APP_ROOT_DIR'])
 
@@ -50,6 +50,11 @@ class DjangoAppTest(PyW4CTestCase):
                 'a', common, 'c'
             )
         )
+
+    def test__compute_middleware_settings__use_ddtrace(self):
+        self.assertEqual(
+            default_settings._compute_middleware_settings(early=('early',), use_ddtrace=True),
+            ('ddtrace.contrib.django.TraceMiddleware', 'early', 'django.middleware.common.CommonMiddleware'))
 
     def test_init_web_settings(self):
         app_name = 'django_app'

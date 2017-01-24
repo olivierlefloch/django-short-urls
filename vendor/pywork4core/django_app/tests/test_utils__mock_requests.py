@@ -55,21 +55,31 @@ class UtilsMockRequestsTest(PyW4CTestCase):
                 resp.raise_for_status()  # The mock behaves like a proper requests' Response
 
     @patch_requests_decorator({requests_mock_dec_test_url: {'response': 'Bah, humbug'}})
-    def test_001_as_decorator(self):
+    def test_as_decorator(self):
         # Check that the mock behaves too when used properly as a decorator
         resp = requests.post(self.requests_mock_dec_test_url)
         self.assertEqual(resp.url, self.requests_mock_dec_test_url)
         self.assertEqual(resp.status_code, 200)
         self.assertIn('Bah', resp.text)
 
-    def test_002_empty_mapping(self):
+    def test_empty_mapping(self):
         # An empty mapping does not crash − but using it will fail
         mapping = {}
         with patch_requests(mapping):
             with self.assertRaises(Exception):  # "called with unexpected URL…"
                 requests.get("https://whatever.work4labs.com")
 
-    def test_003_custom_headers_and_json(self):
+    def test_no_mapping_no_domains(self):
+        with self.assertRaises(ValueError):
+            with patch_requests():
+                pass
+
+    def test_specific_domain(self):
+        with patch_requests(allowed_domains=["work4labs.com"], allowed_methods=["get"]):
+            resp = requests.get("https://app.work4labs.com")
+            self.assertEqual(resp.status_code, 200)
+
+    def test_custom_headers_and_json(self):
         # B. Custom headers and json
         test_url = "https://whatever.work4labs.com"
         headers = {"x-api-key": 'Blablabla'}
@@ -89,7 +99,7 @@ class UtilsMockRequestsTest(PyW4CTestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertEqual('["Nothingness"]', resp.text)
 
-    def test_004_request_method(self):
+    def test_request_method(self):
         # Using requests.request directly also work (kind of an edge case for coverage)
         test_url = "http://test.work4labs.com"
         mapping = {
