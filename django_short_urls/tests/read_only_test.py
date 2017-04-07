@@ -3,16 +3,15 @@
 from __future__ import unicode_literals
 
 from django.test.client import RequestFactory
-from mock import patch
+from mock import Mock, patch
 import mongoengine
 
 from django_app.test import PyW4CTestCase
-from http.status import HTTP_REDIRECT_PERMANENTLY
+from http.status import HTTP_REDIRECT_PERMANENTLY, HTTP_SERVICE_UNAVAILABLE
 
 from django_short_urls.middleware import ServiceUnavailableMiddleware
 from django_short_urls.models import Link
 from django_short_urls.views import main
-from django_short_urls.w4l_http import HTTP_SERVICE_UNAVAILABLE
 
 
 # pylint: disable=W0613,E1101
@@ -36,22 +35,24 @@ class ReadOnlyTestCase(PyW4CTestCase):
     @patch('django_short_urls.middleware.mongoengine_is_primary', return_value=False)
     def test_middleware_process_request(self, mock_mongoengine_is_primary):
         self.assertEqual(
-            ServiceUnavailableMiddleware().process_request(self.factory.post('/')).status_code,
+            ServiceUnavailableMiddleware(get_response=Mock())(self.factory.post('/')).status_code,
             HTTP_SERVICE_UNAVAILABLE
         )
 
-        self.assertTrue(ServiceUnavailableMiddleware().process_request(self.factory.get('/')) is None)
+        mock_request = Mock(method='GET')
+        # Yes, get_response is `lambda x: x`, so the response will be mock_request – but that's fine,
+        # that's not what we're testing here anyway
+        self.assertEqual(ServiceUnavailableMiddleware(get_response=lambda x: x)(mock_request), mock_request)
 
     @patch('django_short_urls.middleware.mongoengine_is_primary', return_value=False)
     def test_middleware_process_view(self, mock_mongoengine_is_primary):
         self.assertTrue(
-            ServiceUnavailableMiddleware().process_view(None, lambda x: True, [], {})
+            ServiceUnavailableMiddleware(get_response=lambda x: x).process_view(None, lambda x: True, [], {})
         )
 
         def raise_write_denied(request):  # pylint: disable=W0613
-            raise mongoengine.connection.ConnectionError()
+            raise mongoengine.connection.MongoEngineConnectionError()
 
-        self.assertEqual(
-            ServiceUnavailableMiddleware().process_view(None, raise_write_denied, [], {}).status_code,
-            HTTP_SERVICE_UNAVAILABLE
-        )
+        status_code = ServiceUnavailableMiddleware(
+            get_response=Mock()).process_view(None, raise_write_denied, [], {}).status_code
+        self.assertEqual(status_code, HTTP_SERVICE_UNAVAILABLE)
