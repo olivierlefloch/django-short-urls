@@ -46,7 +46,6 @@ class DjangoAppTest(PyW4CTestCase):
             default_settings._compute_middleware_settings(early=('a',), late=('c',), use_sentry=True),
             (
                 'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
-                'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware',
                 'a', common, 'c'
             )
         )
