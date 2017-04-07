@@ -46,15 +46,9 @@ class DjangoAppTest(PyW4CTestCase):
             default_settings._compute_middleware_settings(early=('a',), late=('c',), use_sentry=True),
             (
                 'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
-                'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware',
                 'a', common, 'c'
             )
         )
-
-    def test__compute_middleware_settings__use_ddtrace(self):
-        self.assertEqual(
-            default_settings._compute_middleware_settings(early=('early',), use_ddtrace=True),
-            ('ddtrace.contrib.django.TraceMiddleware', 'early', 'django.middleware.common.CommonMiddleware'))
 
     def test_init_web_settings(self):
         app_name = 'django_app'
