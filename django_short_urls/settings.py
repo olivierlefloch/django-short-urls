@@ -40,5 +40,5 @@ try:
 
     SERVICE_UNAVAILABLE = False
 except mongoengine.connection.MongoEngineConnectionError, err:  # pragma: no cover
-    logging.error('MongoEngine ConnectionError: %s', err)
+    logging.error('MongoEngineConnectionError: %s', err)
     SERVICE_UNAVAILABLE = True
