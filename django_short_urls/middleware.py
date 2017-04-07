@@ -36,7 +36,7 @@ class ServiceUnavailableMiddleware(object):
         """
         try:
             return view_func(request, *view_args, **view_kwargs)
-        except mongoengine.connection.ConnectionError as err:
+        except mongoengine.connection.MongoEngineConnectionError as err:
             getLogger('app').error('Database access error: %s', err)
 
             return response_service_unavailable()
