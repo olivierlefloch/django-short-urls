@@ -127,7 +127,7 @@ def init_settings(app_name, debug):
 
 # pylint: disable=used-before-assignment
 def init_web_settings(  # pylint: disable=too-many-arguments
-        app_name, debug, sentry_dsn, early_middleware=(), late_middleware=(), use_ddtrace=False):
+        app_name, debug, sentry_dsn, early_middleware=(), late_middleware=()):
     """
     Appends extra Django settings useful specifically for web apps, such as static files handling, etc.
 
@@ -205,14 +205,13 @@ def init_web_settings(  # pylint: disable=too-many-arguments
             # Probably not a git repo (on heroku?)
             pass
 
-    settings['MIDDLEWARE_CLASSES'] = _compute_middleware_settings(
-        early_middleware, late_middleware, use_sentry=bool(sentry_dsn), use_ddtrace=use_ddtrace)
+    settings['MIDDLEWARE'] = _compute_middleware_settings(
+        early_middleware, late_middleware, use_sentry=bool(sentry_dsn))
 
     return settings
 
 
-def _compute_middleware_settings(early=(), late=(), use_sentry=False, use_ddtrace=False):
+def _compute_middleware_settings(early=(), late=(), use_sentry=False):
     """This method takes care of inserting the app's middlewares without conflicting with Sentry's positioning"""
-    return (('ddtrace.contrib.django.TraceMiddleware',) if use_ddtrace else ()) \
-        + (('raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',) if use_sentry else ()) \
+    return (('raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',) if use_sentry else ()) \
         + early + ('django.middleware.common.CommonMiddleware',) + late

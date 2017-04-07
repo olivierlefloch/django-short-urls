@@ -50,11 +50,6 @@ class DjangoAppTest(PyW4CTestCase):
             )
         )
 
-    def test__compute_middleware_settings__use_ddtrace(self):
-        self.assertEqual(
-            default_settings._compute_middleware_settings(early=('early',), use_ddtrace=True),
-            ('ddtrace.contrib.django.TraceMiddleware', 'early', 'django.middleware.common.CommonMiddleware'))
-
     def test_init_web_settings(self):
         app_name = 'django_app'
         web_settings = default_settings.init_web_settings(app_name, False, None)

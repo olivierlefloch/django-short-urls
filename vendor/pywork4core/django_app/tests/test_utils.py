@@ -7,7 +7,7 @@ import os
 from mock import patch
 
 from django_app.test import PyW4CTestCase
-from utils import gui, mongo, path, tmp, patterns
+from utils import gui, path, tmp, patterns
 
 
 class UtilsTest(PyW4CTestCase):
@@ -43,9 +43,6 @@ class UtilsTest(PyW4CTestCase):
         os.remove(temp_filename)
 
         self.assertEquals(len(os.listdir(self.temp_dir)), nb_temp_files_before)
-
-    def test_mongoengine_is_primary(self):
-        self.assertTrue(mongo.mongoengine_is_primary())
 
     def test_patterns_singleton(self):
         val = 42
