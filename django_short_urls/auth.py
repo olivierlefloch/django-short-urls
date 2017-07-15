@@ -9,7 +9,8 @@ from decorator import decorator
 from django.http import HttpResponse
 
 from django_short_urls.models import User
-from http.status import HTTP_UNAUTHORIZED
+# pylint 1.7.1 gets confused and thinks `http` is a standard python module. Not in python 2.7.x…
+from http.status import HTTP_UNAUTHORIZED  # pylint: disable=wrong-import-order
 
 
 def _safe_base64_decode(encoded):

@@ -11,7 +11,8 @@ import urllib
 from django.http import HttpResponse
 from django.template import loader
 
-from http.status import HTTP_SERVICE_UNAVAILABLE
+# pylint 1.7.1 gets confused and thinks `http` is a standard python module. Not in python 2.7.x…
+from http.status import HTTP_SERVICE_UNAVAILABLE  # pylint: disable=wrong-import-order
 
 _BROWSERS = OrderedDict((
     ('Opera', 'opera'),

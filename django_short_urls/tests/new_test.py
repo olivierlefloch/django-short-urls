@@ -10,7 +10,9 @@ from mock import patch
 from requests.auth import _basic_auth_str
 
 from django_app.test import PyW4CTestCase
-from http.status import HTTP_OK, HTTP_BAD_REQUEST, HTTP_UNAUTHORIZED, HTTP_FORBIDDEN, HTTP_CONFLICT
+# pylint 1.7.1 gets confused and thinks `http` is a standard python module. Not in python 2.7.x…
+from http.status import (  # pylint: disable=wrong-import-order
+    HTTP_OK, HTTP_BAD_REQUEST, HTTP_UNAUTHORIZED, HTTP_FORBIDDEN, HTTP_CONFLICT)
 
 from django_short_urls.views import new
 from django_short_urls.models import User
