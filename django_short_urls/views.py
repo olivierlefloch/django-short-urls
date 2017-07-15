@@ -102,8 +102,8 @@ def main(request, path):
     # Either redirect the user, or load the target page and display it directly
     if link.act_as_proxy:
         return proxy(target_url)
-    else:
-        return redirect(target_url, permanent=True)
+
+    return redirect(target_url, permanent=True)
 
 
 @require_POST
