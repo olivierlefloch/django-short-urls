@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 from django_app.test import PyW4CTestCase
-from utils import bson_encoding
+from pywork4core.utils import bson_encoding
 
 
 class BsonEncodingTestCase(PyW4CTestCase):

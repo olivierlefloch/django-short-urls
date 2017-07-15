@@ -4,16 +4,16 @@
 
 from __future__ import unicode_literals
 
-DIGITS = "0123456789"
-ALPHABET = "abcdefghijklmnopqrstuvwxyz"
-LOWERALPHANUM = DIGITS + ALPHABET
-ALPHANUM = LOWERALPHANUM + ALPHABET.upper()
+import string  # pylint: disable=deprecated-module
+
+LOWERALPHANUM = string.digits + string.ascii_lowercase
+DEFAULT_ALPHABET = LOWERALPHANUM + string.ascii_uppercase
 
 
-def encode(decoded, alphabet=ALPHANUM):
+def encode(decoded, alphabet=DEFAULT_ALPHABET):
     """Converts an int to an alphanumerical string"""
 
-    if decoded == 0:
+    if not decoded:
         return alphabet[0]
 
     base = len(alphabet)
@@ -27,7 +27,7 @@ def encode(decoded, alphabet=ALPHANUM):
     return ''.join(encoded)
 
 
-def decode(encoded, alphabet=ALPHANUM):
+def decode(encoded, alphabet=DEFAULT_ALPHABET):
     """Converts an alphanumerical string to an int"""
 
     base = len(alphabet)
