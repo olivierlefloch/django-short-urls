@@ -24,3 +24,7 @@ class ImageTestCaseTestCase(ImageTestCase):
 
         with self.assertRaises(AssertionError):
             _compare('red.jpg', 'white.png')
+
+        # Compare idendical images, threshold 0%
+        file_path = _path_from_name('white.png')
+        self.assertImageEqual(file_path, file_path)

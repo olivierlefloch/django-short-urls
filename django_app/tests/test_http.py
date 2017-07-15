@@ -8,10 +8,11 @@ from django.http import HttpResponse
 from mock import patch
 
 from django_app.test import PyW4CTestCase
-from http.utils import (
+# pylint 1.7.1 gets confused and thinks `http` is a standard python module. Not in python 2.7.x…
+from http.utils import (  # pylint: disable=wrong-import-order
     empty_response, proxy, pyw4c_response, url_append_parameters, validate_url
 )
-from http.status import HTTP_CONFLICT, HTTP_OK
+from http.status import HTTP_CONFLICT, HTTP_OK  # pylint: disable=wrong-import-order
 
 
 class W4lHttpTestCase(PyW4CTestCase):
@@ -46,11 +47,13 @@ class W4lHttpTestCase(PyW4CTestCase):
             'http://www.theuselessweb.com?c=42&foo=search'
         )
 
-    @patch('requests.get')
+    @patch('requests.get', return_value=HttpResponse(content_type='text'))
     def test_proxy(self, requests_get):
         url = 'http://www.work4labs.com'
+        proxied_response = proxy(url)
 
-        self.assertEqual(type(proxy(url)), HttpResponse)
+        self.assertEqual(type(proxied_response), HttpResponse)
+        self.assertEqual(proxied_response['Content-Type'], 'text')
 
         requests_get.assert_called_once_with(url)
 

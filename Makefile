@@ -26,17 +26,14 @@ PYTHONHOME ?= ${PROJECT_DIR}venv
 VENV_WRAPPER_DIR = $(abspath ${PYTHONHOME})/.virtualenvs/
 
 PHANTOM_VERSION = 1.9.8
+PHANTOMJS = ${ROOTDIR}/venv/bin/phantomjs
 
 ifeq (${WORK4CORE_DIR}, ${PROJECT_DIR})
 	IN_WORK4CORE_PROJECT = TRUE
+	# We will already be linting pywork4core's tests via WORK4CORE_TESTS_DIR
+	APP_TESTS_DIR =
 else
 	IN_WORK4CORE_PROJECT = FALSE
-endif
-
-ifeq (${IN_WORK4CORE_PROJECT}, TRUE)
-	PW4C_DIR = ${PROJECT_DIR}
-else
-	PW4C_DIR = ${PROJECT_DIR}vendor/pywork4core
 endif
 
 ## Specific to virtualenv
@@ -91,7 +88,7 @@ install_do: venv
 install_project::
 
 install_phantomjs:
-	${WORK4CORE_DIR}/bin/install_phantomjs ${PROJECT_DIR} ${PHANTOM_VERSION}
+	${WORK4CORE_DIR}/bin/install_phantomjs ${PROJECT_DIR} ${PHANTOM_VERSION} ${PHANTOMJS}
 
 install_settings:
 	echo "Copying settings..."
@@ -104,7 +101,7 @@ install_settings:
 # Temp file handling #
 ######################
 
-clean:
+clean::
 	(test -d ${TEMP_DIR} && rm -rf ${TEMP_DIR}* ) || true
 
 # The code below helps reset the repository completely to its pre-install state
@@ -129,16 +126,11 @@ clean_pyc:
 ###################
 
 PYLINT_RC = ${WORK4CORE_DIR}config/pylint.rc
-EXTRA_ARGS_FOR_TESTS = --method-rgx='([a-z_][a-z0-9_]{2,50}|(setUp|tearDown)(Class)?)$$' --disable=C0111,R0904,C0321,W0212,too-many-ancestors
+EXTRA_ARGS_FOR_TESTS = --method-rgx='([a-z_][a-z0-9_]{2,50}|(setUp|tearDown)(Class)?)$$' --disable=missing-docstring,protected-access,too-many-ancestors
 lint:
 	${PYTHONHOME}/bin/pep8 --config=${WORK4CORE_DIR}config/pep8.cfg ${PROJECT_DIR}
-	${PYTHONHOME}/bin/pylint --rcfile=${PYLINT_RC} ${WORK4CORE_DIR}
-	${PYTHONHOME}/bin/pylint --rcfile=${PYLINT_RC} ${EXTRA_ARGS_FOR_TESTS} ${WORK4CORE_TESTS_DIR}
-ifeq (${IN_WORK4CORE_PROJECT}, TRUE)
-else
-	${PYTHONHOME}/bin/pylint --rcfile=${PYLINT_RC} ${APP_DIR}
-	${PYTHONHOME}/bin/pylint --rcfile=${PYLINT_RC} ${EXTRA_ARGS_FOR_TESTS} ${APP_TESTS_DIR}
-endif
+	${PYTHONHOME}/bin/pylint --rcfile=${PYLINT_RC} ${WORK4CORE_DIR} ${APP_DIR}
+	${PYTHONHOME}/bin/pylint --rcfile=${PYLINT_RC} ${EXTRA_ARGS_FOR_TESTS} ${WORK4CORE_TESTS_DIR} ${APP_TESTS_DIR}
 
 
 #########
@@ -148,7 +140,7 @@ endif
 COVERAGE_RC = ${WORK4CORE_DIR}config/coverage.rc
 
 test_one:
-	${RUN_CMD} ${PYTHONHOME}/bin/coverage run --rcfile=${COVERAGE_RC} --source=${APP_DIR},${WORK4CORE_DIR} ${PROJECT_DIR}manage.py test --noinput ${APP_NAME}.${test}
+	${RUN_CMD} ${PYTHONHOME}/bin/coverage run --rcfile=${COVERAGE_RC} --source=${APP_DIR},${WORK4CORE_DIR} ${PROJECT_DIR}manage.py test --noinput --pdb ${APP_NAME}.${test}
 
 test:
 	${RUN_CMD} ${PYTHONHOME}/bin/coverage run --rcfile=${COVERAGE_RC} --source=${APP_DIR},${WORK4CORE_DIR} ${PROJECT_DIR}manage.py test --noinput django_app
@@ -206,7 +198,7 @@ collectstatic:
 ifeq (${IN_WORK4CORE_PROJECT}, TRUE)
 	# Git subtree commands cannot be run from the PyWork4Core project
 else
-git-subtree = git subtree ${1} --prefix=vendor/pywork4core --squash pywork4core master
+git-subtree = git subtree ${1} --prefix=${PW4C_RELATIVE_DIR} --squash pywork4core master
 
 git_subtree_pull:
 	$(call git-subtree, pull)

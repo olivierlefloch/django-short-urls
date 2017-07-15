@@ -11,13 +11,15 @@ from __future__ import unicode_literals
 import os
 import sys
 
+from tzlocal import get_localzone
+
 
 def env_to_bool(val):
     """Use this when parsing environment variables for booleans as it will properly consider 'FALSE' to be False."""
     if isinstance(val, basestring):
         return val.lower() in ("true", "yes", "1")
-    else:
-        return bool(val)
+
+    return bool(val)
 
 
 def init_settings(app_name, debug):
@@ -50,7 +52,7 @@ def init_settings(app_name, debug):
         'VENV_DIR': os.path.join(project_root_dir, 'venv'),
 
         # Timezone management: Use operating system's timezone
-        'TIME_ZONE': None,
+        'TIME_ZONE': get_localzone().zone,
         'USE_TZ': True,
 
         # Language
@@ -127,7 +129,7 @@ def init_settings(app_name, debug):
 
 # pylint: disable=used-before-assignment
 def init_web_settings(  # pylint: disable=too-many-arguments
-        app_name, debug, sentry_dsn, early_middleware=(), late_middleware=()):
+        app_name, debug, sentry_dsn, early_middleware=(), late_middleware=(), context_processors=()):
     """
     Appends extra Django settings useful specifically for web apps, such as static files handling, etc.
 
@@ -149,8 +151,11 @@ def init_web_settings(  # pylint: disable=too-many-arguments
         if not settings['TESTING'] \
         else 'django.contrib.staticfiles.storage.StaticFilesStorage'  # pragma: no cover
 
+    if context_processors:
+        settings['TEMPLATES'][0]['OPTIONS']['context_processors'].extend(context_processors)
+
     if debug:  # pragma: no cover
-        settings['TEMPLATES'][0]['OPTIONS']['context_processors'].insert(0, "django.template.context_processors.debug")
+        settings['TEMPLATES'][0]['OPTIONS']['context_processors'].append("django.template.context_processors.debug")
 
     settings['TEMPLATES'][0]['OPTIONS']['context_processors'].extend([
         "django.template.context_processors.i18n",

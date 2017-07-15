@@ -9,7 +9,8 @@ import urlparse
 from django.http import HttpResponse, JsonResponse, QueryDict
 import requests
 
-from http.status import HTTP_OK
+# pylint 1.7.1 gets confused and thinks `http` is a standard python module. Not in python 2.7.x…
+from http.status import HTTP_OK  # pylint: disable=wrong-import-order
 
 
 def validate_url(url):
@@ -77,7 +78,4 @@ def proxy(url):
     """Loads url and returns its contents as a proxied web page"""
     resp = requests.get(url)
 
-    return HttpResponse(
-        resp.content,
-        status=resp.status_code,
-        content_type=resp.headers['Content-Type'])
+    return HttpResponse(resp.content, status=resp.status_code, content_type=resp['Content-Type'])

@@ -1,8 +1,9 @@
-amqp==1.4.9  # Seems Celery isn't compatible with newer versions yet
-billiard==3.3.0.23  # Seems Celery isn't compatible with newer versions yet
-celery==3.1.24
+amqp==1.4.9  # Seems Celery isn't compatible with newer versions yet (BAT-7184, 2.1.4)
+billiard==3.3.0.23  # Seems Celery isn't compatible with newer versions yet (BAT-7184, 3.5.0.2)
+celery==3.1.24  # (Stuck by BAT-7184, 4.0.2)
 dj-database-url==0.4.2
 django-celery==3.2.1
 gunicorn==19.7.1
+kombu==3.0.37  # Seems Celery isn't compatible with newer versions yet (BAT-7184, 4.0.2)
 redis==2.10.5
 vine==1.1.3

@@ -46,10 +46,14 @@ def patch_requests(mapping=None, allowed_domains=None, allowed_methods=None):
         for (token, config) in mapping.iteritems():
             if token in url:
                 resp = requests.Response()
-                resp.url = url
+                resp.url = config.get('url', url)
                 resp.status_code = config.get('http_code', 200)
-                if config.get("json", False):
+                if config.get("json", True) and 'response' in config:
                     resp._content = json.dumps(config["response"])  # pylint: disable=W0212
+                elif config.get("stream", False):
+                    resp.raw = MagicMock(
+                        stream=MagicMock(return_value=config["response"])
+                    )
                 else:
                     # str: Requests uses str as bytes internally, at least on Python 2
                     resp._content = str(config.get("response", ''))  # pylint: disable=W0212
@@ -66,7 +70,8 @@ def patch_requests(mapping=None, allowed_domains=None, allowed_methods=None):
     methods_map['request'] = MagicMock(side_effect=_request_response_from_query)
 
     with patch.multiple('requests', **methods_map):
-        yield {k: getattr(requests, k) for k in methods_map}
+        with patch.multiple('requests.Session', **methods_map):
+            yield {k: getattr(requests, k) for k in methods_map}
 
 
 def patch_requests_decorator(mapping):
