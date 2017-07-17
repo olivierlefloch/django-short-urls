@@ -3,9 +3,10 @@ set -e
 
 ROOTDIR=$1
 VERSION=$2
+DEFAULT_PHANTOMJS=$ROOTDIR/venv/bin/phantomjs
+PHANTOMJS="${3:-$DEFAULT_PHANTOMJS}"
 TEMP_DIR=$ROOTDIR/temp/
 
-PHANTOMJS=$ROOTDIR/venv/bin/phantomjs
 
 if [[ -a "$PHANTOMJS" ]]; then
     if [[ $($PHANTOMJS --version) == "$VERSION" ]]; then
@@ -20,6 +21,7 @@ else
 fi
 
 CURRENT_DIR=`pwd`
+mkdir -p "$TEMP_DIR"
 cd "$TEMP_DIR"
 
 UNAME=$(uname -s)

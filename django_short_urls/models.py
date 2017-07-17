@@ -54,8 +54,8 @@ class Link(Document):
         """
         if prefix:
             return cls.objects(hash__startswith=('%s/' % prefix.lower()))
-        else:
-            return cls.objects(hash__not__contains='/')
+
+        return cls.objects(hash__not__contains='/')
 
     @classmethod
     def find_for_prefix_and_long_url(cls, prefix, long_url):
@@ -73,7 +73,7 @@ class Link(Document):
             ForbiddenKeyword.raise_if_banned(prefix)
             PathIsNotUrlSafe.raise_if_unsafe(prefix)
 
-        if short_path is None or not len(short_path):
+        if short_path is None or not short_path:
             link = cls.find_for_prefix_and_long_url(prefix, long_url).first()
 
             if link is None:
@@ -140,7 +140,7 @@ class Link(Document):
     @staticmethod
     def hash_for_prefix_and_short_path(prefix, short_path):
         """Returns the hash for a combination of prefix and short_path"""
-        return ('%s%s' % ('%s/' % prefix if prefix != '' else '', short_path)).lower()
+        return ('%s%s' % ('%s/' % prefix if prefix else '', short_path)).lower()
 
     @classmethod
     def find_by_hash(cls, path):

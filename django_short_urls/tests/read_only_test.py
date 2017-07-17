@@ -7,7 +7,8 @@ from mock import Mock, patch
 import mongoengine
 
 from django_app.test import PyW4CTestCase
-from http.status import HTTP_REDIRECT_PERMANENTLY, HTTP_SERVICE_UNAVAILABLE
+# pylint 1.7.1 gets confused and thinks `http` is a standard python module. Not in python 2.7.x…
+from http.status import HTTP_REDIRECT_PERMANENTLY, HTTP_SERVICE_UNAVAILABLE  # pylint: disable=wrong-import-order
 
 from django_short_urls.middleware import ServiceUnavailableMiddleware
 from django_short_urls.models import Link

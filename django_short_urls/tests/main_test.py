@@ -7,7 +7,8 @@ from django.test.client import RequestFactory
 from mock import patch
 
 from django_app.test import PyW4CTestCase
-from http.status import HTTP_REDIRECT_PERMANENTLY
+# pylint 1.7.1 gets confused and thinks `http` is a standard python module. Not in python 2.7.x…
+from http.status import HTTP_REDIRECT_PERMANENTLY  # pylint: disable=wrong-import-order
 
 from django_short_urls.views import _extract_valid_path, main
 from django_short_urls.models import Link

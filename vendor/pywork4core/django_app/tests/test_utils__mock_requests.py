@@ -105,7 +105,8 @@ class UtilsMockRequestsTest(PyW4CTestCase):
         mapping = {
             test_url: {
                 'response': 'Nothingness',
-                'http_code': 200
+                'json': False,
+                'http_code': 200,
             }
         }
         with patch_requests(mapping) as m_requests:
@@ -116,3 +117,23 @@ class UtilsMockRequestsTest(PyW4CTestCase):
             self.assertEqual(resp.url, test_url)
             self.assertEqual(resp.status_code, 200)
             self.assertIn('Nothingness', resp.text)
+
+    def test_stream_response(self):
+        # Using requests.request directly also work (kind of an edge case for coverage)
+        test_url = "http://test.work4labs.com"
+        mapping = {
+            test_url: {
+                'response': 'Nothingness',
+                'json': False,
+                'stream': True,
+                'http_code': 200,
+            }
+        }
+        with patch_requests(mapping) as m_requests:
+            resp = requests.request('GET', test_url, stream=True)
+            self.assertEqual(m_requests['request'].call_count, 1)
+            self.assertEqual(m_requests['request'].call_args[0][0], 'GET')
+            self.assertEqual(m_requests['request'].call_args[0][1], test_url)
+            self.assertEqual(resp.url, test_url)
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(resp.raw.stream(), 'Nothingness')

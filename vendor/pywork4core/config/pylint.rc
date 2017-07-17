@@ -3,6 +3,7 @@
 ignore=local_settings.py,tests
 persistent=yes
 jobs=0
+load-plugins=pylint.extensions.redefined_variable_type,pylint.extensions.bad_builtin,pylint.extensions.comparetozero,pylint.extensions.emptystring
 
 
 [MESSAGES CONTROL]
@@ -14,11 +15,6 @@ disable=I0011
 
 output-format=colorized
 msg-template={path}:{line}: [{msg_id}({symbol}), {obj}] {msg}
-
-# Put messages in a separate file for each module / package specified on the
-# command line instead of printing them on stdout. Reports (if any) will be
-# written in a file name "pylint_global.[txt|html]".
-files-output=no
 
 # Tells whether to display a full report or only the messages
 reports=no

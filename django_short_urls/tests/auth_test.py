@@ -5,7 +5,8 @@ from __future__ import unicode_literals
 from mock import Mock
 
 from django_app.test import PyW4CTestCase
-from http.status import HTTP_UNAUTHORIZED
+# pylint 1.7.1 gets confused and thinks `http` is a standard python module. Not in python 2.7.x…
+from http.status import HTTP_UNAUTHORIZED  # pylint: disable=wrong-import-order
 
 from django_short_urls.auth import _safe_base64_decode, login_with_basic_auth_required
 from django_short_urls.models import User

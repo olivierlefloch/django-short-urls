@@ -18,8 +18,9 @@ from django.views.decorators.http import require_safe, require_POST
 from statsd import statsd
 
 from utils.mongo import mongoengine_is_primary
-from http.status import HTTP_BAD_REQUEST, HTTP_CONFLICT, HTTP_FORBIDDEN
-from http.utils import proxy, pyw4c_response, url_append_parameters, validate_url
+# pylint 1.7.1 gets confused and thinks `http` is a standard python module. Not in python 2.7.x…
+from http.status import HTTP_BAD_REQUEST, HTTP_CONFLICT, HTTP_FORBIDDEN  # pylint: disable=wrong-import-order
+from http.utils import proxy, pyw4c_response, url_append_parameters, validate_url  # pylint: disable=wrong-import-order
 
 import django_short_urls.suffix_catchall as suffix_catchall
 from django_short_urls.models import Link
@@ -101,8 +102,8 @@ def main(request, path):
     # Either redirect the user, or load the target page and display it directly
     if link.act_as_proxy:
         return proxy(target_url)
-    else:
-        return redirect(target_url, permanent=True)
+
+    return redirect(target_url, permanent=True)
 
 
 @require_POST
