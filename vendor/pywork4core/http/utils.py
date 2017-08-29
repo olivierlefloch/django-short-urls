@@ -31,16 +31,16 @@ def validate_url(url):
 
 
 def url_append_parameters(url, params_to_replace, defaults):
-    '''
+    """
     Appends the REDIRECT_PARAM_NAME param and the shorten's GET params
     to the long URL.
     Takes QueryDicts as parameters
-    '''
+    """
 
     if not params_to_replace and not defaults:
         return url
 
-    (scheme, netloc, path, params, link_query, fragment) = urlparse.urlparse(url)  # pylint: disable=W0633
+    (scheme, netloc, path, params, link_query, fragment) = urlparse.urlparse(url)
 
     link_query = QueryDict(link_query).copy()
 

@@ -24,7 +24,7 @@ class LocalURLField(mongoengine.URLField):
     a regular URL (leveraging the existing mongoengine.URLField._URL_REGEX.pattern).
     """
     _URL_REGEX = re.compile(
-        r'^/\S*$|' + mongoengine.URLField._URL_REGEX.pattern,  # pylint: disable=protected-access
+        r'^/\S*$|' + mongoengine.URLField._URL_REGEX.pattern,
         re.IGNORECASE)
 
     def validate(self, value):
@@ -44,7 +44,7 @@ class LocalURLField(mongoengine.URLField):
 def get_document_or_404(klass, *filter_args, **filter_kwargs):
     """Retrieve Document for given pk value or return a 404 HTTP response"""
     try:
-        return klass.objects.get(*filter_args, **filter_kwargs)  # pylint: disable=no-member
-    except klass.DoesNotExist:  # pylint: disable=no-member
+        return klass.objects.get(*filter_args, **filter_kwargs)
+    except klass.DoesNotExist:
         from django.http import Http404
         raise Http404('No match found.')

@@ -7,7 +7,6 @@ from django_app.test import PyW4CTestCase
 from utils.int_to_alnum import DEFAULT_ALPHABET, encode, decode
 
 
-# pylint: disable=E1101
 class IntToAlnumTestCase(PyW4CTestCase):
     def test_default_alphabet_length(self):
         self.assertEquals(len(DEFAULT_ALPHABET), 10 + 2 * 26)

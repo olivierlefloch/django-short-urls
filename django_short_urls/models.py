@@ -16,7 +16,6 @@ from utils.int_to_alnum import encode as int_to_alnum_encode, LOWERALPHANUM
 from django_short_urls.exceptions import PathIsNotUrlSafe, ForbiddenKeyword, ShortPathConflict
 
 
-# pylint: disable=R0904, E1101
 class User(Document):
     """Collection representing a user with access to the API"""
 
@@ -53,9 +52,9 @@ class Link(Document):
            so make sure you filter on another field that is actually indexed.
         """
         if prefix:
-            return cls.objects(hash__startswith=('%s/' % prefix.lower()))
+            return cls.objects(hash__startswith=('%s/' % prefix.lower()))  # pylint: disable=no-member
 
-        return cls.objects(hash__not__contains='/')
+        return cls.objects(hash__not__contains='/')  # pylint: disable=no-member
 
     @classmethod
     def find_for_prefix_and_long_url(cls, prefix, long_url):
@@ -132,7 +131,7 @@ class Link(Document):
     def __get_or_create(cls, prefix, short_path, long_url):
         """Retrieves (and creates if necessary) a Link object by (prefix, short_path)"""
         _hash = Link.hash_for_prefix_and_short_path(prefix, short_path)
-        return cls.objects(hash=_hash).modify(
+        return cls.objects(hash=_hash).modify(  # pylint: disable=no-member
             set_on_insert__hash=_hash, set_on_insert__long_url=long_url,
             upsert=True, new=True
         )
@@ -145,7 +144,7 @@ class Link(Document):
     @classmethod
     def find_by_hash(cls, path):
         """Searches for a Link object by hash"""
-        return cls.objects(hash=path.lower()).first()
+        return cls.objects(hash=path.lower()).first()  # pylint: disable=no-member
 
     @property
     def prefix(self):
@@ -153,11 +152,11 @@ class Link(Document):
         if '/' not in self.hash:  # pylint: disable=unsupported-membership-test
             return ''
 
-        return self.hash.split('/')[0]
+        return self.hash.split('/')[0]  # pylint: disable=no-member
 
     def click(self):
         """Register a click on this link"""
-        self.__class__.objects(hash=self.hash).update_one(inc__clicks=1)
+        self.__class__.objects(hash=self.hash).update_one(inc__clicks=1)  # pylint: disable=no-member
 
     def build_relative_path(self):
         """Builds the relative path for the current url (since we only store the hash, we get a lowercase version)"""

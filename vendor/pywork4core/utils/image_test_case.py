@@ -1,12 +1,12 @@
 # coding=utf-8
-'''
+"""
 TestCase extension that knows how to compare image files for equality.
 
 Use as such (compatible with other TestCase classes):
 
     class MyTestCase(ImageTestCase):
         self.assertImageAlmostEqual(path_to_generated, path_to_expected)
-'''
+"""
 
 # Force floating point division
 from __future__ import division, unicode_literals

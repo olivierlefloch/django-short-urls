@@ -1,11 +1,11 @@
 # coding=utf-8
 
-'''
+"""
 Views for Django Short Urls:
 
   - main is the redirect view
   - new is the API view to create shortened urls
-'''
+"""
 
 from __future__ import unicode_literals
 
@@ -50,10 +50,9 @@ def _extract_valid_path(path):
     return path
 
 
-# pylint: disable=E1101, W0511
 @require_safe
 def main(request, path):
-    '''Search for a long link matching the `path` and redirect'''
+    """Search for a long link matching the `path` and redirect"""
 
     path = _extract_valid_path(path)
 
@@ -109,7 +108,7 @@ def main(request, path):
 @require_POST
 @login_with_basic_auth_required
 def new(request):
-    '''Create a new short url based on the POST parameters'''
+    """Create a new short url based on the POST parameters"""
     long_url = request.GET.get('long_url')
 
     if long_url is None:

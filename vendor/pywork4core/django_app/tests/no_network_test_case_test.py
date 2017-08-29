@@ -25,7 +25,7 @@ class NoNetworkTestCaseTestCase(NoNetworkTestCase):
 
 
 if __name__ == "__main__":  # pragma: no cover
-    class InternalTestCase(NoNetworkTestCase):  # pylint: disable=too-many-public-methods
+    class InternalTestCase(NoNetworkTestCase):
         """
         This is tested via no_network_test_case_test
         Ensures that setUp methods are also prevented from performing network

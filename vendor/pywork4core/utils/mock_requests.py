@@ -1,5 +1,5 @@
 # coding=utf-8
-'''A little helper allowing to mock requests very effectively for tests'''
+"""A little helper allowing to mock requests very effectively for tests"""
 
 from __future__ import unicode_literals
 
@@ -13,7 +13,7 @@ from mock import patch, MagicMock
 
 
 @contextmanager
-def patch_requests(mapping=None, allowed_domains=None, allowed_methods=None):
+def patch_requests(mapping=None, allowed_domains=None, allowed_methods=None):  # pylint: disable=too-complex
     """
     mapping is a dict of str => data
     so that "toto" => {"response" => {"success" : 1}, "json" => True/False} means that
@@ -39,9 +39,9 @@ def patch_requests(mapping=None, allowed_domains=None, allowed_methods=None):
         return _response(url)
 
     def _response(url):
-        '''
+        """
         If the requested URL is found in the mapping, returns the mocked response as configured
-        '''
+        """
         logging.debug("mocking %s", url)
         for (token, config) in mapping.iteritems():
             if token in url:

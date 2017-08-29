@@ -82,4 +82,4 @@ class ViewMainTestCase(PyW4CTestCase):
 
     def test_divide_by_zero(self):
         with self.assertRaises(ZeroDivisionError):
-            self.client.get('/DivideByZeroPlease')  # pylint: disable=E1103
+            self.client.get('/DivideByZeroPlease')

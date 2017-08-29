@@ -127,7 +127,6 @@ def init_settings(app_name, debug):
     }
 
 
-# pylint: disable=used-before-assignment
 def init_web_settings(  # pylint: disable=too-many-arguments
         app_name, debug, sentry_dsn, early_middleware=(), late_middleware=(), context_processors=()):
     """
@@ -199,8 +198,8 @@ def init_web_settings(  # pylint: disable=too-many-arguments
         }
         settings['LOGGING']['root']['handlers'].append('sentry')
 
-        # import-error disabled: Raven shall only be a dependency of projects that define sentry_dsn
-        import raven  # pylint: disable=wrong-import-position, wrong-import-order, import-error
+        # Raven shall only be a dependency of projects that define sentry_dsn
+        import raven
 
         settings['RAVEN_CONFIG']['dsn'] = sentry_dsn
 
