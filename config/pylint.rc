@@ -3,12 +3,13 @@
 ignore=local_settings.py,tests
 persistent=yes
 jobs=0
-load-plugins=pylint.extensions.redefined_variable_type,pylint.extensions.bad_builtin,pylint.extensions.comparetozero,pylint.extensions.emptystring
+load-plugins=pylint.extensions.bad_builtin,pylint.extensions.check_elif,pylint.extensions.comparetozero,pylint.extensions.docstyle,pylint.extensions.emptystring,pylint.extensions.mccabe,pylint.extensions.overlapping_exceptions,pylint.extensions.redefined_variable_type
 
 
 [MESSAGES CONTROL]
 
-disable=I0011
+enable=all
+disable=docstring-first-line-empty,locally-disabled,suppressed-message
 
 
 [REPORTS]

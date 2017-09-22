@@ -18,7 +18,7 @@ class NetworkError(Exception):
     pass
 
 
-class NoNetworkTestCase(TestCase):  # pylint: disable=too-many-public-methods
+class NoNetworkTestCase(TestCase):
     """
     TestCase class that prevents networking requests from non whitelisted modules
 
