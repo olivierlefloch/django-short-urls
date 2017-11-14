@@ -6,15 +6,29 @@ machine:
   environment:
     ADMINS: Olivier Le Floch <olefloch@work4labs.com>
     SECRET_KEY: EamJrjviiW13ue8PEamJrjviiW13ue8P
+    MONGO_VERSION: 3.4.9
   python:
     version: 2.7.11
 
+checkout:
+  pre:
+    - git clone https://github.com/Work4Labs/circleci_toolkit.git ~/circleci_toolkit
+
 dependencies:
+  pre:
+    - ~/circleci_toolkit/bin/setup_mongo.sh
   override:
     - pip install --upgrade pip # To work around a pip 6.0.3 bug that fails to parse the setuptools version string
     - pip install --upgrade distribute # To work around mysql-python / virtualenv --distribute incompatibility
     - cp ~/django-short-urls/django_short_urls/local_settings.tpl.py ~/django-short-urls/django_short_urls/local_settings.py
     - make clean install
+
+  post:
+    - ~/mongo.sh:
+        background: true
+
+  cache_directories:
+    - "~/cache"
 
 test:
   override:
