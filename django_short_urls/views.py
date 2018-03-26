@@ -22,7 +22,6 @@ from utils.mongo import mongoengine_is_primary
 from http.status import HTTP_BAD_REQUEST, HTTP_CONFLICT, HTTP_FORBIDDEN  # pylint: disable=wrong-import-order
 from http.utils import proxy, pyw4c_response, url_append_parameters, validate_url  # pylint: disable=wrong-import-order
 
-import django_short_urls.suffix_catchall as suffix_catchall
 from django_short_urls.models import Link
 from django_short_urls.exceptions import InvalidHashException, ForbiddenKeyword, ShortPathConflict
 from django_short_urls.auth import login_with_basic_auth_required
@@ -58,15 +57,17 @@ def main(request, path):
 
     link = Link.find_by_hash(path)
 
-    if link is None:
-        # Try to find a matching short link by removing valid "catchall" suffixes
-        path_prefix, redirect_suffix = suffix_catchall.get_hash_from(path)
+    redirect_suffix = None
 
-        if redirect_suffix is not None:
-            # If we found a suffix, we try to find a link again with the prefix
+    if link is None:
+        # Try to find a matching prefix
+        parts = path.rsplit('/', 1)
+
+        if len(parts) == 2:
+            path_prefix, redirect_suffix = parts
+
+            # If there was a prefix, we try to find a link again
             link = Link.find_by_hash(path_prefix)
-    else:
-        redirect_suffix = None
 
     # Instrumentation
     prefix_tag = 'prefix:' + link.prefix if link else 'Http404'
