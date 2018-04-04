@@ -27,23 +27,28 @@ class ViewMainTestCase(PyW4CTestCase):
         self.assertEqual(_extract_valid_path('foo/&bar'), 'foo')
         self.assertEqual(_extract_valid_path('%5C'), '')
 
-    def call_main(self, query):
-        return main(self.factory.get('/' + query), query)
-
     @patch('django_short_urls.views.statsd')
-    def test_redirect(self, mock_statsd):
+    def call_main(self, query, mock_statsd):
+        response = main(self.factory.get('/' + query), query)
+
+        self.assertEqual(mock_statsd.increment.call_count, 1)
+
+        return response
+
+    def test_redirect(self):
         response = self.call_main(self.path)
 
         self.assertEqual(response.status_code, HTTP_REDIRECT_PERMANENTLY)
         self.assertEqual(self.link.reload().clicks, 1)
-        self.assertEqual(mock_statsd.increment.call_count, 1)
 
     def test_suffixes(self):
+        response = self.call_main(self.path)
+
         def expect_same_with_suffix(suffix):
             """Check that appending a certain suffix leaves the response unchanged"""
             response_with_suffix = self.call_main(self.path + suffix)
 
-            self.assertEqual(response_with_suffix.status_code, response.status_code)
+            self.assertEqual(response_with_suffix.status_code, HTTP_REDIRECT_PERMANENTLY)
             self.assertEqual(response_with_suffix.serialize_headers(), response.serialize_headers())
 
         expect_same_with_suffix('&foobar')
@@ -64,14 +69,15 @@ class ViewMainTestCase(PyW4CTestCase):
 
         self.assertEqual(response.status_code, HTTP_REDIRECT_PERMANENTLY)
 
-    def test_redirect_suffix(self):
+    def test_redirect_missing_suffix(self):
         response = self.call_main(self.path + '/deleted_suffix')
 
         self.assertEqual(response.status_code, HTTP_REDIRECT_PERMANENTLY)
-        self.assertEqual(response['location'], self.location)
+        self.assertEqual(response['location'], self.location + '?redirect_suffix=deleted_suffix&ref=shortener')
 
     def test_redirect_with_utf8_query_param(self):
-        response = main(self.factory.get('/' + self.path + '?bla=éàû'), self.path)
+        with patch('django_short_urls.views.statsd'):
+            response = main(self.factory.get('/' + self.path + '?bla=éàû'), self.path)
 
         self.assertEqual(response.status_code, HTTP_REDIRECT_PERMANENTLY)
         self.assertEqual(response['location'], self.location + '?bla=%C3%A9%C3%A0%C3%BB&ref=shortener')
