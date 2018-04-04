@@ -27,9 +27,9 @@ class ViewMainTestCase(PyW4CTestCase):
         self.assertEqual(_extract_valid_path('foo/&bar'), 'foo')
         self.assertEqual(_extract_valid_path('%5C'), '')
 
-    @patch('django_short_urls.views.statsd')
-    def call_main(self, query, mock_statsd):
-        response = main(self.factory.get('/' + query), query)
+    def call_main(self, query):
+        with patch('django_short_urls.views.statsd') as mock_statsd:
+            response = main(self.factory.get('/' + query), query)
 
         self.assertEqual(mock_statsd.increment.call_count, 1)
 
