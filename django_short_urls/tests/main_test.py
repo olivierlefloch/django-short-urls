@@ -27,18 +27,21 @@ class ViewMainTestCase(PyW4CTestCase):
         self.assertEqual(_extract_valid_path('foo/&bar'), 'foo')
         self.assertEqual(_extract_valid_path('%5C'), '')
 
+    def call_main(self, query):
+        return main(self.factory.get('/' + query), query)
+
     @patch('django_short_urls.views.statsd')
     def test_redirect(self, mock_statsd):
-        response = main(self.factory.get('/%s' % self.path), self.path)
+        response = self.call_main(self.path)
+
         self.assertEqual(response.status_code, HTTP_REDIRECT_PERMANENTLY)
         self.assertEqual(self.link.reload().clicks, 1)
         self.assertEqual(mock_statsd.increment.call_count, 1)
 
+    def test_suffixes(self):
         def expect_same_with_suffix(suffix):
             """Check that appending a certain suffix leaves the response unchanged"""
-            path_with_suffix = self.path + suffix
-
-            response_with_suffix = main(self.factory.get('/%s' % path_with_suffix), path_with_suffix)
+            response_with_suffix = self.call_main(self.path + suffix)
 
             self.assertEqual(response_with_suffix.status_code, response.status_code)
             self.assertEqual(response_with_suffix.serialize_headers(), response.serialize_headers())
@@ -52,23 +55,23 @@ class ViewMainTestCase(PyW4CTestCase):
         self.link.act_as_proxy = True
         self.link.save()
 
-        main(self.factory.get('/%s' % self.path), self.path)
+        self.call_main(self.path)
+
         self.assertEqual(mock_proxy.call_count, 1)
 
     def test_redirect_suffix(self):
-        response = main(self.factory.get('/%s/recruiter' % self.path), self.path + '/recruiter')
+        response = self.call_main(self.path + '/recruiter')
 
         self.assertEqual(response.status_code, HTTP_REDIRECT_PERMANENTLY)
 
     def test_redirect_suffix(self):
-        response = main(self.factory.get('/%s/deleted_suffix' % self.path), self.path + '/deleted_suffix')
+        response = self.call_main(self.path + '/deleted_suffix')
 
         self.assertEqual(response.status_code, HTTP_REDIRECT_PERMANENTLY)
         self.assertEqual(response['location'], self.location)
 
     def test_redirect_with_utf8_query_param(self):
-        with patch('django_short_urls.views.statsd'):
-            response = main(self.factory.get('/' + self.path + '?bla=éàû'), self.path)
+        response = main(self.factory.get('/' + self.path + '?bla=éàû'), self.path)
 
         self.assertEqual(response.status_code, HTTP_REDIRECT_PERMANENTLY)
         self.assertEqual(response['location'], self.location + '?bla=%C3%A9%C3%A0%C3%BB&ref=shortener')
@@ -77,10 +80,10 @@ class ViewMainTestCase(PyW4CTestCase):
         path404 = self.path + 'foobar'
 
         with self.assertRaises(Http404):
-            main(self.factory.get('/%s' % path404), path404)
+            self.call_main(path404)
 
         with self.assertRaises(Http404):
-            main(self.factory.get('/%s/' % path404), path404 + '/')
+            self.call_main(path404 + '/')
 
     def test_divide_by_zero(self):
         with self.assertRaises(ZeroDivisionError):
