@@ -60,6 +60,12 @@ class ViewMainTestCase(PyW4CTestCase):
 
         self.assertEqual(response.status_code, HTTP_REDIRECT_PERMANENTLY)
 
+    def test_redirect_suffix(self):
+        response = main(self.factory.get('/%s/deleted_suffix' % self.path), self.path + '/deleted_suffix')
+
+        self.assertEqual(response.status_code, HTTP_REDIRECT_PERMANENTLY)
+        self.assertEqual(response['location'], self.location)
+
     def test_redirect_with_utf8_query_param(self):
         with patch('django_short_urls.views.statsd'):
             response = main(self.factory.get('/' + self.path + '?bla=éàû'), self.path)
