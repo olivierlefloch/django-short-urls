@@ -19,7 +19,8 @@ class ViewMainTestCase(PyW4CTestCase):
         self.factory = RequestFactory()
 
         self.path = 'test42'
-        self.link = Link.shorten('http://www.work4.com/jobs', short_path=self.path)
+        self.location = 'http://www.work4.com/jobs'
+        self.link = Link.shorten(self.location, short_path=self.path)
 
     def test_extract_valid_path(self):
         self.assertEqual(_extract_valid_path('work4us'), 'work4us')
@@ -47,16 +48,14 @@ class ViewMainTestCase(PyW4CTestCase):
         expect_same_with_suffix('%C2%A0%E2%80%A6')
 
     @patch('django_short_urls.views.proxy')
-    @patch('django_short_urls.views.statsd')
-    def test_act_as_proxy(self, mock_statsd, mock_proxy):  # pylint: disable=W0613
+    def test_act_as_proxy(self, mock_proxy):
         self.link.act_as_proxy = True
         self.link.save()
 
         main(self.factory.get('/%s' % self.path), self.path)
         self.assertEqual(mock_proxy.call_count, 1)
 
-    @patch('django_short_urls.views.statsd')
-    def test_redirect_suffix(self, mock_statsd):  # pylint: disable=unused-argument
+    def test_redirect_suffix(self):
         response = main(self.factory.get('/%s/recruiter' % self.path), self.path + '/recruiter')
 
         self.assertEqual(response.status_code, HTTP_REDIRECT_PERMANENTLY)
@@ -66,12 +65,9 @@ class ViewMainTestCase(PyW4CTestCase):
             response = main(self.factory.get('/' + self.path + '?bla=éàû'), self.path)
 
         self.assertEqual(response.status_code, HTTP_REDIRECT_PERMANENTLY)
-        self.assertEqual(
-            response['location'],
-            'http://www.work4.com/jobs?bla=%C3%A9%C3%A0%C3%BB&ref=shortener')
+        self.assertEqual(response['location'], self.location + '?bla=%C3%A9%C3%A0%C3%BB&ref=shortener')
 
-    @patch('django_short_urls.views.statsd')
-    def test_404(self, mock_statsd):  # pylint: disable=unused-argument
+    def test_404(self):
         path404 = self.path + 'foobar'
 
         with self.assertRaises(Http404):
