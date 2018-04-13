@@ -61,7 +61,7 @@ def main(request, path):
 
     if link is None:
         # Try to find a matching prefix
-        parts = path.rsplit('/', 1)
+        parts = path.split('/', 1)
 
         if len(parts) == 2:
             path_prefix, redirect_suffix = parts
