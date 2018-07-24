@@ -1,7 +1,6 @@
 # django-short-urls
 
-[![Circle CI](https://circleci.com/gh/Work4Labs/django-short-urls/tree/master.png?style=shield&circle-token=5d7460a8d2e37a2a2a7d410470d12109cccd93d3)](https://circleci.com/gh/Work4Labs/django-short-urls/tree/master)
-[![Dependency Status](https://www.versioneye.com/user/projects/569e703b2025a6003a00034c/badge.svg)](https://www.versioneye.com/user/projects/569e703b2025a6003a00034c)
+[![CircleCI](https://circleci.com/gh/Work4Labs/django-short-urls.svg?style=svg&circle-token=eeabf3e67644ee77dada25aef2fc30221d439b0b)](https://circleci.com/gh/Work4Labs/django-short-urls)
 
 For dependencies see `requirements.txt`.
 
