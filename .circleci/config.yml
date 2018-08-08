@@ -18,7 +18,7 @@ jobs:
     steps:
       # SETUP
       - checkout
-      - restore_cache:  # from this branch is available, or latest on master
+      - restore_cache:  # from this branch if available, or latest on master
           keys:
             - v1-deps-{{ .Branch }}-
             - v1-deps-master-
