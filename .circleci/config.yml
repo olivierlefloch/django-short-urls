@@ -22,8 +22,6 @@ jobs:
           keys:
             - v1-deps-{{ .Branch }}-
             - v1-deps-master-
-      - run: venv/bin/pip install --upgrade pip
-      - run: venv/bin/pip install --upgrade distribute
       - run: cp ~/django-short-urls/django_short_urls/local_settings.tpl.py ~/django-short-urls/django_short_urls/local_settings.py
       - run: make clean install
       - save_cache:
