@@ -1,7 +1,7 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/django_short_urls
+    working_directory: ~/django-short-urls
 
     environment:
       ADMINS: Olivier Le Floch <olefloch@work4labs.com>
