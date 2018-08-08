@@ -22,7 +22,7 @@ jobs:
           keys:
             - v1-deps-{{ .Branch }}-
             - v1-deps-master-
-      - run: make clean install
+      - run: make cp_settings install
       - save_cache:
           key: v1-deps-{{ .Branch }}-{{ epoch }}
           paths:
