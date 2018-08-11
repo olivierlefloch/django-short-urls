@@ -91,10 +91,15 @@ install_phantomjs:
 	${WORK4CORE_DIR}/bin/install_phantomjs ${PROJECT_DIR} ${PHANTOM_VERSION} ${PHANTOMJS}
 
 install_settings:
-	echo "Copying settings..."
-	([ ! -f ${SETTINGS_TPL_FILE} ] && echo "Project does not have a settings file.") || \
-		([ -f ${SETTINGS_FILE} ] && echo "Settings file already exists.") || \
-			(cp -n ${SETTINGS_TPL_FILE} ${SETTINGS_FILE} && vi ${SETTINGS_FILE})
+	@echo "Installing settings..."
+	@([ ! -f ${SETTINGS_TPL_FILE} ] && echo "Project does not have a settings template.") || \
+		(make -s cp_settings edit_cmd=vi)
+
+# If target doesn't exist, copy the template and open it with 'edit_cmd' (if given)
+cp_settings:
+	@([ -f ${SETTINGS_FILE} ] && echo "Settings file already exists.") || \
+		(cp -n ${SETTINGS_TPL_FILE} ${SETTINGS_FILE} && \
+		[ -n "${edit_cmd}" ] && ${edit_cmd} ${SETTINGS_FILE} || echo "Settings template installed as-is")
 
 
 ######################
