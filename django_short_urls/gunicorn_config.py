@@ -1,5 +1,10 @@
-# -*- coding: utf-8 -
-# https://docs.gunicorn.org/en/19.9.0/settings.html
+# -*- coding: utf-8 -*-
+"""
+Defines the shortener / django-short-urls settings for gunicorn.
+https://docs.gunicorn.org/en/19.9.0/settings.html
+"""
+# Sorry pylint, I know you don't like lowercase constants, but...
+# pylint: disable=invalid-name
 
 import os
 
