@@ -26,4 +26,3 @@ timeout = 10
 # MONITORING
 statsd_host = "localhost:8125"
 statsd_prefix = ""
-
