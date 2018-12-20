@@ -2,11 +2,11 @@
 
 branch = true
 data_file = temp/coverage.data
-omit = venv*,*django_app/tests*,*/gunicorn_config.py
+omit = venv*,*django_app/tests*
 
 [report]
 
-omit=venv*,*django_app/tests*,*/gunicorn_config.py,vendor/pywork4core/manage.py,vendor/pywork4core/django_app/settings.py
+omit=venv*,*django_app/tests*,vendor/pywork4core/manage.py,vendor/pywork4core/django_app/settings.py
 
 [html]
 directory = temp/coverage_html
