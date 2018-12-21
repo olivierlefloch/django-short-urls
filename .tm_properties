@@ -10,4 +10,4 @@ tabSize = 4
 softWrap = false
 showInvisibles = true
 
-excludeDirectories = "{temp,venv}"
+excludeDirectories = "{temp,venv*}"
