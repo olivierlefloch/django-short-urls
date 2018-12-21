@@ -48,7 +48,7 @@ class W4lHttpTestCase(PyW4CTestCase):
             'http://www.theuselessweb.com?c=42&foo=search'
         )
 
-    @patch('requests.get', return_value=requests.Response(headers={'content_type': 'text'})
+    @patch('requests.get', return_value=requests.Response(headers={'content_type': 'text'}))
     def test_proxy(self, requests_get):
         url = 'http://www.work4labs.com'
         proxied_response = proxy(url)
