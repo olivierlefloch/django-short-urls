@@ -35,7 +35,7 @@ ACTIVATE_VENV = . ${PYTHONHOME}/bin/activate
 venv: venv_init venv_prereqs venv_deps venv_wrapper
 
 venv_init:
-	(test -d ${PYTHONHOME}/bin/python || virtualenv --python=${PYTHON_VERSION} --no-site-packages ${PYTHONHOME})
+	(test -f ${PYTHONHOME}/bin/python || virtualenv --python=${PYTHON_VERSION} --no-site-packages ${PYTHONHOME})
 	${CFLAGS} ${PYTHONHOME}/bin/pip install pip==${PIP_VERSION}
 
 venv_prereqs:
