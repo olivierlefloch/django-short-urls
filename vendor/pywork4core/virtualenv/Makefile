@@ -18,8 +18,8 @@ endif
 
 PW4C_DIR = $(abspath ${PROJECT_DIR}${PW4C_RELATIVE_DIR})
 
-PYTHONHOME ?= ${PROJECT_DIR}venv/
-VENV_WRAPPER_DIR = $(abspath ${PYTHONHOME})/.virtualenvs/
+PYTHONHOME ?= ${PROJECT_DIR}venv
+VENV_WRAPPER_DIR = $(abspath ${PYTHONHOME})/.virtualenvs
 
 PIP_VERSION = 9.0.1
 PYTHON_VERSION = python2.7
@@ -35,7 +35,7 @@ ACTIVATE_VENV = . ${PYTHONHOME}/bin/activate
 venv: venv_init venv_prereqs venv_deps venv_wrapper
 
 venv_init:
-	(test -d ${PYTHONHOME} || virtualenv --python=${PYTHON_VERSION} --no-site-packages ${PYTHONHOME})
+	(test -d ${PYTHONHOME}/bin/python || virtualenv --python=${PYTHON_VERSION} --no-site-packages ${PYTHONHOME})
 	${CFLAGS} ${PYTHONHOME}/bin/pip install pip==${PIP_VERSION}
 
 venv_prereqs:

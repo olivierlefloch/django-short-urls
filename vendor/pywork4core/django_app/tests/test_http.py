@@ -6,6 +6,7 @@ import json
 
 from django.http import HttpResponse
 from mock import patch
+import requests
 
 from django_app.test import PyW4CTestCase
 # pylint 1.7.1 gets confused and thinks `http` is a standard python module. Not in python 2.7.x…
@@ -47,15 +48,19 @@ class W4lHttpTestCase(PyW4CTestCase):
             'http://www.theuselessweb.com?c=42&foo=search'
         )
 
-    @patch('requests.get', return_value=HttpResponse(content_type='text'))
-    def test_proxy(self, requests_get):
+    @patch('requests.get')
+    def test_proxy(self, p_requests_get):
+        p_response = requests.Response()
+        p_response.headers['Content-Type'] = 'plain/text'
+        p_requests_get.return_value = p_response
+
         url = 'http://www.work4labs.com'
         proxied_response = proxy(url)
 
         self.assertEqual(type(proxied_response), HttpResponse)
-        self.assertEqual(proxied_response['Content-Type'], 'text')
+        self.assertEqual(proxied_response['content-type'], 'plain/text')
 
-        requests_get.assert_called_once_with(url)
+        p_requests_get.assert_called_once_with(url)
 
     def test_response(self):
         res = pyw4c_response(message="test", status=HTTP_CONFLICT)
