@@ -78,4 +78,4 @@ def proxy(url):
     """Loads url and returns its contents as a proxied web page"""
     resp = requests.get(url)
 
-    return HttpResponse(resp.content, status=resp.status_code, content_type=resp['Content-Type'])
+    return HttpResponse(resp.content, status=resp.status_code, content_type=resp.headers['Content-Type'])
