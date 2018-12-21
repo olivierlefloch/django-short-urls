@@ -12,7 +12,7 @@ import os
 proc_name = "shortener"
 
 # Do start gunicorn from the virtualenv to make all 3rd-party pkgs available
-pythonpath = os.path.dirname(os.path.abspath(__file__))
+pythonpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 bind = "127.0.0.1:8000"
 
