@@ -1,4 +1,6 @@
 -r ./vendor/pywork4core/requirements.txt
+-r ./vendor/pywork4core/web/requirements.txt
 
 dogstatsd-python
-raven>=3
+gevent==1.3.7
+gunicorn==19.9.0

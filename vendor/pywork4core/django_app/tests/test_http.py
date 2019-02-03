@@ -2,18 +2,21 @@
 
 from __future__ import unicode_literals
 
-from django.http import HttpResponse
-from django.utils import unittest
-from mock import patch
-
-from http.utils import (
-    validate_url, url_append_parameters, proxy, response
-)
-from http.status import HTTP_CONFLICT, HTTP_OK
 import json
 
+from django.http import HttpResponse
+from mock import patch
+import requests
 
-class W4lHttpTestCase(unittest.TestCase):
+from django_app.test import PyW4CTestCase
+# pylint 1.7.1 gets confused and thinks `http` is a standard python module. Not in python 2.7.x…
+from http.utils import (  # pylint: disable=wrong-import-order
+    empty_response, proxy, pyw4c_response, url_append_parameters, validate_url
+)
+from http.status import HTTP_CONFLICT, HTTP_OK  # pylint: disable=wrong-import-order
+
+
+class W4lHttpTestCase(PyW4CTestCase):
     def test(self):
         self.assertEqual(validate_url('http://workfor.us'), (True, None))
         self.assertEqual(validate_url('http://app.work4labs.com/jobs?job_id=42'), (True, None))
@@ -46,21 +49,33 @@ class W4lHttpTestCase(unittest.TestCase):
         )
 
     @patch('requests.get')
-    def test_proxy(self, requests_get):
+    def test_proxy(self, p_requests_get):
+        p_response = requests.Response()
+        p_response.headers['Content-Type'] = 'plain/text'
+        p_requests_get.return_value = p_response
+
         url = 'http://www.work4labs.com'
+        proxied_response = proxy(url)
 
-        self.assertEqual(type(proxy(url)), HttpResponse)
+        self.assertEqual(type(proxied_response), HttpResponse)
+        self.assertEqual(proxied_response['content-type'], 'plain/text')
 
-        requests_get.assert_called_once_with(url)
+        p_requests_get.assert_called_once_with(url)
 
     def test_response(self):
-        res = response(message="test", status=HTTP_CONFLICT)
+        res = pyw4c_response(message="test", status=HTTP_CONFLICT)
         self.assertEqual(res.status_code, HTTP_CONFLICT)
         json_content = json.loads(res.content)
         self.assertTrue(json_content['error'])
         self.assertIn("test", json_content['message'])
 
-        res = response(status=HTTP_OK)
+        res = pyw4c_response(status=HTTP_OK)
         self.assertEqual(res.status_code, HTTP_OK)
         json_content = json.loads(res.content)
         self.assertFalse(json_content['error'])
+
+    def test_empty_response(self):
+        res = empty_response()
+
+        self.assertEqual(res.status_code, HTTP_OK)
+        self.assertEqual(res.content, '')

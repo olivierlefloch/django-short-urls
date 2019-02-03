@@ -1,32 +1,26 @@
 [MASTER]
 
-profile=no
 ignore=local_settings.py,tests
 persistent=yes
+jobs=0
+load-plugins=pylint.extensions.bad_builtin,pylint.extensions.check_elif,pylint.extensions.comparetozero,pylint.extensions.docstyle,pylint.extensions.emptystring,pylint.extensions.mccabe,pylint.extensions.overlapping_exceptions,pylint.extensions.redefined_variable_type
 
 
 [MESSAGES CONTROL]
 
-disable=I0011
+enable=all
+disable=docstring-first-line-empty,locally-disabled,suppressed-message
 
 
 [REPORTS]
 
 output-format=colorized
-include-ids=yes
 msg-template={path}:{line}: [{msg_id}({symbol}), {obj}] {msg}
-symbols=no
-
-# Put messages in a separate file for each module / package specified on the
-# command line instead of printing them on stdout. Reports (if any) will be
-# written in a file name "pylint_global.[txt|html]".
-files-output=no
 
 # Tells whether to display a full report or only the messages
 reports=no
 
 evaluation=10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10)
-comment=yes
 
 
 [MISCELLANEOUS]
@@ -45,7 +39,6 @@ ignore-imports=yes
 
 [BASIC]
 
-required-attributes=
 bad-functions=map,filter,apply,input
 
 # Regular expression which should only match correct module names
@@ -102,8 +95,6 @@ ignore-mixin-members=yes
 # (useful for classes with attributes dynamically set).
 ignored-classes=
 
-zope=no
-
 # List of members which are set dynamically and missed by pylint inference
 # system, and so shouldn't trigger E0201 when accessed. Python regular
 # expressions are accepted.
@@ -125,10 +116,6 @@ additional-builtins=
 
 
 [CLASSES]
-
-# List of interface methods to ignore, separated by a comma. This is used for
-# instance to not check methods defines in Zope's Interface base class.
-ignore-iface-methods=
 
 # List of method names used to declare (i.e. assign) instance attributes.
 defining-attr-methods=__init__,__new__,setUp

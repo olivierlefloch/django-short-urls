@@ -15,33 +15,36 @@ from mongoengine.connection import connect, disconnect
 from mongoengine import Document
 
 
-# pylint: disable=R0904
 class MongoTestCase(TestCase):
     """
-    TestCase class that clears the collection between the tests
+    TestCase class that clears the collection between the tests.
+
+    Extends internal methods of django.test.TestCase, so beware when upgrading Django!
     """
 
-    def __init__(self, method_name='runtest'):
+    def _pre_setup(self):
+        super(MongoTestCase, self)._pre_setup()
+
         disconnect()
 
         db_name = 'test_%s' % settings.MONGOENGINE['db']
-        self.database = connect(db_name)[db_name]
-
-        super(MongoTestCase, self).__init__(method_name)
+        self._database = connect(  # pylint: disable=attribute-defined-outside-init
+            db_name, tz_aware=settings.USE_TZ
+        )[db_name]
 
     def _post_teardown(self):
-        super(MongoTestCase, self)._post_teardown()
-
-        for collection in self.database.collection_names():
-            if collection == 'system.indexes':
+        for collection in self._database.collection_names():
+            if collection == 'system.indexes':  # pragma: no cover
                 continue
 
-            self.database.drop_collection(collection)
+            self._database.drop_collection(collection)
 
         # Mongoengine models need to forget about their collection (to recreate indexes). Hackish, I know.
-        # pylint: disable=E1101
+        # FIXME: __subclasses__ may only take direct descendants into account!
         for model in Document.__subclasses__():
             if hasattr(model, '_collection'):
                 del model._collection
 
         disconnect()
+
+        super(MongoTestCase, self)._post_teardown()

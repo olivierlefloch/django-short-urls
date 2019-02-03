@@ -12,13 +12,7 @@ ADMINS = (
 
 SERVER_EMAIL = "root@work4labs.com"
 
-MONGOENGINE = {
-    'db': 'work4labs',
-    'host': 'localhost',
-    'port': 27017,
-    'username': 'work4labs',
-    'password': 'work4labs'
-}
+MONGO_URI = 'mongodb://localhost:27017/work4labs'
 
 ALLOWED_HOSTS = ['.workfor.us']
 

@@ -12,20 +12,14 @@ ADMINS = (
 
 SERVER_EMAIL = "root@work4labs.com"
 
-MONGOENGINE = {
-    'db': '<%= @creds["db"]["name"] %>',
-    'host': '<%= @creds["db"]["host"] %>',
-    'port': <%= @creds["db"]["port"] %>,
-    'username': '<%= @creds["db"]["username"] %>',
-    'password': '<%= @creds["db"]["password"] %>'
-}
+MONGO_URI = '<%= @creds["mongo_uri"] %>'
 
 ALLOWED_HOSTS = ['.workfor.us']
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '<%= @creds["secret_key"] %>'
 
-SENTRY_DSN = '<%= @creds["sentry_dsn"] %>'
+SENTRY_DSN = '<%= @creds["sentry_dsn"] %>' or None
 
 # Do *not* set to True if you're connecting to the production database!
 MONGO_AUTO_CREATE_INDEXES = False

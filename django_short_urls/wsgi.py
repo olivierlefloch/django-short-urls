@@ -26,9 +26,10 @@ sys.path.append(ROOT_DIR)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_short_urls.settings")
 
-# This application object is used by any WSGI server configured to use this
-# file. This includes Django's development server, if the WSGI_APPLICATION
-# setting points here.
-from django.core.wsgi import get_wsgi_application
-# pylint: disable=C0103
-application = get_wsgi_application()
+# The following imports cannot be placed at the top of the file since they Django to be initialized properly
+# pylint: disable=wrong-import-position
+from raven.contrib.django.raven_compat.middleware.wsgi import Sentry  # noqa
+from django.core.wsgi import get_wsgi_application  # noqa
+
+
+application = Sentry(get_wsgi_application())  # pylint: disable=C0103

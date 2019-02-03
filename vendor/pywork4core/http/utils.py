@@ -4,13 +4,13 @@
 
 from __future__ import unicode_literals
 
-from django.http import HttpResponse, QueryDict
-import json
-import requests
-from urllib import urlencode
 import urlparse
 
-from http.status import HTTP_OK
+from django.http import HttpResponse, JsonResponse, QueryDict
+import requests
+
+# pylint 1.7.1 gets confused and thinks `http` is a standard python module. Not in python 2.7.x…
+from http.status import HTTP_OK  # pylint: disable=wrong-import-order
 
 
 def validate_url(url):
@@ -31,16 +31,15 @@ def validate_url(url):
 
 
 def url_append_parameters(url, params_to_replace, defaults):
-    '''
+    """
     Appends the REDIRECT_PARAM_NAME param and the shorten's GET params
     to the long URL.
     Takes QueryDicts as parameters
-    '''
+    """
 
     if not params_to_replace and not defaults:
         return url
 
-    # pylint: disable=W0633
     (scheme, netloc, path, params, link_query, fragment) = urlparse.urlparse(url)
 
     link_query = QueryDict(link_query).copy()
@@ -54,12 +53,17 @@ def url_append_parameters(url, params_to_replace, defaults):
 
     return urlparse.urlunparse((
         scheme, netloc, path, params,
-        urlencode(link_query),
+        link_query.urlencode(),
         fragment
     ))
 
 
-def response(message=None, status=HTTP_OK, **kwargs):
+def empty_response():
+    """Returns a totally empty, successful response"""
+    return HttpResponse(status=HTTP_OK)
+
+
+def pyw4c_response(message=None, status=HTTP_OK, **kwargs):
     """Builds a json response with the kwargs object and some additional standardized fields"""
     kwargs.update({
         "status_code": status,
@@ -67,14 +71,11 @@ def response(message=None, status=HTTP_OK, **kwargs):
         "message": message
     })
 
-    return HttpResponse(json.dumps(kwargs), status=status, mimetype="application/json")
+    return JsonResponse(kwargs, safe=False, status=status)
 
 
 def proxy(url):
     """Loads url and returns its contents as a proxied web page"""
     resp = requests.get(url)
 
-    return HttpResponse(
-        resp.content,
-        status=resp.status_code,
-        mimetype=resp.headers['Content-Type'])
+    return HttpResponse(resp.content, status=resp.status_code, content_type=resp.headers['Content-Type'])

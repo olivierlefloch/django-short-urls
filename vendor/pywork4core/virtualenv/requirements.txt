@@ -1,1 +1,1 @@
-virtualenvwrapper==4.2
+virtualenvwrapper==4.8.2

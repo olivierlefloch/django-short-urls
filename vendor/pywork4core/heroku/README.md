@@ -1,1 +1,1 @@
-Collects file to be used when deploying to heroku.
+Collects files to be used when deploying to heroku.

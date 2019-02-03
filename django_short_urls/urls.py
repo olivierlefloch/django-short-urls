@@ -4,24 +4,19 @@
 
 from __future__ import unicode_literals
 
-from django.conf.urls import patterns, url
-from django.views.generic.base import TemplateView
+from django.conf.urls import url
+
+from django_short_urls.static_view import StaticView
+from django_short_urls import views
 
 
-# pylint: disable=C0103, E1120
+urlpatterns = [  # pylint: disable=invalid-name
+    url(r'^robots\.txt$', StaticView.as_view(template_name='robots.txt', content_type='text/plain')),
+    url(r'^humans\.txt$', StaticView.as_view(template_name='humans.txt', content_type='text/plain; charset=utf-8')),
 
-# Uncomment the next two lines to enable the admin:
-# from django.contrib import admin
-# admin.autodiscover()
+    # A view that can be used to test exception handling
+    url(r'^DivideByZeroPlease$', lambda request: 0 / 0),
 
-urlpatterns = patterns(
-    '',
-    (r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
-    (r'^humans\.txt$', TemplateView.as_view(template_name='humans.txt', content_type='text/plain')),
-
-    url(r'^api/v1/new$', 'django_short_urls.views.new', name='new'),
-    url(r'^(.*)$', 'django_short_urls.views.main', name='main'),
-
-    # Uncomment the next line to enable the admin:
-    # url(r'^admin/', include(admin.site.urls)),
-)
+    url(r'^api/v1/new$', views.new, name='new'),
+    url(r'^(.*)$', views.main, name='main'),
+]

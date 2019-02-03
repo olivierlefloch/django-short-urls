@@ -1,29 +1,31 @@
 # coding=utf-8
 
-'''
+"""
 Views for Django Short Urls:
 
   - main is the redirect view
   - new is the API view to create shortened urls
-'''
+"""
 
 from __future__ import unicode_literals
 
+from logging import getLogger
+import re
+
 from django.http import Http404
 from django.shortcuts import redirect
-from django.utils.log import getLogger
 from django.views.decorators.http import require_safe, require_POST
 from statsd import statsd
 
 from utils.mongo import mongoengine_is_primary
-from http.status import HTTP_UNAUTHORIZED, HTTP_BAD_REQUEST, HTTP_CONFLICT, HTTP_FORBIDDEN
+# pylint 1.7.1 gets confused and thinks `http` is a standard python module. Not in python 2.7.x…
+from http.status import HTTP_BAD_REQUEST, HTTP_CONFLICT, HTTP_FORBIDDEN  # pylint: disable=wrong-import-order
+from http.utils import proxy, pyw4c_response, url_append_parameters, validate_url  # pylint: disable=wrong-import-order
 
-import django_short_urls.suffix_catchall as suffix_catchall
-from django_short_urls.models import Link, User
-from django_short_urls.exceptions import ForbiddenKeyword, ShortPathConflict
-from django_short_urls.w4l_http import (
-    validate_url, url_append_parameters, response, proxy, get_browser, get_client_ip
-)
+from django_short_urls.models import Link
+from django_short_urls.exceptions import InvalidHashException, ForbiddenKeyword, ShortPathConflict
+from django_short_urls.auth import login_with_basic_auth_required
+from django_short_urls.w4l_http import get_browser, get_client_ip, URL_SAFE_FOR_PATH
 
 
 REF_PARAM_NAME = 'ref'
@@ -31,29 +33,41 @@ REF_PARAM_DEFAULT_VALUE = 'shortener'
 
 REDIRECT_PARAM_NAME = 'redirect_suffix'
 
+# This regex extracts the longest valid path in the url
+_EXTRACT_VALID_PATH_RE = re.compile(r'^[%s]*' % URL_SAFE_FOR_PATH)
 
-# pylint: disable=E1101, W0511
+
+def _extract_valid_path(path):
+    """Remove anything after the first non-URL_SAFE_FOR_PATH char as well as the last potential trailing '/',"""
+
+    path = _EXTRACT_VALID_PATH_RE.match(path).group(0)
+
+    if path[-1:] == '/':
+        # This can't be done directly in the regex because of greediness issues (URL_SAFE_FOR_PATH includes '/')
+        return path[:-1]
+
+    return path
+
+
 @require_safe
 def main(request, path):
-    '''
-    Search for a long link matching the `path` and redirect
-    '''
+    """Search for a long link matching the `path` and redirect"""
 
-    if len(path) and path[-1] == '/':
-        # Removing trailing slash so "/jobs/" and "/jobs" redirect identically
-        path = path[:-1]
+    path = _extract_valid_path(path)
 
     link = Link.find_by_hash(path)
 
-    if link is None:
-        # Try to find a matching short link by removing valid "catchall" suffixes
-        path_prefix, redirect_suffix = suffix_catchall.get_hash_from(path)
+    redirect_suffix = None
 
-        if redirect_suffix is not None:
-            # If we found a suffix, we try to find a link again with the prefix
+    if link is None:
+        # Try to find a matching prefix
+        parts = path.split('/', 1)
+
+        if len(parts) == 2:
+            path_prefix, redirect_suffix = parts
+
+            # If there was a prefix, we try to find a link again
             link = Link.find_by_hash(path_prefix)
-    else:
-        redirect_suffix = None
 
     # Instrumentation
     prefix_tag = 'prefix:' + link.prefix if link else 'Http404'
@@ -86,70 +100,65 @@ def main(request, path):
     )
 
     # Either redirect the user, or load the target page and display it directly
-    return (proxy if link.act_as_proxy else redirect)(target_url)
+    if link.act_as_proxy:
+        return proxy(target_url)
+
+    return redirect(target_url, permanent=True)
 
 
-# pylint: disable=W0142
 @require_POST
+@login_with_basic_auth_required
 def new(request):
-    '''
-    Create a new short url based on the POST parameters
-    '''
+    """Create a new short url based on the POST parameters"""
+    long_url = request.GET.get('long_url')
 
-    if 'login' in request.REQUEST and 'api_key' in request.REQUEST:
-        login = request.REQUEST['login']
-        api_key = request.REQUEST['api_key']
-
-        user = User.objects(login=login, api_key=api_key).first()
+    if long_url is None:
+        is_valid, error_message = False, "Missing GET parameter: 'long_url'"
     else:
-        user = None
+        is_valid, error_message = validate_url(long_url)
 
-    if user is None:
-        return response(status=HTTP_UNAUTHORIZED, message="Invalid credentials.")
+    if not is_valid:
+        return pyw4c_response(status=HTTP_BAD_REQUEST, message=error_message)
 
     params = {}
 
-    if 'long_url' in request.REQUEST:
-        params['long_url'] = request.REQUEST['long_url']
-
-        (is_valid, error_message) = validate_url(params['long_url'])
-    else:
-        (is_valid, error_message) = (False, "Missing parameter: 'long_url'")
-
-    if not is_valid:
-        return response(status=HTTP_BAD_REQUEST, message=error_message)
-
-    allow_slashes_in_prefix = 'allow_slashes_in_prefix' in request.REQUEST
-
     for key in ['short_path', 'prefix']:
-        if key in request.REQUEST:
-            params[key] = request.REQUEST[key]
+        params[key] = request.GET.get(key)
 
-            if '/' in params[key] and not (key == 'prefix' and allow_slashes_in_prefix):
-                return response(
-                    status=HTTP_BAD_REQUEST,
-                    message="%s may not contain a '/' character." % key)
+        if key == 'prefix' and 'allow_slashes_in_prefix' in request.GET:
+            continue
+
+        if params[key] is not None and '/' in params[key]:
+            return pyw4c_response(
+                status=HTTP_BAD_REQUEST,
+                message="%s may not contain a '/' character." % key)
+
+    statsd.increment(
+        'workforus.new',
+        tags=['prefix:' + unicode(params['prefix']), 'is_secure:' + unicode(request.is_secure())])
 
     try:
-        link = Link.shorten(**params)
+        link = Link.shorten(long_url, **params)
 
-        getLogger('app').info('Successfully shortened %s into %s for user %s', link.long_url, link.hash, login)
+        getLogger('app').info(
+            'Successfully shortened %s into %s for user %s',
+            link.long_url, link.hash, request.user.login)
     except ShortPathConflict, err:
-        del params['short_path'], params['long_url']
+        del params['short_path'], long_url
+        del params['prefix']
 
-        if 'prefix' in params:
-            del params['prefix']
+        params['hash'] = err.hash
 
-        params['hash'] = err.link.hash
+        return pyw4c_response(status=HTTP_CONFLICT, message=str(err), **params)
+    except InvalidHashException, err:
+        getLogger('app').error(str(err))
 
-        return response(status=HTTP_CONFLICT, message=str(err), **params)
-    except ForbiddenKeyword, err:
-        getLogger('app').warning('Attempt to use forbidden keyword "%s" in a short url.' % err.keyword)
-
-        return response(status=HTTP_FORBIDDEN, message=str(err), **params)
+        return pyw4c_response(
+            status=HTTP_FORBIDDEN if isinstance(err, ForbiddenKeyword) else HTTP_BAD_REQUEST,
+            message=str(err), **params)
 
     params['short_path'] = link.hash.split('/')[-1]
 
     params['short_url'] = link.build_absolute_uri(request)
 
-    return response(**params)
+    return pyw4c_response(**params)

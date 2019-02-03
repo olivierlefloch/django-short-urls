@@ -1,0 +1,34 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/django-short-urls
+
+    environment:
+      ADMINS: Olivier Le Floch <olefloch@work4labs.com>
+      SECRET_KEY: EamJrjviiW13ue8PEamJrjviiW13ue8P
+
+    docker:
+      # Main Python image: contains git and other useful tools
+      - image: circleci/python:2.7.15-jessie-node
+
+      # Services: use in-memory DBs provided by CCi
+      - image: circleci/mongo:3.4-ram
+      # SQL on a sqlite – see DATABASES in default_settings
+
+    steps:
+      # SETUP
+      - checkout
+      - restore_cache:  # from this branch if available, or latest on master
+          keys:
+            - v1-deps-{{ .Branch }}-
+            - v1-deps-master-
+      - run: make cp_settings install
+      - save_cache:
+          key: v1-deps-{{ .Branch }}-{{ epoch }}
+          paths:
+            - ~/django_short_urls/venv
+
+      - run: make lint test || (make test_generate_report; exit 1)
+
+      - store_artifacts:
+          path: temp

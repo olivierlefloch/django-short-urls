@@ -1,14 +1,21 @@
+general:
+  artifacts:
+    - "temp"
+
 machine:
   environment:
     ADMINS: Olivier Le Floch <olefloch@work4labs.com>
     SECRET_KEY: CgKyhUT9eiTqwrfjPzTKCgKyhUT9eiTqwrfjPzTK
+  python:
+    version: 2.7.11
 
 dependencies:
   override:
+    - pip install --upgrade pip # To work around a pip 6.0.3 bug that fails to parse the setuptools version string
     - pip install --upgrade distribute # To work around mysql-python / virtualenv --distribute incompatibility
     - make clean install
 
 test:
   override:
-    - make lint test
+    - make lint test || (make test_generate_report; exit 1)
 

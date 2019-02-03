@@ -6,20 +6,14 @@ from __future__ import unicode_literals
 
 import logging
 
+import mongoengine
 
 from django_app.default_settings import init_settings
+
 
 APP_NAME = 'django_app'
 
 DEBUG = True
-
-MONGOENGINE = {
-    'db': 'pywork4core',
-    'host': 'localhost',
-    'port': 27017,
-    'username': '',
-    'password': ''
-}
 
 SECRET_KEY = 'Foobar'
 
@@ -27,19 +21,14 @@ SECRET_KEY = 'Foobar'
 # Default configuration #
 #########################
 
-for (key, value) in init_settings(APP_NAME=APP_NAME, DEBUG=DEBUG):
-    if key not in globals():
-        globals()[key] = value
+globals().update(init_settings(app_name=APP_NAME, debug=DEBUG))
 
 
 # Databases
 
-import mongoengine
-
 try:
-    # pylint: disable=W0142
-    mongoengine.connect(**MONGOENGINE)
-except mongoengine.connection.ConnectionError, err:  # pragma: no cover
-    logging.error('MongoEngine ConnectionError: %s', err)
+    mongoengine.connect(tz_aware=USE_TZ, **MONGOENGINE)  # pylint: disable=undefined-variable
+except mongoengine.connection.MongoEngineConnectionError, err:  # pragma: no cover
+    logging.error('MongoEngineConnectionError: %s', err)
 
 INSTALLED_APPS = (APP_NAME,)

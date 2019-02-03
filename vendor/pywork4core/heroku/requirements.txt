@@ -1,6 +1,9 @@
-celery
-dj-database-url
-django-celery
-gunicorn
-newrelic
-redis
+amqp==1.4.9  # Seems Celery isn't compatible with newer versions yet (BAT-7184, 2.2.2)
+billiard==3.3.0.23  # Seems Celery isn't compatible with newer versions yet (BAT-7184, 3.5.0.3)
+celery==3.1.24  # (Stuck by BAT-7184, 4.1.0)
+dj-database-url==0.4.2
+django-celery==3.2.1
+gunicorn==19.7.1
+kombu==3.0.37  # Seems Celery isn't compatible with newer versions yet (BAT-7184, 4.1.0)
+redis==2.10.6
+vine==1.1.4
