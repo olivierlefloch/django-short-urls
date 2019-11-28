@@ -2,7 +2,7 @@
 appdirs==1.4.2  # (1.4.3 seems broken on install)
 astroid==1.5.3
 backports.functools-lru-cache==1.4
-certifi==2017.7.27.1
+certifi==2019.11.28
 coverage==4.4.1
 decorator==4.1.2
 django-extensions==1.9.1
