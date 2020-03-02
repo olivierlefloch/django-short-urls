@@ -4,7 +4,7 @@ astroid==1.5.3
 backports.functools-lru-cache==1.4
 certifi==2017.7.27.1
 coverage==4.4.1
-decorator==4.1.2
+decorator==4.4.2
 django-extensions==1.9.1
 django-nose==1.4.5
 Django==1.11.5
